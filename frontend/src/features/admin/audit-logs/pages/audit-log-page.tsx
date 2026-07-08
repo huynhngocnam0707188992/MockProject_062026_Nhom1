@@ -1,20 +1,42 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SystemActionTab } from "../tabs/system-action-tab";
 import { PhiAccessTab } from "../tabs/phi-access-tab";
+import { PERMISSIONS } from "@/common/permissions";
+import { usePermissions } from "@/features/auth/hooks/use-current-user";
+
+const tabs = [
+  {
+    value: "system-actions",
+    label: "System Actions",
+    permission: PERMISSIONS.AUDIT_LOG_VIEW,
+    content: <SystemActionTab />,
+  },
+  {
+    value: "phi-access",
+    label: "PHI Access",
+    permission: PERMISSIONS.PHI_ACCESS_LOG_VIEW,
+    content: <PhiAccessTab />,
+  },
+];
 
 const AuditlogPage = () => {
+  const { can } = usePermissions();
+  const visibleTabs = tabs.filter((t) => can(t.permission));
+
   return (
-    <Tabs defaultValue="system-actions">
-      <TabsList className={"w-full"}>
-        <TabsTrigger value="system-actions">System Actions</TabsTrigger>
-        <TabsTrigger value="phi-access">PHI Access</TabsTrigger>
+    <Tabs defaultValue={visibleTabs[0]?.value}>
+      <TabsList className="w-full">
+        {visibleTabs.map((t) => (
+          <TabsTrigger key={t.value} value={t.value}>
+            {t.label}
+          </TabsTrigger>
+        ))}
       </TabsList>
-      <TabsContent value="system-actions">
-        <SystemActionTab />
-      </TabsContent>
-      <TabsContent value="phi-access">
-        <PhiAccessTab />
-      </TabsContent>
+      {visibleTabs.map((t) => (
+        <TabsContent key={t.value} value={t.value}>
+          {t.content}
+        </TabsContent>
+      ))}
     </Tabs>
   );
 };

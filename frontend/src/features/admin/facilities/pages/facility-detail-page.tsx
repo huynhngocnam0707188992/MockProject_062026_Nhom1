@@ -1,25 +1,32 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScreeningTab } from "../tabs/screening-tab";
-import { AssessmentTab } from "../tabs/assessment-tab";
+import { RoomsBedTab } from "../tabs/rooms-bed-tab";
+import { CareLevelRateTab } from "../tabs/care-level-rate-tab";
 import { PERMISSIONS } from "@/common/permissions";
 import { usePermissions } from "@/features/auth/hooks/use-current-user";
+import { InventoryTab } from "../tabs/inventory-tab";
 
 const tabs = [
   {
-    value: "screening",
-    label: "Screening",
-    permission: PERMISSIONS.SCREENING_VIEW,
-    content: <ScreeningTab />,
+    value: "rooms-beds",
+    label: "Rooms & Beds",
+    permission: PERMISSIONS.FACILITY_VIEW,
+    content: <RoomsBedTab />,
   },
   {
-    value: "assessment",
-    label: "Assessment",
-    permission: PERMISSIONS.ASSESSMENT_VIEW,
-    content: <AssessmentTab />,
+    value: "care-level-rates",
+    label: "Care Level Rates",
+    permission: PERMISSIONS.FACILITY_VIEW,
+    content: <CareLevelRateTab />,
+  },
+  {
+    value: "inventory",
+    label: "Inventory",
+    permission: PERMISSIONS.INVENTORY_VIEW,
+    content: <InventoryTab />,
   },
 ];
 
-const PreAdmissionDetailPage = () => {
+export const FacilityDetailPage = () => {
   const { can } = usePermissions();
   const visibleTabs = tabs.filter((t) => can(t.permission));
 
@@ -40,5 +47,3 @@ const PreAdmissionDetailPage = () => {
     </Tabs>
   );
 };
-
-export default PreAdmissionDetailPage;
