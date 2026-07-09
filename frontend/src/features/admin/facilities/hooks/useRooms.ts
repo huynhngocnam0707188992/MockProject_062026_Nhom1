@@ -15,8 +15,13 @@ export function useRooms(facilityId?: number, searchTerm?: string) {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['rooms', facilityId, page, pageSize, searchTerm],
-    queryFn: () => roomsApi.getRooms(facilityId!, page, pageSize, searchTerm),
-    enabled: !!facilityId,
+    queryFn: () => {
+      if (facilityId) {
+        return roomsApi.getRooms(facilityId, page, pageSize, searchTerm);
+      }
+      return roomsApi.getAllRooms(page, pageSize, searchTerm);
+    },
+    enabled: true,
   });
 
   const createRoomMutation = useMutation({

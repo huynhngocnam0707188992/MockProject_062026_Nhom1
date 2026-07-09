@@ -25,6 +25,12 @@ export interface Room {
 }
 
 export const roomsApi = {
+  getAllRooms: async (page: number = 0, size: number = 10, search?: string): Promise<{ data: Room[], metadata: PaginationMetadata }> => {
+    const { data } = await apiClient.get(`/admin/facility-settings/rooms`, {
+      params: { page, size, search: search?.trim() || undefined }
+    });
+    return { data: data.data, metadata: data.metadata };
+  },
   getRooms: async (facilityId: number, page: number = 0, size: number = 10, search?: string): Promise<{ data: Room[], metadata: PaginationMetadata }> => {
     const { data } = await apiClient.get(`/admin/facility-settings/${facilityId}/rooms`, {
       params: { page, size, search: search?.trim() || undefined }
