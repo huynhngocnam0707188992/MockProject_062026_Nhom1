@@ -1,9 +1,7 @@
-package com.eldercare.modules.admin.user_management;
+package com.eldercare.modules.admin.user_management.role;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -11,23 +9,23 @@ import java.time.OffsetDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RoleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "role_name", unique = true, nullable = false, length = 100)
+    @Column(name = "role_name", nullable = false)
     private String roleName;
 
-    @Column(length = 500)
     private String description;
 
-    @Column(name = "is_deleted", nullable = false)
+    @Column(name = "is_deleted")
     private Boolean isDeleted = false;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 }

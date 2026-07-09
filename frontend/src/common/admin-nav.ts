@@ -11,6 +11,10 @@ import {
   Bell,
   UserCircle,
   type LucideIcon,
+  Database,
+  Shield,
+  Clock,
+  Clock3,
 } from "lucide-react";
 import { PERMISSIONS, type PermissionCode } from "@/common/permissions";
 
@@ -35,6 +39,26 @@ export const adminNavGroups: AdminNavGroup[] = [
         path: "/admin",
         icon: LayoutDashboard,
         permission: PERMISSIONS.RESIDENT_VIEW,
+      },
+    ],
+  },
+  {
+    title: "User & Role Management",
+    items: [
+      {
+        label: "Users",
+        path: "/admin/users",
+        icon: Users,
+        permission: PERMISSIONS.USER_VIEW,
+      },
+      {
+        label: "Roles",
+        path: "/admin/roles",
+        icon: Shield,
+        permission: [
+          PERMISSIONS.ROLE_VIEW,
+          PERMISSIONS.PERMISSION_VIEW,
+        ],
       },
     ],
   },
@@ -70,6 +94,12 @@ export const adminNavGroups: AdminNavGroup[] = [
         icon: Building2,
         permission: PERMISSIONS.FACILITY_VIEW,
       },
+      {
+        label: "Staffing",
+        path: "/admin/staffing-ratios",
+        icon: Clock3,
+        permission: PERMISSIONS.STAFFING_RATIO_VIEW,
+      },
     ],
   },
   {
@@ -100,6 +130,17 @@ export const adminNavGroups: AdminNavGroup[] = [
           PERMISSIONS.AUDIT_LOG_VIEW,
           PERMISSIONS.PHI_ACCESS_LOG_VIEW,
         ],
+      },
+    ],
+  },
+  {
+    title: "Data & Seeding",
+    items: [
+      {
+        label: "Demo Data",
+        path: "/admin/demo-data",
+        icon: Database,
+        permission: PERMISSIONS.DEMO_DATA_VIEW,
       },
     ],
   },

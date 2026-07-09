@@ -17,12 +17,25 @@ import { PERMISSIONS } from "@/common/permissions";
 import type { RouteObject } from "react-router";
 import { RequirePermission } from "@/components/common/require-permission";
 import { FacilityDetailPage } from "@/features/admin/facilities/pages/facility-detail-page";
+import DemoDataPage from "@/features/admin/demo-data/pages/demo-data-page";
+import StaffingRatioPage from "@/features/admin/staffing-ratios/pages/staffing-ratio-page";
+import RolePage from "@/features/admin/roles/pages/role-page";
 
 export const adminRoutes: RouteObject = {
   path: "/admin",
   element: <AdminLayout />,
   children: [
     { index: true, element: <DashboardPage /> },
+    {
+      path: "roles",
+      element: (
+        <RequirePermission
+          permission={[PERMISSIONS.ROLE_VIEW, PERMISSIONS.PERMISSION_VIEW]}
+        >
+          <RolePage />
+        </RequirePermission>
+      ),
+    },
     {
       path: "residents",
       element: (
@@ -84,6 +97,14 @@ export const adminRoutes: RouteObject = {
       ),
     },
     {
+      path: "staffing-ratios",
+      element: (
+        <RequirePermission permission={PERMISSIONS.FACILITY_VIEW}>
+          <StaffingRatioPage />
+        </RequirePermission>
+      ),
+    },
+    {
       path: "care-plans",
       element: (
         <RequirePermission permission={PERMISSIONS.CARE_PLAN_VIEW}>
@@ -125,6 +146,14 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.NOTIFICATION_VIEW}>
           <NotificationPage />
+        </RequirePermission>
+      ),
+    },
+    {
+      path: "demo-data",
+      element: (
+        <RequirePermission permission={PERMISSIONS.USER_VIEW}>
+          <DemoDataPage />
         </RequirePermission>
       ),
     },
