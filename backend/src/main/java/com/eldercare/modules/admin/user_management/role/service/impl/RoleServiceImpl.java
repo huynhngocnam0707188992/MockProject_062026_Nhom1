@@ -1,8 +1,8 @@
-package com.eldercare.modules.role.service.impl;
+package com.eldercare.modules.admin.user_management.role.service.impl;
 
-import com.eldercare.modules.role.dto.response.RoleResponse;
-import com.eldercare.modules.role.repository.RoleRepository;
-import com.eldercare.modules.role.service.RoleService;
+import com.eldercare.modules.admin.user_management.role.dto.response.RoleResponse;
+import com.eldercare.modules.admin.user_management.role.repository.RoleRepository;
+import com.eldercare.modules.admin.user_management.role.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

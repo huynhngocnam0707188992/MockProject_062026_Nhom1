@@ -1,4 +1,4 @@
-package com.eldercare.modules.role.dto.response;
+package com.eldercare.modules.admin.user_management.role.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
