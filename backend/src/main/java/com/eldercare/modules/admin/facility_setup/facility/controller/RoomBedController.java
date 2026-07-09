@@ -24,6 +24,15 @@ public class RoomBedController {
 
     // RoomEntity Endpoints
 
+    @GetMapping("/rooms")
+    // @PreAuthorize("hasRole('NHA_ADMIN')") // Bypassed for development
+    public ResponseEntity<PagedResponse<List<RoomResponse>>> getAllRooms(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        return ResponseEntity.ok(roomBedService.getAllRooms(page, size, search));
+    }
+
     @GetMapping("/{facilityId}/rooms")
     // @PreAuthorize("hasRole('NHA_ADMIN')") // Bypassed for development
     public ResponseEntity<PagedResponse<List<RoomResponse>>> getRoomList(

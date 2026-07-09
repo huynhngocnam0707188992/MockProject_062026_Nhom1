@@ -62,6 +62,32 @@ public class RoomBedServiceImpl implements RoomBedService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public PagedResponse<List<RoomResponse>> getAllRooms(int page, int size, String search) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<RoomEntity> roomPage;
+        
+        if (search != null && !search.trim().isEmpty()) {
+            roomPage = roomRepository.findByRoomNumberContainingIgnoreCase(search, pageable);
+        } else {
+            roomPage = roomRepository.findAllRooms(pageable);
+        }
+        
+        List<RoomEntity> rooms = roomPage.getContent();
+        List<Long> roomIds = rooms.stream().map(RoomEntity::getId).collect(Collectors.toList());
+        
+        List<BedRepository.BedProjection> enrichedBeds = List.of();
+        if (!roomIds.isEmpty()) {
+            enrichedBeds = bedRepository.findEnrichedBedsByRoomIds(roomIds);
+        }
+
+        List<RoomResponse> content = mapper.toRoomResponseList(rooms, enrichedBeds);
+        
+        return PagedResponse.of(content, 200, "All rooms retrieved successfully",
+                page, roomPage.getTotalPages(), size, roomPage.getTotalElements());
+    }
+
+    @Override
     @Transactional
     public RoomResponse createRoom(Long facilityId, RoomRequest request) {
         if (roomRepository.existsByFacilityIdAndRoomNumber(facilityId, request.getRoomNumber())) {

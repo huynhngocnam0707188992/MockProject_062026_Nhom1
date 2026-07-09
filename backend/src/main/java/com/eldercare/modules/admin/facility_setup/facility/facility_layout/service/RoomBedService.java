@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface RoomBedService {
     PagedResponse<List<RoomResponse>> getRoomList(Long facilityId, int page, int size, String search);
+    PagedResponse<List<RoomResponse>> getAllRooms(int page, int size, String search);
     RoomResponse createRoom(Long facilityId, RoomRequest request);
     RoomResponse updateRoom(Long roomId, RoomRequest request);
     void deleteRoom(Long roomId);
