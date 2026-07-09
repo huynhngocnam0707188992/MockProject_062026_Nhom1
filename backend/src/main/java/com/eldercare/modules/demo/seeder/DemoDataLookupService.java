@@ -1,136 +1,142 @@
 package com.eldercare.modules.demo.seeder;
 
-import com.eldercare.modules.demo.dto.csv.ResidentCsvRow;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
-@Component
-public class ResidentCsvReader {
+@Service
+@RequiredArgsConstructor
+public class DemoDataLookupService {
 
-    public List<ResidentCsvRow> read(MultipartFile file) {
-        List<ResidentCsvRow> rows = new ArrayList<>();
+    private final JdbcTemplate jdbcTemplate;
 
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+    public Long findBedId(String facilityCode, String roomNumber, String bedNumber) {
+        List<Long> bedIds = jdbcTemplate.query(
+                """
+                SELECT TOP 1 b.id
+                FROM beds b
+                INNER JOIN rooms r ON b.room_id = r.id
+                INNER JOIN facilities f ON r.facility_id = f.id
+                WHERE f.facility_code = ?
+                  AND r.room_number = ?
+                  AND b.bed_number = ?
+                ORDER BY b.id
+                """,
+                (rs, rowNum) -> rs.getLong("id"),
+                facilityCode,
+                roomNumber,
+                bedNumber
+        );
 
-            String line;
-            int lineNumber = 0;
-
-            while ((line = reader.readLine()) != null) {
-                lineNumber++;
-
-                if (line.trim().isEmpty()) continue;
-                if (isHeaderLine(line)) continue;
-
-                String[] columns = splitCsvOrTsvLine(line);
-
-                if (columns.length < 14) {
-                    throw new RuntimeException("Invalid CSV row at line " + lineNumber);
-                }
-
-                ResidentCsvRow row = new ResidentCsvRow(
-                        parseNullableString(columns[0]),
-                        parseNullableString(columns[1]),
-                        parseNullableString(columns[2]),
-                        parseNullableString(columns[3]),
-                        normalizeGender(columns[4]),
-                        parseNullableString(columns[5]),
-                        parseNullableString(columns[6]),
-                        normalizeResidentStatus(columns[7]),
-                        parseNullableString(columns[8]),
-                        parseNullableString(columns[9]),
-                        parseNullableString(columns[10]),
-                        parseNullableString(columns[11]),
-                        parseIntOrDefault(columns[12], 0),
-                        parseIntOrDefault(columns[13], 0)
-                );
-
-                validate(row, lineNumber);
-                rows.add(row);
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to read CSV file", e);
+        if (bedIds.isEmpty()) {
+            throw new RuntimeException(
+                    "Bed not found: facility_code=" + facilityCode
+                            + ", room_number=" + roomNumber
+                            + ", bed_number=" + bedNumber
+            );
         }
 
-        return rows;
+        return bedIds.get(0);
     }
 
-    private void validate(ResidentCsvRow row, int lineNumber) {
-        if (row.firstName() == null || row.firstName().isBlank()) {
-            throw new RuntimeException("first_name is required at line " + lineNumber);
-        }
+    public void ensureCareLevel(String careLevelCode) {
+        List<Long> ids = jdbcTemplate.query(
+                "SELECT id FROM care_levels WHERE level_code = ?",
+                (rs, rowNum) -> rs.getLong("id"),
+                careLevelCode
+        );
 
-        if (row.lastName() == null || row.lastName().isBlank()) {
-            throw new RuntimeException("last_name is required at line " + lineNumber);
-        }
-
-        try {
-            LocalDate.parse(row.dateOfBirth());
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid date_of_birth at line " + lineNumber + ": " + row.dateOfBirth());
+        if (ids.isEmpty()) {
+            throw new RuntimeException("Care level not found: " + careLevelCode);
         }
     }
 
-    private boolean isHeaderLine(String line) {
-        return removeBom(line).toLowerCase().startsWith("first_name,");
+    public Long ensureDemoUser() {
+        List<Long> existing = jdbcTemplate.query(
+                "SELECT id FROM users WHERE email = ?",
+                (rs, rowNum) -> rs.getLong("id"),
+                "demo.admin@eldercare.local"
+        );
+
+        if (!existing.isEmpty()) return existing.get(0);
+
+        Long roleId = findSystemAdminRoleId();
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    """
+                    INSERT INTO users
+                    (
+                        employee_code, email, password_hash, first_name, last_name,
+                        phone_number, status, mfa_enabled, role_id, is_deleted,
+                        created_at, updated_at
+                    )
+                    VALUES
+                    (
+                        'DEMO-ADMIN-001', 'demo.admin@eldercare.local',
+                        'demo-password-hash', 'Demo', 'Admin', '9165559999',
+                        'ACTIVE', 0, ?, 0, SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET()
+                    )
+                    """,
+                    Statement.RETURN_GENERATED_KEYS
+            );
+
+            ps.setLong(1, roleId);
+            return ps;
+        }, keyHolder);
+
+        Number key = keyHolder.getKey();
+        if (key == null) throw new RuntimeException("Failed to get generated user id");
+
+        return key.longValue();
     }
 
-    private String[] splitCsvOrTsvLine(String line) {
-        return line.contains("\t") ? line.split("\\t", -1) : line.split(",", -1);
+    public Long ensureIncidentSeverity() {
+        List<Long> existing = jdbcTemplate.query(
+                "SELECT TOP 1 id FROM incident_severities ORDER BY id",
+                (rs, rowNum) -> rs.getLong("id")
+        );
+
+        if (!existing.isEmpty()) return existing.get(0);
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    """
+                    INSERT INTO incident_severities (level_name, chart_lock_trigger)
+                    VALUES ('Low', 0)
+                    """,
+                    Statement.RETURN_GENERATED_KEYS
+            );
+
+            return ps;
+        }, keyHolder);
+
+        Number key = keyHolder.getKey();
+        if (key == null) throw new RuntimeException("Failed to get generated incident severity id");
+
+        return key.longValue();
     }
 
-    private String parseNullableString(String value) {
-        if (value == null) return null;
+    private Long findSystemAdminRoleId() {
+        List<Long> roleIds = jdbcTemplate.query(
+                """
+                SELECT TOP 1 id
+                FROM roles
+                WHERE role_name IN ('System_Administrator', 'System Administrator', 'NHA_Admin')
+                ORDER BY id
+                """,
+                (rs, rowNum) -> rs.getLong("id")
+        );
 
-        String trimmed = removeBom(value).trim();
-
-        if (trimmed.isBlank() || trimmed.equalsIgnoreCase("NULL")) return null;
-
-        return trimmed;
-    }
-
-    private int parseIntOrDefault(String value, int defaultValue) {
-        String trimmed = parseNullableString(value);
-        return trimmed == null ? defaultValue : Integer.parseInt(trimmed);
-    }
-
-    private String removeBom(String value) {
-        if (value == null) return null;
-        return value.replace("\uFEFF", "");
-    }
-
-    private String normalizeGender(String gender) {
-        String value = parseNullableString(gender);
-
-        if (value == null) return "UNDISCLOSED";
-
-        return switch (value.trim().toUpperCase()) {
-            case "MALE", "M" -> "MALE";
-            case "FEMALE", "F" -> "FEMALE";
-            case "OTHER" -> "OTHER";
-            default -> "UNDISCLOSED";
-        };
-    }
-
-    private String normalizeResidentStatus(String status) {
-        String value = parseNullableString(status);
-
-        if (value == null) return "ACTIVE";
-
-        return switch (value.trim().toUpperCase()) {
-            case "ACTIVE" -> "ACTIVE";
-            case "INACTIVE" -> "INACTIVE";
-            case "DECEASED" -> "DECEASED";
-            case "DISCHARGED" -> "DISCHARGED";
-            default -> "ACTIVE";
-        };
+        return roleIds.isEmpty() ? 5L : roleIds.get(0);
     }
 }
