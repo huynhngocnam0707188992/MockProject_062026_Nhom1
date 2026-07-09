@@ -1,5 +1,7 @@
+import ResidentsFeature from "@/features/residents/residents-feature";
+
 const ResidentPage = () => {
-  return <div>ResidentPage</div>;
+  return <ResidentsFeature />;
 };
 
 export default ResidentPage;
