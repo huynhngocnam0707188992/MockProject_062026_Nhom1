@@ -1,5 +1,6 @@
 package com.eldercare.modules.facility.service.impl;
 
+import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.exception.custom.BadRequestException;
 import com.eldercare.exception.custom.ResourceNotFoundException;
 import com.eldercare.modules.facility.dto.request.FacilityCreateRequest;
@@ -10,6 +11,9 @@ import com.eldercare.modules.facility.mapper.FacilityMapper;
 import com.eldercare.modules.facility.repository.FacilityRepository;
 import com.eldercare.modules.facility.service.FacilityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,20 +29,28 @@ public class FacilityServiceImpl implements FacilityService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<FacilityResponse> getFacilities() {
-        return facilityRepository.findAll()
+    public PagedResponse<List<FacilityResponse>> getFacilities(int page, int size, String search) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Facility> facilityPage;
+        
+        if (search != null && !search.trim().isEmpty()) {
+            facilityPage = facilityRepository.findByFacilityCodeContainingIgnoreCaseOrNameContainingIgnoreCaseOrLicenseNumberContainingIgnoreCase(
+                    search, search, search, pageable);
+        } else {
+            facilityPage = facilityRepository.findAll(pageable);
+        }
+        
+        List<FacilityResponse> content = facilityPage.getContent()
                 .stream()
                 .map(facilityMapper::toResponse)
                 .collect(Collectors.toList());
+        return PagedResponse.of(content, 200, "Facilities retrieved successfully",
+                page, facilityPage.getTotalPages(), size, facilityPage.getTotalElements());
     }
 
     @Override
     @Transactional
     public FacilityResponse createFacility(FacilityCreateRequest request) {
-        if (request.getTargetState() == null || !request.getTargetState().equalsIgnoreCase("CA")) {
-            throw new BadRequestException("Target state must be 'CA'");
-        }
-        
         if (facilityRepository.findByFacilityCode(request.getFacilityCode()).isPresent()) {
             throw new BadRequestException("Facility code already exists");
         }
@@ -59,10 +71,6 @@ public class FacilityServiceImpl implements FacilityService {
     @Override
     @Transactional
     public FacilityResponse updateFacilityInfo(Long facilityId, FacilityUpdateRequest request) {
-        if (request.getTargetState() != null && !request.getTargetState().equalsIgnoreCase("CA")) {
-            throw new BadRequestException("Target state must be 'CA'");
-        }
-
         Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Facility not found"));
         

@@ -1,5 +1,6 @@
 package com.eldercare.modules.facility.service.impl;
 
+import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.common.enums.BedStatus;
 import com.eldercare.exception.custom.BadRequestException;
 import com.eldercare.exception.custom.ResourceNotFoundException;
@@ -16,10 +17,14 @@ import com.eldercare.modules.facility.repository.FacilityRepository;
 import com.eldercare.modules.facility.repository.RoomRepository;
 import com.eldercare.modules.facility.service.RoomBedService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +37,28 @@ public class RoomBedServiceImpl implements RoomBedService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RoomResponse> getRoomList(Long facilityId) {
-        List<Room> rooms = roomRepository.findByFacilityId(facilityId);
-        return mapper.toRoomResponseList(rooms);
+    public PagedResponse<List<RoomResponse>> getRoomList(Long facilityId, int page, int size, String search) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Room> roomPage;
+        
+        if (search != null && !search.trim().isEmpty()) {
+            roomPage = roomRepository.findByFacilityIdAndRoomNumberContainingIgnoreCase(facilityId, search, pageable);
+        } else {
+            roomPage = roomRepository.findByFacilityId(facilityId, pageable);
+        }
+        
+        List<Room> rooms = roomPage.getContent();
+        List<Long> roomIds = rooms.stream().map(Room::getId).collect(Collectors.toList());
+        
+        List<BedRepository.BedProjection> enrichedBeds = List.of();
+        if (!roomIds.isEmpty()) {
+            enrichedBeds = bedRepository.findEnrichedBedsByRoomIds(roomIds);
+        }
+
+        List<RoomResponse> content = mapper.toRoomResponseList(rooms, enrichedBeds);
+        
+        return PagedResponse.of(content, 200, "Rooms retrieved successfully",
+                page, roomPage.getTotalPages(), size, roomPage.getTotalElements());
     }
 
     @Override
@@ -50,7 +74,9 @@ public class RoomBedServiceImpl implements RoomBedService {
         Room room = mapper.toEntity(request);
         room.setFacility(facility);
         room = roomRepository.save(room);
-        return mapper.toResponse(room);
+        
+        // Return without beds initially
+        return mapper.toResponse(room, List.of());
     }
 
     @Override
@@ -70,7 +96,9 @@ public class RoomBedServiceImpl implements RoomBedService {
         }
         
         room = roomRepository.save(room);
-        return mapper.toResponse(room);
+        
+        List<BedRepository.BedProjection> enrichedBeds = bedRepository.findEnrichedBedsByRoomIds(List.of(roomId));
+        return mapper.toResponse(room, enrichedBeds);
     }
 
     @Override
@@ -115,8 +143,6 @@ public class RoomBedServiceImpl implements RoomBedService {
         Bed bed = bedRepository.findById(bedId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bed not found"));
 
-        // Here we just update the status as per requirement. The complex check if a resident is linked
-        // is typically handled when integrating with the Resident module (M1).
         if (request.getStatus() != null) {
             bed.setStatus(request.getStatus());
         }
