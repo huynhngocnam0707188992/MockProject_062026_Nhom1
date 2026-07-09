@@ -1,6 +1,7 @@
 package com.eldercare.modules.facility.mapper;
 
 import com.eldercare.modules.facility.dto.request.AddressDto;
+import com.eldercare.modules.facility.dto.request.FacilityCreateRequest;
 import com.eldercare.modules.facility.dto.request.FacilityUpdateRequest;
 import com.eldercare.modules.facility.dto.response.FacilityResponse;
 import com.eldercare.modules.facility.entity.Address;
@@ -9,6 +10,32 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FacilityMapper {
+
+    public Facility toEntity(FacilityCreateRequest request) {
+        if (request == null) {
+            return null;
+        }
+
+        Facility facility = new Facility();
+        facility.setFacilityCode(request.getFacilityCode());
+        facility.setName(request.getName());
+        facility.setLicenseNumber(request.getLicenseNumber());
+        facility.setTargetState(request.getTargetState());
+        facility.setPhoneNumber(request.getPhoneNumber());
+
+        if (request.getAddress() != null) {
+            Address address = new Address();
+            address.setStreetLine1(request.getAddress().getStreetLine1());
+            address.setStreetLine2(request.getAddress().getStreetLine2());
+            address.setCity(request.getAddress().getCity());
+            address.setState(request.getAddress().getState());
+            address.setZipCode(request.getAddress().getZipCode());
+            address.setAddressType(request.getAddress().getAddressType());
+            facility.setAddress(address);
+        }
+
+        return facility;
+    }
 
     public FacilityResponse toResponse(Facility facility) {
         if (facility == null) {
