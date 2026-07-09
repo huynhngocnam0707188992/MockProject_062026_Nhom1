@@ -1,6 +1,6 @@
 package com.eldercare.modules.admin.user_management.role.repository;
 
-import com.eldercare.modules.admin.user_management.role.RoleEntity;
+import com.eldercare.modules.admin.user_management.RoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
