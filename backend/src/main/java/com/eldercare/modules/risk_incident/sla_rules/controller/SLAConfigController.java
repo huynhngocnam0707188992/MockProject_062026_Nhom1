@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/sla-configs")
+@RequestMapping("/api/v1/admin/sla-configs")
 @RequiredArgsConstructor
 @Validated
 public class SLAConfigController {

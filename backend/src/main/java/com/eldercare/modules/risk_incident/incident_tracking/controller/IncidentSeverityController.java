@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/incident-severity-levels")
+@RequestMapping("/api/v1/admin/incident-severity-levels")
 @RequiredArgsConstructor
 @Validated
 public class IncidentSeverityController {

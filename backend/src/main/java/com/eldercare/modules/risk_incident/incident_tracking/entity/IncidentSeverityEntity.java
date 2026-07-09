@@ -19,7 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class IncidentSeverity {
+public class IncidentSeverityEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

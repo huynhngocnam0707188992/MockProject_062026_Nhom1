@@ -1,6 +1,6 @@
 package com.eldercare.modules.risk_incident.sla_rules.entity;
 
-import com.eldercare.modules.risk_incident.incident_tracking.entity.IncidentSeverity;
+import com.eldercare.modules.risk_incident.incident_tracking.entity.IncidentSeverityEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,7 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SLAConfig {
+public class SLAConfigEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,5 +34,5 @@ public class SLAConfig {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "severity_id", nullable = false)
-    private IncidentSeverity severity;
+    private IncidentSeverityEntity severity;
 }

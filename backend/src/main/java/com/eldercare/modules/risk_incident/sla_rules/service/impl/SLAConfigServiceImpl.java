@@ -1,11 +1,11 @@
 package com.eldercare.modules.risk_incident.sla_rules.service.impl;
 
-import com.eldercare.modules.risk_incident.incident_tracking.entity.IncidentSeverity;
+import com.eldercare.modules.risk_incident.incident_tracking.entity.IncidentSeverityEntity;
 import com.eldercare.modules.risk_incident.incident_tracking.repository.IncidentSeverityRepository;
 import com.eldercare.modules.risk_incident.sla_rules.dto.CreateSLARequest;
 import com.eldercare.modules.risk_incident.sla_rules.dto.SLAResponse;
 import com.eldercare.modules.risk_incident.sla_rules.dto.UpdateSLARequest;
-import com.eldercare.modules.risk_incident.sla_rules.entity.SLAConfig;
+import com.eldercare.modules.risk_incident.sla_rules.entity.SLAConfigEntity;
 import com.eldercare.modules.risk_incident.sla_rules.mapper.SLAConfigMapper;
 import com.eldercare.modules.risk_incident.sla_rules.repository.SLAConfigRepository;
 import com.eldercare.modules.risk_incident.sla_rules.service.SLAConfigService;
@@ -35,20 +35,20 @@ public class SLAConfigServiceImpl implements SLAConfigService {
     @Override
     @Transactional
     public SLAResponse createSLAConfig(CreateSLARequest request) {
-        IncidentSeverity severity = incidentSeverityRepository.findById(request.getSeverityId())
+        IncidentSeverityEntity severity = incidentSeverityRepository.findById(request.getSeverityId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Incident severity not found"));
 
-        SLAConfig saved = slaConfigRepository.save(SLAConfigMapper.toEntity(request, severity));
+        SLAConfigEntity saved = slaConfigRepository.save(SLAConfigMapper.toEntity(request, severity));
         return SLAConfigMapper.toResponse(saved);
     }
 
     @Override
     @Transactional
     public SLAResponse updateSLAConfig(Long slaConfigId, UpdateSLARequest request) {
-        SLAConfig existing = slaConfigRepository.findById(slaConfigId)
+        SLAConfigEntity existing = slaConfigRepository.findById(slaConfigId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "SLA config not found"));
 
-        IncidentSeverity severity = incidentSeverityRepository.findById(request.getSeverityId())
+        IncidentSeverityEntity severity = incidentSeverityRepository.findById(request.getSeverityId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Incident severity not found"));
 
         SLAConfigMapper.updateEntity(existing, request, severity);

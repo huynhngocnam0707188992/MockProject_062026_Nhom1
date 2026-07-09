@@ -3,7 +3,7 @@ package com.eldercare.modules.risk_incident.incident_tracking.service.impl;
 import com.eldercare.modules.risk_incident.incident_tracking.dto.CreateIncidentSeverityRequest;
 import com.eldercare.modules.risk_incident.incident_tracking.dto.IncidentSeverityResponse;
 import com.eldercare.modules.risk_incident.incident_tracking.dto.UpdateIncidentSeverityRequest;
-import com.eldercare.modules.risk_incident.incident_tracking.entity.IncidentSeverity;
+import com.eldercare.modules.risk_incident.incident_tracking.entity.IncidentSeverityEntity;
 import com.eldercare.modules.risk_incident.incident_tracking.mapper.IncidentSeverityMapper;
 import com.eldercare.modules.risk_incident.incident_tracking.repository.IncidentSeverityRepository;
 import com.eldercare.modules.risk_incident.incident_tracking.service.IncidentSeverityService;
@@ -32,14 +32,14 @@ public class IncidentSeverityServiceImpl implements IncidentSeverityService {
     @Override
     @Transactional
     public IncidentSeverityResponse createSeverityLevel(CreateIncidentSeverityRequest request) {
-        IncidentSeverity saved = incidentSeverityRepository.save(IncidentSeverityMapper.toEntity(request));
+        IncidentSeverityEntity saved = incidentSeverityRepository.save(IncidentSeverityMapper.toEntity(request));
         return IncidentSeverityMapper.toResponse(saved);
     }
 
     @Override
     @Transactional
     public IncidentSeverityResponse updateSeverityLevel(Long severityId, UpdateIncidentSeverityRequest request) {
-        IncidentSeverity existing = incidentSeverityRepository.findById(severityId)
+        IncidentSeverityEntity existing = incidentSeverityRepository.findById(severityId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Incident severity level not found"));
 
         IncidentSeverityMapper.updateEntity(existing, request);
