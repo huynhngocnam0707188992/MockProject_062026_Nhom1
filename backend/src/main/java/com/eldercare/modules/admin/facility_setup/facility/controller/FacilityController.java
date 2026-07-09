@@ -1,4 +1,4 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_profile.controller;
+package com.eldercare.modules.admin.facility_setup.facility.controller;
 
 import com.eldercare.common.constants.RouteConstants;
 import com.eldercare.common.dto.PagedResponse;
@@ -9,7 +9,6 @@ import com.eldercare.modules.admin.facility_setup.facility.facility_profile.serv
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_layout.controller;
+package com.eldercare.modules.admin.facility_setup.facility.controller;
 
 import com.eldercare.common.constants.RouteConstants;
 import com.eldercare.common.dto.PagedResponse;
