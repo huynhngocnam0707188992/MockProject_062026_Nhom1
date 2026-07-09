@@ -178,7 +178,7 @@ export function SlaConfigForm(): React.ReactElement {
                       value={row.target}
                       onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleTargetChange(index, e.target.value)}
                       disabled={isSaving}
-                      className="sla-select-field border rounded p-2"
+                      className="w-full bg-transparent border border-gray-300 rounded px-2 py-1"
                     >
                       <option value="Emergency Response Team">Emergency Response Team</option>
                       <option value="Director of Nursing (DON)">Director of Nursing (DON)</option>
