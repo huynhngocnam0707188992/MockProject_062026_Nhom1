@@ -23,6 +23,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Bypass auth for facilities API for testing
                 .requestMatchers("/api/v1/admin/facility-settings/**").permitAll()
+                .requestMatchers("/admin/**").permitAll()
                 // All other requests also permitted for now during early development
                 .anyRequest().permitAll()
             )
