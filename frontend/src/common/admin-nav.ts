@@ -10,6 +10,8 @@ import {
   Settings,
   Bell,
   UserCircle,
+  ShieldAlert,
+  AlarmClock,
   type LucideIcon,
 } from "lucide-react";
 import { PERMISSIONS, type PermissionCode } from "@/common/permissions";
@@ -69,6 +71,18 @@ export const adminNavGroups: AdminNavGroup[] = [
         path: "/admin/facilities",
         icon: Building2,
         permission: PERMISSIONS.FACILITY_VIEW,
+      },
+      {
+        label: "Incident Severity",
+        path: "/admin/incident-severity",
+        icon: ShieldAlert,
+        permission: PERMISSIONS.INCIDENT_SEVERITY_VIEW,
+      },
+      {
+        label: "SLA Config",
+        path: "/admin/sla-config",
+        icon: AlarmClock,
+        permission: PERMISSIONS.SLA_CONFIG_VIEW,
       },
     ],
   },

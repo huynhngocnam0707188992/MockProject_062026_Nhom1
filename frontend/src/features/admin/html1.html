@@ -1,0 +1,366 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Incident Severity Levels - Direlda NHMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#93000a",
+                    "inverse-primary": "#b9c3ff",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-variant": "#e1e3e4",
+                    "surface-container-high": "#e7e8e9",
+                    "on-tertiary-container": "#bdc7de",
+                    "on-tertiary-fixed": "#111c2d",
+                    "primary": "#0b2ca1",
+                    "on-error": "#ffffff",
+                    "outline-variant": "#c5c5d5",
+                    "on-background": "#191c1d",
+                    "secondary": "#565e71",
+                    "outline": "#757685",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#b9c3ff",
+                    "on-secondary-container": "#5c6477",
+                    "secondary-fixed-dim": "#bfc6dc",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#f8f9fa",
+                    "on-secondary-fixed": "#141b2c",
+                    "tertiary-container": "#495367",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed": "#001158",
+                    "on-primary": "#ffffff",
+                    "inverse-surface": "#2e3132",
+                    "primary-container": "#2e47b8",
+                    "tertiary-fixed-dim": "#bdc7de",
+                    "surface-container-low": "#f3f4f5",
+                    "on-tertiary-fixed-variant": "#3d475a",
+                    "secondary-fixed": "#dbe2f9",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#d9e3fb",
+                    "primary-fixed": "#dee1ff",
+                    "on-surface": "#191c1d",
+                    "on-primary-fixed-variant": "#1f3aac",
+                    "surface-dim": "#d9dadb",
+                    "surface-tint": "#3c54c4",
+                    "on-primary-container": "#b9c3ff",
+                    "surface-container": "#edeeef",
+                    "secondary-container": "#dbe2f9",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#323c4f",
+                    "background": "#f8f9fa",
+                    "surface": "#f8f9fa",
+                    "on-surface-variant": "#444653",
+                    "on-secondary-fixed-variant": "#3f4759"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-desktop": "64px",
+                    "unit": "4px",
+                    "margin-mobile": "16px",
+                    "container-max": "1280px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-base": ["Inter"],
+                    "display-lg-mobile": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-bold": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "60px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-bold": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(228, 231, 235, 0.5);
+        }
+        .active-nav {
+            background-color: #dee1ff;
+            color: #0b2ca1;
+            font-weight: 600;
+        }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #e1e3e4; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm h-16 flex items-center px-margin-desktop"><button class="md:hidden material-symbols-outlined text-on-surface-variant p-2 mr-2 hover:bg-surface-container rounded-full">menu</button>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: &quot;FILL&quot; 1;">health_and_safety</span>
+<span class="text-headline-md font-bold text-primary">Direlda</span>
+</div>
+<nav class="ml-auto hidden md:flex items-center gap-8">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Home</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">About</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Services</a>
+<div class="flex items-center gap-4 pl-4 border-l border-outline-variant/50">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary">help</button>
+<div class="flex items-center gap-2 cursor-pointer group">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">VA</div>
+<div class="hidden lg:block text-left">
+<p class="text-[12px] font-bold text-on-surface leading-none">Victor Alvarez</p>
+<p class="text-[10px] text-on-surface-variant leading-none mt-0.5">System Admin</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:rotate-180 transition-transform">expand_more</span>
+</div>
+</div>
+</nav>
+</header>
+<div class="flex flex-1 pt-16">
+<!-- Sidebar -->
+<aside class="w-64 fixed left-0 top-16 bottom-0 bg-surface-container-low border-r border-outline-variant/30 hidden md:flex flex-col py-6 overflow-y-auto sidebar-scroll">
+<div class="px-6 mb-4">
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+</div>
+<div class="px-6 mb-2">
+<p class="text-[10px] font-bold text-outline tracking-widest uppercase px-4 mb-2">User &amp; Role Management</p>
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-sm text-body-sm">Users</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">shield_person</span>
+<span class="font-body-sm text-body-sm">Roles</span>
+</a>
+</div>
+<div class="px-6 mb-2">
+<p class="text-[10px] font-bold text-outline tracking-widest uppercase px-4 mb-2">Facility &amp; Configuration</p>
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">apartment</span>
+<span class="font-body-sm text-body-sm">Facility</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-sm text-body-sm">LOC Rates</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="font-body-sm text-body-sm">Staffing</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">inventory</span>
+<span class="font-body-sm text-body-sm">Equipment</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl active-nav transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">report_problem</span>
+<span class="font-body-sm text-body-sm">Incident Severity</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">settings_suggest</span>
+<span class="font-body-sm text-body-sm">SLA Config</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 ml-0 md:ml-64 p-6 lg:p-10 pb-32 px-4">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="text-body-sm font-body-sm">Admin</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-body-sm font-body-sm text-primary font-bold">Incident Severity</span>
+</nav>
+<!-- Page Title -->
+<div class="mb-8">
+<h1 class="font-display-lg text-display-lg text-on-surface leading-tight">Incident Severity Levels</h1>
+<p class="text-body-base font-body-base text-on-surface-variant mt-2">Taxonomy used across Incident &amp; Risk (M7) — 4 levels, fixed</p>
+</div>
+<!-- Info Banner -->
+<div class="mb-8 p-4 rounded-xl flex gap-4 border border-primary/10 shadow-sm animate-pulse-slow text-[#2563EB] px-4 items-center" style="background-color: rgb(219, 234, 254);">
+<span class="material-symbols-outlined mt-0.5">info</span>
+<p class="font-body-sm text-body-sm font-medium">Fixed 4-level taxonomy, referenced across all M7 Incident wireframes. Only descriptions are editable.</p>
+</div>
+<!-- Severity Table Card -->
+<div class="glass-card rounded-2xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/30">
+<th class="px-6 py-4 font-label-bold text-label-bold text-outline uppercase tracking-wider w-32">Level</th>
+<th class="px-6 py-4 font-label-bold text-label-bold text-outline uppercase tracking-wider">Description</th>
+<th class="px-6 py-4 font-label-bold text-label-bold text-outline uppercase tracking-wider">Example</th>
+<th class="px-6 py-4 font-label-bold text-label-bold text-outline uppercase tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<!-- Minor Row -->
+<tr class="group hover:bg-surface-container/30 transition-colors">
+<td class="px-6 py-6 align-top">
+<span class="px-3 py-1 font-label-bold text-[10px] rounded-full border border-outline-variant/50" style="background-color: rgb(243, 244, 246); color: rgb(109, 116, 129);">Minor</span>
+</td>
+<td class="px-6 py-6 align-top">
+<p class="text-body-base font-body-base text-on-surface">Low-risk event; no injury or intervention required.</p>
+</td>
+<td class="px-6 py-6 align-top">
+<p class="text-body-sm font-body-sm text-on-surface-variant italic">e.g. minor skin tear, no treatment needed</p>
+</td>
+<td class="px-6 py-6 text-right align-top">
+<button class="text-primary font-label-bold hover:underline">Edit</button>
+</td>
+</tr>
+<!-- Moderate Row -->
+<tr class="group hover:bg-surface-container/30 transition-colors">
+<td class="px-6 py-6 align-top">
+<span class="px-3 py-1 font-label-bold text-[10px] rounded-full border border-secondary-fixed-dim/50" style="background-color: rgb(254, 243, 199); color: rgb(217, 119, 6);">Moderate</span>
+</td>
+<td class="px-6 py-6 align-top">
+<p class="text-body-base font-body-base text-on-surface">Injury requiring minor treatment; no hospitalization.</p>
+</td>
+<td class="px-6 py-6 align-top">
+<p class="text-body-sm font-body-sm text-on-surface-variant italic">e.g. bruise requiring first aid, missed dose</p>
+</td>
+<td class="px-6 py-6 text-right align-top">
+<button class="text-primary font-label-bold hover:underline">Edit</button>
+</td>
+</tr>
+<!-- Major Row -->
+<tr class="group hover:bg-surface-container/30 transition-colors">
+<td class="px-6 py-6 align-top">
+<span class="px-3 py-1 font-label-bold text-[10px] rounded-full border border-tertiary-fixed-dim/50" style="background-color: rgb(255, 237, 213); color: rgb(194, 65, 12);">Major</span>
+</td>
+<td class="px-6 py-6 align-top">
+<p class="text-body-base font-body-base text-on-surface">Significant injury requiring treatment; possible hospitalization.</p>
+</td>
+<td class="px-6 py-6 align-top">
+<p class="text-body-sm font-body-sm text-on-surface-variant italic">e.g. fall with fracture, med error</p>
+</td>
+<td class="px-6 py-6 text-right align-top">
+<button class="text-primary font-label-bold hover:underline">Edit</button>
+</td>
+</tr>
+<!-- Critical Row -->
+<tr class="group hover:bg-surface-container/30 transition-colors">
+<td class="px-6 py-6 align-top">
+<span class="px-3 py-1 font-label-bold text-[10px] rounded-full border border-error/20" style="background-color: rgb(254, 226, 226); color: rgb(220, 38, 38);">Critical</span>
+</td>
+<td class="px-6 py-6 align-top">
+<p class="text-body-base font-body-base text-on-surface">Life-threatening event requiring emergency intervention.</p>
+</td>
+<td class="px-6 py-6 align-top">
+<p class="text-body-sm font-body-sm text-on-surface-variant italic">e.g. elopement, cardiac event</p>
+</td>
+<td class="px-6 py-6 text-right align-top">
+<button class="text-primary font-label-bold hover:underline">Edit</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 text-on-surface-variant italic text-[11px] border-t border-outline-variant/20" style="background-color: rgb(249, 249, 250);">
+                    Levels cannot be added or deleted here. Chart-lock (BR-07) triggers on every incident regardless of severity — severity only determines the external-reporting deadline (see SLA Configuration, AD-09).
+                </div>
+</div>
+<!-- Empty State Illustration / Atmospheric Background -->
+</main>
+</div>
+<!-- Action Bar (Footer Replacement) -->
+<div class="fixed bottom-0 left-0 right-0 backdrop-blur-xl border-t border-outline-variant/30 py-4 px-margin-desktop z-40 md:ml-64 bg-white">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row items-center justify-end gap-4">
+<button class="w-full md:w-auto px-8 py-3 border border-outline text-on-surface hover:bg-surface-container transition-all font-body-sm font-bold rounded-lg">
+                Cancel
+            </button>
+<button class="w-full md:w-auto px-10 py-3 bg-primary text-on-primary hover:bg-primary-container shadow-lg shadow-primary/20 transition-all font-body-sm font-bold flex items-center justify-center gap-2 rounded-lg">
+<span class="material-symbols-outlined text-lg">save</span>
+                Save Changes
+            </button>
+</div>
+</div>
+<script>
+        // Simple Interaction logic for "Edit" simulation
+        document.querySelectorAll('button:contains("Edit")').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const desc = row.querySelector('.text-body-base');
+                const currentText = desc.innerText;
+                
+                if (this.innerText === "Edit") {
+                    const input = document.createElement('textarea');
+                    input.className = 'w-full p-2 text-body-sm border border-primary rounded-lg focus:ring-2 focus:ring-primary/20 focus:outline-none bg-white';
+                    input.value = currentText;
+                    input.rows = 2;
+                    desc.innerHTML = '';
+                    desc.appendChild(input);
+                    this.innerText = "Done";
+                } else {
+                    const input = desc.querySelector('textarea');
+                    desc.innerHTML = input.value;
+                    this.innerText = "Edit";
+                    
+                    // Simple Toast simulation
+                    const toast = document.createElement('div');
+                    toast.className = 'fixed top-20 right-10 bg-inverse-surface text-inverse-on-surface px-6 py-3 rounded-xl shadow-2xl z-[100] animate-bounce';
+                    toast.innerText = 'Changes saved locally. Click "Save Changes" at bottom to confirm.';
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                }
+            });
+        });
+
+        // Helper for selector
+        function initSelectors() {
+            const buttons = document.getElementsByTagName('button');
+            for (let btn of buttons) {
+                if (btn.textContent.trim() === "Edit") {
+                    btn.addEventListener('click', function() {
+                        const row = this.closest('tr');
+                        const descriptionCell = row.querySelectorAll('td')[1];
+                        const exampleCell = row.querySelectorAll('td')[2];
+                        
+                        if (this.textContent === "Edit") {
+                            this.textContent = "Done";
+                            this.classList.add('text-green-600');
+                            
+                            const descText = descriptionCell.innerText;
+                            const exampleText = exampleCell.innerText;
+                            
+                            descriptionCell.innerHTML = `<textarea class="w-full text-body-base border-primary rounded-lg p-2">${descText}</textarea>`;
+                            exampleCell.innerHTML = `<textarea class="w-full text-body-sm italic border-primary rounded-lg p-2">${exampleText}</textarea>`;
+                        } else {
+                            this.textContent = "Edit";
+                            this.classList.remove('text-green-600');
+                            
+                            const newDesc = descriptionCell.querySelector('textarea').value;
+                            const newExample = exampleCell.querySelector('textarea').value;
+                            
+                            descriptionCell.innerHTML = `<p class="text-body-base font-body-base text-on-surface">${newDesc}</p>`;
+                            exampleCell.innerHTML = `<p class="text-body-sm font-body-sm text-on-surface-variant italic">${newExample}</p>`;
+                        }
+                    });
+                }
+            }
+        }
+        initSelectors();
+    </script>
+
+
+</body></html>

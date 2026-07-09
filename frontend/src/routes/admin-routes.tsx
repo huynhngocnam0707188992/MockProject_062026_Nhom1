@@ -7,10 +7,12 @@ import CarePlanDetailPage from "@/features/admin/care-plans/pages/care-plan-deta
 import CareTaskPage from "@/features/admin/care-tasks/pages/care-task-page";
 import DashboardPage from "@/features/admin/dashboard/pages/dashboard-page";
 import FacilityPage from "@/features/admin/facilities/pages/facility-page";
+import IncidentSeverityPage from "@/features/admin/incident-severity/pages/incident-severity-page";
 import NotificationPage from "@/features/admin/notifications/pages/notification-page";
 import ProfilePage from "@/features/admin/profile/pages/profile-page";
 import ResidentPage from "@/features/admin/residents/pages/resident-page";
 import ResidentDetailPage from "@/features/admin/residents/pages/resident-detail-page";
+import SlaConfigPage from "@/features/admin/sla-config/pages/sla-config-page";
 import SettingPage from "@/features/admin/settings/pages/setting-page";
 import { AdminLayout } from "@/layouts/admin-layout";
 import { PERMISSIONS } from "@/common/permissions";
@@ -80,6 +82,22 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.FACILITY_VIEW}>
           <FacilityDetailPage />
+        </RequirePermission>
+      ),
+    },
+    {
+      path: "incident-severity",
+      element: (
+        <RequirePermission permission={PERMISSIONS.INCIDENT_SEVERITY_VIEW}>
+          <IncidentSeverityPage />
+        </RequirePermission>
+      ),
+    },
+    {
+      path: "sla-config",
+      element: (
+        <RequirePermission permission={PERMISSIONS.SLA_CONFIG_VIEW}>
+          <SlaConfigPage />
         </RequirePermission>
       ),
     },
