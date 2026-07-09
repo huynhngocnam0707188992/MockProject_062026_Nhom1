@@ -9,6 +9,6 @@ import java.util.List;
 public interface FacilityService {
     List<FacilityResponse> getFacilities();
     FacilityResponse createFacility(FacilityCreateRequest request);
-    FacilityResponse getFacilityInfo();
-    FacilityResponse updateFacilityInfo(FacilityUpdateRequest request);
+    FacilityResponse getFacilityInfo(Long facilityId);
+    FacilityResponse updateFacilityInfo(Long facilityId, FacilityUpdateRequest request);
 }

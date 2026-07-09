@@ -48,27 +48,24 @@ public class FacilityServiceImpl implements FacilityService {
         return facilityMapper.toResponse(facility);
     }
 
-    // For simplicity in this mock context, we assume there's one main facility or we fetch the first one.
-    // In a real multi-tenant system, this would fetch based on the logged-in user's facility ID.
-    private Facility getPrimaryFacility() {
-        return facilityRepository.findById(1L)
-                .orElseThrow(() -> new ResourceNotFoundException("Primary facility not found."));
-    }
-
     @Override
     @Transactional(readOnly = true)
-    public FacilityResponse getFacilityInfo() {
-        return facilityMapper.toResponse(getPrimaryFacility());
+    public FacilityResponse getFacilityInfo(Long facilityId) {
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new ResourceNotFoundException("Facility not found"));
+        return facilityMapper.toResponse(facility);
     }
 
     @Override
     @Transactional
-    public FacilityResponse updateFacilityInfo(FacilityUpdateRequest request) {
+    public FacilityResponse updateFacilityInfo(Long facilityId, FacilityUpdateRequest request) {
         if (request.getTargetState() != null && !request.getTargetState().equalsIgnoreCase("CA")) {
             throw new BadRequestException("Target state must be 'CA'");
         }
 
-        Facility facility = getPrimaryFacility();
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new ResourceNotFoundException("Facility not found"));
+        
         facilityMapper.updateEntity(facility, request);
         facility = facilityRepository.save(facility);
         

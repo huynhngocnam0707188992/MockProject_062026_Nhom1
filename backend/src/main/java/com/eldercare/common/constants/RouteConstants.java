@@ -12,7 +12,4 @@ public final class RouteConstants {
     
     // Facility Management Routes
     public static final String API_ADMIN_FACILITIES = ADMIN_API_PREFIX + "/facilities";
-    public static final String API_ADMIN_FACILITY_SETTINGS = ADMIN_API_PREFIX + "/facility-settings";
-    public static final String API_ADMIN_ROOMS = API_ADMIN_FACILITY_SETTINGS + "/rooms";
-    public static final String API_ADMIN_BEDS = API_ADMIN_FACILITY_SETTINGS + "/beds";
 }

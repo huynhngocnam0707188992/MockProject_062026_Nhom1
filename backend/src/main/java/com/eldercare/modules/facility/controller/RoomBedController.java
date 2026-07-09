@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping(RouteConstants.API_ADMIN_FACILITIES)
 @RequiredArgsConstructor
 public class RoomBedController {
 
@@ -22,49 +23,48 @@ public class RoomBedController {
 
     // Room Endpoints
 
-    @GetMapping(RouteConstants.API_ADMIN_ROOMS)
+    @GetMapping("/{facilityId}/rooms")
     @PreAuthorize("hasRole('NHA_ADMIN')")
-    public ResponseEntity<List<RoomResponse>> getRoomList() {
-        // Mocking facilityId = 1 based on the simplified assumption for this mock project
-        return ResponseEntity.ok(roomBedService.getRoomList(1L));
+    public ResponseEntity<List<RoomResponse>> getRoomList(@PathVariable Long facilityId) {
+        return ResponseEntity.ok(roomBedService.getRoomList(facilityId));
     }
 
-    @PostMapping(RouteConstants.API_ADMIN_ROOMS)
+    @PostMapping("/{facilityId}/rooms")
     @PreAuthorize("hasRole('NHA_ADMIN')")
-    public ResponseEntity<RoomResponse> createRoom(@RequestBody RoomRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(roomBedService.createRoom(1L, request));
+    public ResponseEntity<RoomResponse> createRoom(@PathVariable Long facilityId, @RequestBody RoomRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(roomBedService.createRoom(facilityId, request));
     }
 
-    @PutMapping(RouteConstants.API_ADMIN_ROOMS + "/{roomId}")
+    @PutMapping("/{facilityId}/rooms/{roomId}")
     @PreAuthorize("hasRole('NHA_ADMIN')")
-    public ResponseEntity<RoomResponse> updateRoom(@PathVariable Long roomId, @RequestBody RoomRequest request) {
+    public ResponseEntity<RoomResponse> updateRoom(@PathVariable Long facilityId, @PathVariable Long roomId, @RequestBody RoomRequest request) {
         return ResponseEntity.ok(roomBedService.updateRoom(roomId, request));
     }
 
-    @DeleteMapping(RouteConstants.API_ADMIN_ROOMS + "/{roomId}")
+    @DeleteMapping("/{facilityId}/rooms/{roomId}")
     @PreAuthorize("hasRole('NHA_ADMIN')")
-    public ResponseEntity<Void> deleteRoom(@PathVariable Long roomId) {
+    public ResponseEntity<Void> deleteRoom(@PathVariable Long facilityId, @PathVariable Long roomId) {
         roomBedService.deleteRoom(roomId);
         return ResponseEntity.noContent().build();
     }
 
     // Bed Endpoints
 
-    @GetMapping(RouteConstants.API_ADMIN_ROOMS + "/{roomId}/beds")
+    @GetMapping("/{facilityId}/rooms/{roomId}/beds")
     @PreAuthorize("hasRole('NHA_ADMIN')")
-    public ResponseEntity<List<BedResponse>> getBedListByRoomId(@PathVariable Long roomId) {
+    public ResponseEntity<List<BedResponse>> getBedListByRoomId(@PathVariable Long facilityId, @PathVariable Long roomId) {
         return ResponseEntity.ok(roomBedService.getBedListByRoomId(roomId));
     }
 
-    @PostMapping(RouteConstants.API_ADMIN_ROOMS + "/{roomId}/beds")
+    @PostMapping("/{facilityId}/rooms/{roomId}/beds")
     @PreAuthorize("hasRole('NHA_ADMIN')")
-    public ResponseEntity<BedResponse> createBed(@PathVariable Long roomId, @RequestBody BedRequest request) {
+    public ResponseEntity<BedResponse> createBed(@PathVariable Long facilityId, @PathVariable Long roomId, @RequestBody BedRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(roomBedService.createBed(roomId, request));
     }
 
-    @PutMapping(RouteConstants.API_ADMIN_BEDS + "/{bedId}")
+    @PutMapping("/{facilityId}/rooms/{roomId}/beds/{bedId}")
     @PreAuthorize("hasRole('NHA_ADMIN')")
-    public ResponseEntity<BedResponse> updateBedStatus(@PathVariable Long bedId, @RequestBody BedRequest request) {
+    public ResponseEntity<BedResponse> updateBedStatus(@PathVariable Long facilityId, @PathVariable Long roomId, @PathVariable Long bedId, @RequestBody BedRequest request) {
         return ResponseEntity.ok(roomBedService.updateBedStatus(bedId, request));
     }
 }
