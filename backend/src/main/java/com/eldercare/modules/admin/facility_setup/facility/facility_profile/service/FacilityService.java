@@ -1,4 +1,4 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_profile;
+package com.eldercare.modules.admin.facility_setup.facility.facility_profile.service;
 
 import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityCreateRequest;

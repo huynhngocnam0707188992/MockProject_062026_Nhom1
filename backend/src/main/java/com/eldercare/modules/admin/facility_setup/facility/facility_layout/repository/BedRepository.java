@@ -1,6 +1,7 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_layout;
+package com.eldercare.modules.admin.facility_setup.facility.facility_layout.repository;
 
 import com.eldercare.common.enums.BedStatus;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.BedEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

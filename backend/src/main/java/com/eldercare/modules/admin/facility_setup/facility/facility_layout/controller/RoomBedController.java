@@ -1,4 +1,4 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_layout;
+package com.eldercare.modules.admin.facility_setup.facility.facility_layout.controller;
 
 import com.eldercare.common.constants.RouteConstants;
 import com.eldercare.common.dto.PagedResponse;
@@ -6,7 +6,7 @@ import com.eldercare.modules.admin.facility_setup.facility.dto.request.BedReques
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.RoomRequest;
 import com.eldercare.modules.admin.facility_setup.facility.dto.response.BedResponse;
 import com.eldercare.modules.admin.facility_setup.facility.dto.response.RoomResponse;
-import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomBedService;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.service.RoomBedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

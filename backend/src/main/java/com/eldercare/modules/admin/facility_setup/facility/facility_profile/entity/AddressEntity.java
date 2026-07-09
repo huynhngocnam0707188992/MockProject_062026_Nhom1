@@ -1,4 +1,4 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_profile;
+package com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity;
 
 import com.eldercare.common.enums.AddressType;
 import jakarta.persistence.*;

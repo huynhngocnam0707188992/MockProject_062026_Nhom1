@@ -1,4 +1,4 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_layout;
+package com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity;
 
 import com.eldercare.common.enums.BedStatus;
 import jakarta.persistence.*;

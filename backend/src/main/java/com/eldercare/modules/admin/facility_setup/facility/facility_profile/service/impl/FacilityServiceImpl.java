@@ -1,4 +1,4 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_profile;
+package com.eldercare.modules.admin.facility_setup.facility.facility_profile.service.impl;
 
 import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.exception.custom.BadRequestException;
@@ -6,10 +6,10 @@ import com.eldercare.exception.custom.ResourceNotFoundException;
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityCreateRequest;
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityUpdateRequest;
 import com.eldercare.modules.admin.facility_setup.facility.dto.response.FacilityResponse;
-import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityEntity;
-import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityMapper;
-import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityRepository;
-import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityService;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.mapper.FacilityMapper;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.repository.FacilityRepository;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.service.FacilityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

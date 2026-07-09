@@ -1,11 +1,11 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_profile;
+package com.eldercare.modules.admin.facility_setup.facility.facility_profile.mapper;
 
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.AddressDto;
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityCreateRequest;
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityUpdateRequest;
 import com.eldercare.modules.admin.facility_setup.facility.dto.response.FacilityResponse;
-import com.eldercare.modules.admin.facility_setup.facility.facility_profile.AddressEntity;
-import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.AddressEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
 import org.springframework.stereotype.Component;
 
 @Component

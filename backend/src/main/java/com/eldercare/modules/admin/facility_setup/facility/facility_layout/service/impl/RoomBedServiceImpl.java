@@ -1,4 +1,4 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_layout;
+package com.eldercare.modules.admin.facility_setup.facility.facility_layout.service.impl;
 
 import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.common.enums.BedStatus;
@@ -8,14 +8,14 @@ import com.eldercare.modules.admin.facility_setup.facility.dto.request.BedReques
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.RoomRequest;
 import com.eldercare.modules.admin.facility_setup.facility.dto.response.BedResponse;
 import com.eldercare.modules.admin.facility_setup.facility.dto.response.RoomResponse;
-import com.eldercare.modules.admin.facility_setup.facility.facility_layout.BedEntity;
-import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityEntity;
-import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomEntity;
-import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomBedMapper;
-import com.eldercare.modules.admin.facility_setup.facility.facility_layout.BedRepository;
-import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityRepository;
-import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomRepository;
-import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomBedService;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.BedEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.RoomEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.mapper.RoomBedMapper;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.repository.BedRepository;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.repository.FacilityRepository;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.repository.RoomRepository;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.service.RoomBedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

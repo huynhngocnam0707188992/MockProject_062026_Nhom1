@@ -1,13 +1,13 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_layout;
+package com.eldercare.modules.admin.facility_setup.facility.facility_layout.mapper;
 
 import com.eldercare.common.enums.BedStatus;
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.BedRequest;
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.RoomRequest;
 import com.eldercare.modules.admin.facility_setup.facility.dto.response.BedResponse;
 import com.eldercare.modules.admin.facility_setup.facility.dto.response.RoomResponse;
-import com.eldercare.modules.admin.facility_setup.facility.facility_layout.BedEntity;
-import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomEntity;
-import com.eldercare.modules.admin.facility_setup.facility.facility_layout.BedRepository.BedProjection;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.BedEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.RoomEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.repository.BedRepository.BedProjection;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

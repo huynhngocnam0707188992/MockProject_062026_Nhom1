@@ -1,5 +1,6 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_profile;
+package com.eldercare.modules.admin.facility_setup.facility.facility_profile.repository;
 
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

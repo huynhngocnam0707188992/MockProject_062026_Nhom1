@@ -1,7 +1,7 @@
-package com.eldercare.modules.admin.facility_setup.facility.facility_layout;
+package com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity;
 
 import com.eldercare.common.enums.RoomType;
-import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
