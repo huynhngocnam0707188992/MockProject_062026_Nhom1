@@ -1,22 +1,15 @@
-package com.eldercare.modules.staffing.dto.response;
+package com.eldercare.modules.human_resources.staffing_compliance.staffing.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class StaffingRatioResponse {
-
-    private Long id;
-
-    @JsonProperty("facility_id")
-    private Long facilityId;
-
+public class UpdateStaffingRatioRequest {
+    
     @JsonProperty("min_hrs_per_resident_day")
     private BigDecimal minHrsPerResidentDay;
 

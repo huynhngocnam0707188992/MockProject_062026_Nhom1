@@ -1,8 +1,8 @@
-package com.eldercare.modules.staffing.controller;
+package com.eldercare.modules.human_resources.staffing_compliance.staffing.controller;
 
-import com.eldercare.modules.staffing.dto.request.UpdateStaffingRatioRequest;
-import com.eldercare.modules.staffing.dto.response.StaffingRatioResponse;
-import com.eldercare.modules.staffing.service.StaffingRatioService;
+import com.eldercare.modules.human_resources.staffing_compliance.staffing.dto.request.UpdateStaffingRatioRequest;
+import com.eldercare.modules.human_resources.staffing_compliance.staffing.dto.response.StaffingRatioResponse;
+import com.eldercare.modules.human_resources.staffing_compliance.staffing.service.StaffingRatioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

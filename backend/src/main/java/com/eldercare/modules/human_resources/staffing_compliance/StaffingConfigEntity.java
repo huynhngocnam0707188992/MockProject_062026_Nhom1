@@ -1,4 +1,4 @@
-package com.eldercare.modules.staffing.entity;
+package com.eldercare.modules.human_resources.staffing_compliance.staffing;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StaffingConfig {
+public class StaffingConfigEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

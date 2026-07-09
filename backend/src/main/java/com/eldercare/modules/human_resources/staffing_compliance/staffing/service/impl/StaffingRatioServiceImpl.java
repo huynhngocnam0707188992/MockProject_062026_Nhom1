@@ -1,10 +1,10 @@
-package com.eldercare.modules.staffing.service.impl;
+package com.eldercare.modules.human_resources.staffing_compliance.staffing.service.impl;
 
-import com.eldercare.modules.staffing.dto.request.UpdateStaffingRatioRequest;
-import com.eldercare.modules.staffing.dto.response.StaffingRatioResponse;
-import com.eldercare.modules.staffing.entity.StaffingConfig;
-import com.eldercare.modules.staffing.repository.StaffingConfigRepository;
-import com.eldercare.modules.staffing.service.StaffingRatioService;
+import com.eldercare.modules.human_resources.staffing_compliance.staffing.dto.request.UpdateStaffingRatioRequest;
+import com.eldercare.modules.human_resources.staffing_compliance.staffing.dto.response.StaffingRatioResponse;
+import com.eldercare.modules.human_resources.staffing_compliance.staffing.StaffingConfigEntity;
+import com.eldercare.modules.human_resources.staffing_compliance.staffing.repository.StaffingConfigRepository;
+import com.eldercare.modules.human_resources.staffing_compliance.staffing.service.StaffingRatioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class StaffingRatioServiceImpl
     @Override
     public StaffingRatioResponse getStaffingRatio() {
 
-        StaffingConfig config = repository.findById(1L)
+        StaffingConfigEntity config = repository.findById(1L)
                 .orElseThrow(() ->
                         new RuntimeException("Staffing configuration not found"));
 
@@ -34,7 +34,7 @@ public class StaffingRatioServiceImpl
     public StaffingRatioResponse updateStaffingRatio(
             UpdateStaffingRatioRequest request) {
 
-        StaffingConfig config = repository.findById(1L)
+        StaffingConfigEntity config = repository.findById(1L)
                 .orElseThrow(() ->
                         new RuntimeException("Staffing configuration not found"));
 
