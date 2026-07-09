@@ -6,9 +6,13 @@ import {
   UserX,
 } from "lucide-react";
 
+import { useUsers } from "@/hooks/use-users";
+import type { UserApiResponse } from "@/types/user";
+
 import { StatisticCard } from "./ul-statistic-card";
 import { SearchFilter } from "./ul-search-filter";
 import { UserTable } from "./ul-table";
+import { Pagination } from "./ul-pagination";
 
 interface UserListProps {
   onAdd: () => void;
@@ -19,87 +23,54 @@ export function UserList({
   onAdd,
   onEdit,
 }: UserListProps) {
+
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("ALL");
   const [status, setStatus] = useState("ALL");
 
-  // Mock data chỉ để làm giao diện
-  const users = [
-    {
-      id: "1",
-      fullName: "Priya Shah",
-      email: "priya.shah@nhms.io",
-      phone: "--",
-      role: "Admission",
-      status: "Invited",
-      twoFA: "Not-set",
-      lastLogin: "--",
-    },
-    {
-      id: "2",
-      fullName: "Denise Carter",
-      email: "denise.carter@nhms.io",
-      phone: "+1 415-555-0142",
-      role: "DON",
-      status: "Active",
-      twoFA: "Enabled",
-      lastLogin: "2026-07-03 08:12",
-    },
-    {
-      id: "3",
-      fullName: "Anna Lee",
-      email: "anna.lee@nhms.io",
-      phone: "+1 415-555-0198",
-      role: "Nurse",
-      status: "Active",
-      twoFA: "Enabled",
-      lastLogin: "2026-07-03 07:40",
-    },
-    {
-      id: "4",
-      fullName: "Marcus Rivera",
-      email: "marcus.rivera@nhms.io",
-      phone: "+1 415-555-0173",
-      role: "CNA",
-      status: "Active",
-      twoFA: "Enabled",
-      lastLogin: "2026-07-02 22:05",
-    },
-    {
-      id: "5",
-      fullName: "Karen Wu",
-      email: "karen.wu@nhms.io",
-      phone: "+1 415-555-0166",
-      role: "Billing",
-      status: "Suspended",
-      twoFA: "Enabled",
-      lastLogin: "2026-06-20 14:22",
-    },
-    {
-      id: "6",
-      fullName: "Tom Becker",
-      email: "tom.becker@nhms.io",
-      phone: "+1 415-555-0184",
-      role: "Nurse",
-      status: "Deactivated",
-      twoFA: "Enabled",
-      lastLogin: "2026-05-15 10:00",
-    },
-    {
-      id: "7",
-      fullName: "Victor Alvarez",
-      email: "victor.alvarez@nhms.io",
-      phone: "+1 415-555-0110",
-      role: "System Admin",
-      status: "Active",
-      twoFA: "Enabled",
-      lastLogin: "2026-07-03 09:00",
-    },
-  ];
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+
+  const { data, loading, error } = useUsers({
+    keyword: search || undefined,
+    roleId: role !== "ALL" ? Number(role) : undefined,
+    status: status !== "ALL" ? status : undefined,
+    page: page - 1,
+    size: pageSize,
+  });
+
+  const transformedUsers = (data?.content || []).map(
+    (user: UserApiResponse) => ({
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      phone: user.phoneNumber || "--",
+      role: user.roleName,
+      status: user.status,
+      twoFA: user.mfaEnabled ? "Enabled" : "Not-set",
+      lastLogin: user.lastLoginAt || "--",
+    })
+  );
+
+  const totalUsers = data?.totalElements || 0;
+
+  const activeCount = transformedUsers.filter(
+    (u) => u.status === "ACTIVE"
+  ).length;
+
+  const invitedCount = transformedUsers.filter(
+    (u) => u.status === "INVITED"
+  ).length;
+
+  const suspendedDeactivatedCount = transformedUsers.filter(
+    (u) =>
+      u.status === "SUSPENDED" ||
+      u.status === "DEACTIVATED"
+  ).length;
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
+
       <div>
         <p className="text-sm text-gray-400">
           Admin &gt; Users
@@ -114,55 +85,83 @@ export function UserList({
         </p>
       </div>
 
-      {/* Statistics */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+
         <StatisticCard
           label="Total Users"
-          value={7}
+          value={totalUsers}
           icon={<Users size={20} />}
           iconBgClassName="bg-blue-100"
         />
 
         <StatisticCard
           label="Active"
-          value={4}
+          value={activeCount}
           icon={<UserCheck size={20} />}
           iconBgClassName="bg-green-100"
         />
 
         <StatisticCard
           label="Invited"
-          value={1}
+          value={invitedCount}
           icon={<UserPlus size={20} />}
           iconBgClassName="bg-yellow-100"
         />
 
         <StatisticCard
           label="Suspended / Deactivated"
-          value={2}
+          value={suspendedDeactivatedCount}
           icon={<UserX size={20} />}
           iconBgClassName="bg-red-100"
         />
+
       </div>
 
-      {/* Search */}
       <SearchFilter
         search={search}
         role={role}
         status={status}
-        onSearchChange={setSearch}
-        onRoleChange={setRole}
-        onStatusChange={setStatus}
-        onReset={() => {}}
+        onSearchChange={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}
+        onRoleChange={(value) => {
+          setRole(value);
+          setPage(1);
+        }}
+        onStatusChange={(value) => {
+          setStatus(value);
+          setPage(1);
+        }}
+        onReset={() => {
+          setSearch("");
+          setRole("ALL");
+          setStatus("ALL");
+          setPage(1);
+        }}
         onAdd={onAdd}
       />
 
-      {/* Table */}
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 text-red-600">
+          {error}
+        </div>
+      )}
+
       <UserTable
-        users={users}
-        isLoading={false}
+        users={transformedUsers}
+        isLoading={loading}
         onEdit={onEdit}
       />
+
+      <Pagination
+        page={page}
+        totalPages={data?.totalPages || 1}
+        total={data?.totalElements || 0}
+        pageSize={pageSize}
+        onPageChange={setPage}
+      />
+
     </div>
   );
 }

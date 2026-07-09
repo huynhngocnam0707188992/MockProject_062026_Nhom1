@@ -10,8 +10,6 @@ interface SearchFilterProps {
   onStatusChange: (value: string) => void;
 
   onReset: () => void;
-
-  // Thêm prop này
   onAdd: () => void;
 }
 
@@ -22,12 +20,12 @@ export function SearchFilter({
   onSearchChange,
   onRoleChange,
   onStatusChange,
+  onReset,
   onAdd,
 }: SearchFilterProps) {
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex flex-1 flex-col gap-3 md:flex-row">
-        {/* Search */}
         <div className="relative flex-1">
           <Search
             size={18}
@@ -43,40 +41,44 @@ export function SearchFilter({
           />
         </div>
 
-        {/* Role */}
         <select
           value={role}
           onChange={(e) => onRoleChange(e.target.value)}
           className="rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
         >
           <option value="ALL">Role: All</option>
-          <option value="System Admin">System Admin</option>
-          <option value="Admission">Admission</option>
-          <option value="DON">DON</option>
-          <option value="Nurse">Nurse</option>
-          <option value="CNA">CNA</option>
-          <option value="Billing">Billing</option>
+          <option value="1">System Admin</option>
+          <option value="2">Admission</option>
+          <option value="3">DON</option>
+          <option value="4">Nurse</option>
+          <option value="5">CNA</option>
+          <option value="6">Billing</option>
         </select>
 
-        {/* Status */}
         <select
           value={status}
           onChange={(e) => onStatusChange(e.target.value)}
           className="rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
         >
           <option value="ALL">Status: All</option>
-          <option value="Active">Active</option>
-          <option value="Invited">Invited</option>
-          <option value="Suspended">Suspended</option>
-          <option value="Deactivated">Deactivated</option>
+          <option value="ACTIVE">Active</option>
+          <option value="INVITED">Invited</option>
+          <option value="SUSPENDED">Suspended</option>
+          <option value="DEACTIVATED">Deactivated</option>
         </select>
+
+        <button
+          onClick={onReset}
+          className="rounded-lg border border-gray-300 px-4 py-2.5 hover:bg-gray-50"
+        >
+          Reset
+        </button>
       </div>
 
-      {/* Add User */}
       <button
         type="button"
         onClick={onAdd}
-        className="rounded-lg bg-blue-600 px-6 py-2.5 font-medium text-white transition hover:bg-blue-700"
+        className="rounded-lg bg-blue-600 px-6 py-2.5 font-medium text-white hover:bg-blue-700"
       >
         + Add User
       </button>
