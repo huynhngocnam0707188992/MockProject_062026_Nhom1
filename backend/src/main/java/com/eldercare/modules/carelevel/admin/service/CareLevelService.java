@@ -30,5 +30,5 @@ public interface CareLevelService {
 
     // API 25
     List<CareLevelRateResponse> seedSampleCareLevelRates();
-
+ 
 }
