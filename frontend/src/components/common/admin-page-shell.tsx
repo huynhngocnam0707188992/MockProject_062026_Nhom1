@@ -1,6 +1,13 @@
 import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
 
+export const badgeClassOptions = [
+  "bg-[rgb(219,234,254)] text-[rgb(37,99,235)] border-[rgb(191,219,254)]",
+  "bg-[rgb(254,243,199)] text-[rgb(217,119,6)] border-[rgb(252,216,133)]",
+  "bg-[rgb(255,237,213)] text-[rgb(194,65,12)] border-[rgb(255,210,156)]",
+  "bg-[rgb(254,226,226)] text-[rgb(220,38,38)] border-[rgb(254,202,202)]",
+];
+
 type BreadcrumbItem = {
   label: string;
   active?: boolean;

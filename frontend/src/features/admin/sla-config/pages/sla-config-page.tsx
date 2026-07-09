@@ -1,24 +1,167 @@
-import { Info, Save } from "lucide-react";
-import { AdminPageShell, AdminPageShellNote } from "@/components/common/admin-page-shell";
-import { AdminPageActions } from "@/components/common/admin-page-actions";
+import { Info } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { AdminPageShell, AdminPageShellNote, badgeClassOptions } from "@/components/common/admin-page-shell";
 import { SeverityRow } from "@/components/common/severity-row";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AddSLATab } from "../tabs/add-sla-tab";
+import { useSLAConfigs } from "../hooks/use-sla-config";
+import { useIncidentSeverityLevels } from "@/features/admin/incident-severity/hooks/use-incident-severity";
+import { createSLAConfig, updateSLAConfig } from "../services/sla-config-service";
+
+type SLAConfigRow = {
+  id: number;
+  severityId: number;
+  severityName: string;
+  slaWindowHrs: number;
+  externalReportRequired: string;
+  regulatoryBody: string;
+  isEditing: boolean;
+};
 
 const SlaConfigPage = () => {
-  const handleCancel = () => {
-    console.log("SLA Config cancel clicked");
-  };
+  const queryClient = useQueryClient();
+  const { data: slaData, isLoading: slaLoading, isError: slaError } = useSLAConfigs();
+  const { data: severityData, isLoading: severityLoading, isError: severityError } = useIncidentSeverityLevels();
+  const [rows, setRows] = useState<SLAConfigRow[]>([]);
+  const [newSLASeverityId, setNewSLASeverityId] = useState<number | null>(null);
+  const [newSLAWindowHrs, setNewSLAWindowHrs] = useState("");
+  const [newSLAError, setNewSLAError] = useState<string | null>(null);
 
-  const handleSave = () => {
-    console.log("SLA Config save clicked");
-  };
+  console.log("SLA page hook data", { slaData, slaLoading, slaError, severityData, severityLoading, severityError });
 
-  const footer = (
-    <AdminPageActions
-      onCancel={handleCancel}
-      onSave={handleSave}
-      saveIcon={<Save className="w-4 h-4" />}
-    />
+  const isLoading = slaLoading || severityLoading;
+  const isError = slaError || severityError;
+  const severityMap = useMemo(
+    () => new Map<number, string>(severityData?.map((item) => [item.id, item.levelName]) ?? []),
+    [severityData]
   );
+
+  useEffect(() => {
+    if (!slaData) return;
+
+    setRows(
+      slaData.map((item) => ({
+        id: item.id,
+        severityId: item.severityId,
+        severityName: severityMap.get(item.severityId) ?? "Unknown",
+        slaWindowHrs: item.slaWindowHrs,
+        externalReportRequired: "No",
+        regulatoryBody: "—",
+        isEditing: false,
+      }))
+    );
+  }, [slaData, severityMap]);
+
+  useEffect(() => {
+    if (newSLASeverityId === null && severityData?.length) {
+      setNewSLASeverityId(severityData[0].id);
+    }
+  }, [newSLASeverityId, severityData]);
+
+  const handleEdit = (id: number) => {
+    setRows((current) =>
+      current.map((row) => (row.id === id ? { ...row, isEditing: true } : row))
+    );
+  };
+
+  const handleCancel = (id: number) => {
+    const originalRow = slaData?.find((item) => item.id === id);
+    if (!originalRow) {
+      setRows((current) =>
+        current.map((row) => (row.id === id ? { ...row, isEditing: false } : row))
+      );
+      return;
+    }
+
+    setRows((current) =>
+      current.map((row) =>
+        row.id === id
+          ? {
+              ...row,
+              severityName: severityMap.get(originalRow.severityId) ?? "Unknown",
+              slaWindowHrs: originalRow.slaWindowHrs,
+              externalReportRequired: "No",
+              regulatoryBody: "—",
+              isEditing: false,
+            }
+          : row
+      )
+    );
+  };
+
+  const handleSave = async (id: number) => {
+    const row = rows.find((item) => item.id === id);
+    if (!row) return;
+
+    try {
+      await updateSLAConfig(id, {
+        severity_id: row.severityId,
+        sla_window_hrs: Number(row.slaWindowHrs),
+        external_report_required: row.externalReportRequired,
+        regulatory_body: row.regulatoryBody,
+      });
+      setRows((current) =>
+        current.map((item) => (item.id === id ? { ...item, isEditing: false } : item))
+      );
+      queryClient.invalidateQueries({ queryKey: ["slaConfigs"] });
+    } catch (error) {
+      console.error("Failed to save SLA row", error);
+    }
+  };
+
+  const handleCreateSLA = async () => {
+    if (!newSLASeverityId) {
+      setNewSLAError("Severity is required.");
+      return;
+    }
+
+    const hours = Number(newSLAWindowHrs);
+    if (!newSLAWindowHrs || Number.isNaN(hours) || hours <= 0) {
+      setNewSLAError("Please enter a valid SLA window in hours.");
+      return;
+    }
+
+    try {
+      await createSLAConfig({
+        severity_id: newSLASeverityId,
+        sla_window_hrs: hours,
+      });
+      setNewSLAWindowHrs("");
+      setNewSLAError(null);
+      queryClient.invalidateQueries({ queryKey: ["slaConfigs"] });
+      setActiveTab("list");
+    } catch (error) {
+      console.error("Failed to create SLA config", error);
+      setNewSLAError("Unable to create SLA config. Please try again.");
+    }
+  };
+
+  const updateField = (
+    id: number,
+    field: "externalReportRequired" | "regulatoryBody",
+    value: string
+  ) => {
+    setRows((current) =>
+      current.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+    );
+  };
+
+  const updateNumberField = (id: number, value: string) => {
+    const numericValue = Number(value);
+    if (Number.isNaN(numericValue)) return;
+
+    setRows((current) =>
+      current.map((row) =>
+        row.id === id ? { ...row, slaWindowHrs: numericValue } : row
+      )
+    );
+  };
+
+  const [activeTab, setActiveTab] = useState("list");
+
+  console.log("SLA page severityMap", [...severityMap.entries()]);
 
   return (
     <AdminPageShell
@@ -32,10 +175,20 @@ const SlaConfigPage = () => {
         icon: <Info className="w-5 h-5" />,
         text: "Deadlines fixed to AD-08 severity tiers. Simulated — nothing is transmitted externally (NFR-05).",
       }}
-      footer={footer}
     >
       <div className="glass-card rounded-2xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <div className="flex flex-col gap-4 px-6 py-4 border-b border-outline-variant/20 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-body-sm text-on-surface-variant">Add or update SLA deadlines for incident severity tiers.</p>
+            </div>
+            <TabsList className="w-full md:w-auto">
+              <TabsTrigger value="list">List</TabsTrigger>
+              <TabsTrigger value="create">Create</TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent value="list">
+            <div className="overflow-x-auto w-full">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-surface-container-low border-b border-outline-variant/30">
@@ -55,53 +208,98 @@ const SlaConfigPage = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/20">
-              <SeverityRow level="Critical" badgeClasses="bg-[rgb(254,226,226)] text-[rgb(220,38,38)] border border-error/20">
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-on-surface">Yes</p>
-                </td>
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-on-surface font-bold">24 hours</p>
-                </td>
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-on-surface-variant">CA Dept. of Public Health</p>
-                </td>
-              </SeverityRow>
-              <SeverityRow level="Major" badgeClasses="bg-[rgb(255,237,213)] text-[rgb(194,65,12)] border border-tertiary-fixed-dim/50">
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-on-surface">Yes</p>
-                </td>
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-on-surface font-bold">24 hours</p>
-                </td>
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-on-surface-variant">CA Dept. of Public Health</p>
-                </td>
-              </SeverityRow>
-              <SeverityRow level="Moderate" badgeClasses="bg-[rgb(254,243,199)] text-[rgb(217,119,6)] border border-secondary-fixed-dim/50">
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-on-surface">Yes</p>
-                </td>
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-on-surface font-bold">48 hours</p>
-                </td>
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-on-surface-variant">CA Dept. of Public Health</p>
-                </td>
-              </SeverityRow>
-              <SeverityRow level="Minor" badgeClasses="bg-[rgb(243,244,246)] text-[rgb(109,116,129)] border border-outline-variant/50">
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-on-surface-variant">No</p>
-                </td>
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-outline">— (not required)</p>
-                </td>
-                <td className="px-6 py-6">
-                  <p className="text-body-base font-body-base text-outline">—</p>
-                </td>
-              </SeverityRow>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-body-base text-on-surface-variant">
+                    Loading SLA configuration...
+                  </td>
+                </tr>
+              ) : isError ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-body-base text-error">
+                    Error loading SLA configuration. Please try again later.
+                  </td>
+                </tr>
+              ) : (
+                rows.map((row, index) => {
+                  const badgeClasses = badgeClassOptions[index % badgeClassOptions.length];
+
+                  return (
+                    <SeverityRow
+                      key={row.id}
+                      level={row.severityName}
+                      badgeClasses={badgeClasses}
+                      viewCells={
+                        <>
+                          <td className="px-6 py-6">
+                            <p className="text-body-base font-body-base text-on-surface">
+                              {row.externalReportRequired}
+                            </p>
+                          </td>
+                          <td className="px-6 py-6">
+                            <p className="text-body-base font-body-base text-on-surface font-bold">
+                              {row.slaWindowHrs} hours
+                            </p>
+                          </td>
+                          <td className="px-6 py-6">
+                            <p className="text-body-base font-body-base text-outline">
+                              {row.regulatoryBody}
+                            </p>
+                          </td>
+                        </>
+                      }
+                      isEditing={row.isEditing}
+                      onEdit={() => handleEdit(row.id)}
+                      editCells={
+                        <>
+                          <td className="px-6 py-6">
+                            <Input
+                              type="text"
+                              value={row.externalReportRequired}
+                              onChange={(event) => updateField(row.id, "externalReportRequired", event.target.value)}
+                              className="text-body-base font-body-base"
+                            />
+                          </td>
+                          <td className="px-6 py-6">
+                            <Input
+                              type="text"
+                              value={`${row.slaWindowHrs}`}
+                              onChange={(event) => updateNumberField(row.id, event.target.value)}
+                              className="text-body-base font-body-base"
+                            />
+                          </td>
+                          <td className="px-6 py-6">
+                            <Input
+                              type="text"
+                              value={row.regulatoryBody}
+                              onChange={(event) => updateField(row.id, "regulatoryBody", event.target.value)}
+                              className="text-body-base font-body-base"
+                            />
+                          </td>
+                        </>
+                      }
+                      onSave={() => handleSave(row.id)}
+                      onCancel={() => handleCancel(row.id)}
+                    />
+                  );
+                })
+              )}
             </tbody>
           </table>
-        </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="create">
+            <AddSLATab
+              severityOptions={severityData}
+              selectedSeverityId={newSLASeverityId}
+              slaWindowHrs={newSLAWindowHrs}
+              errorMessage={newSLAError}
+              onSeverityChange={setNewSLASeverityId}
+              onSLAWindowChange={setNewSLAWindowHrs}
+              onCreate={handleCreateSLA}
+            />
+          </TabsContent>
+        </Tabs>
         <AdminPageShellNote>
           Only Deadline and Regulatory Body are editable. Values match M7 Incident List (SLA Countdown), Incident Detail, and Submit External Report modal (S6) — e.g. Major=24h, Moderate=48h window.
         </AdminPageShellNote>
