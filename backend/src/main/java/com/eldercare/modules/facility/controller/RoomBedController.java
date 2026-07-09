@@ -67,4 +67,11 @@ public class RoomBedController {
     public ResponseEntity<BedResponse> updateBedStatus(@PathVariable Long facilityId, @PathVariable Long roomId, @PathVariable Long bedId, @RequestBody BedRequest request) {
         return ResponseEntity.ok(roomBedService.updateBedStatus(bedId, request));
     }
+
+    @DeleteMapping("/{facilityId}/rooms/{roomId}/beds/{bedId}")
+    @PreAuthorize("hasRole('NHA_ADMIN')")
+    public ResponseEntity<Void> deleteBed(@PathVariable Long facilityId, @PathVariable Long roomId, @PathVariable Long bedId) {
+        roomBedService.deleteBed(bedId);
+        return ResponseEntity.noContent().build();
+    }
 }

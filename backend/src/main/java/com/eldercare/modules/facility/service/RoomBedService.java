@@ -16,4 +16,5 @@ public interface RoomBedService {
     List<BedResponse> getBedListByRoomId(Long roomId);
     BedResponse createBed(Long roomId, BedRequest request);
     BedResponse updateBedStatus(Long bedId, BedRequest request);
+    void deleteBed(Long bedId);
 }

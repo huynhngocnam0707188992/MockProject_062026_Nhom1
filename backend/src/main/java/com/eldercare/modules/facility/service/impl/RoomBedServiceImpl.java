@@ -130,4 +130,17 @@ public class RoomBedServiceImpl implements RoomBedService {
         bed = bedRepository.save(bed);
         return mapper.toResponse(bed);
     }
+
+    @Override
+    @Transactional
+    public void deleteBed(Long bedId) {
+        Bed bed = bedRepository.findById(bedId)
+                .orElseThrow(() -> new ResourceNotFoundException("Bed not found"));
+
+        if (bed.getStatus() == BedStatus.OCCUPIED) {
+            throw new BadRequestException("Cannot delete an occupied bed.");
+        }
+
+        bedRepository.delete(bed);
+    }
 }
