@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Calendar, Save, CheckCircle2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select } from '@/components/ui/sla-config-select';
 
 export interface SlaRowState {
   severity: string;
@@ -175,17 +174,18 @@ export function SlaConfigForm(): React.ReactElement {
                 {/* Column 4: Notification Target Dropdown */}
                 <td className="sla-table-cell">
                   <div className="target-dropdown-col">
-                    <Select
+                    <select
                       value={row.target}
-                      onChange={(e) => handleTargetChange(index, e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleTargetChange(index, e.target.value)}
                       disabled={isSaving}
+                      className="w-full bg-transparent border border-gray-300 rounded px-2 py-1"
                     >
                       <option value="Emergency Response Team">Emergency Response Team</option>
                       <option value="Director of Nursing (DON)">Director of Nursing (DON)</option>
                       <option value="Nursing Supervisor">Nursing Supervisor</option>
                       <option value="Quality Assurance Committee">Quality Assurance Committee</option>
                       <option value="Facility Administrator">Facility Administrator</option>
-                    </Select>
+                    </select>
                   </div>
                 </td>
               </tr>

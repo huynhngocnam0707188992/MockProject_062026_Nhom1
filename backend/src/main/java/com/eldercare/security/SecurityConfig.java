@@ -13,22 +13,14 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-            throws Exception {
-                http
-                .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/admin/roles").permitAll()
-                .requestMatchers("/admin/staffing-ratio-config").permitAll()
-                .requestMatchers(HttpMethod.POST, "/admin/demo-data-seeder").permitAll()
-                .requestMatchers(HttpMethod.GET, "/admin/export").permitAll()
-                .requestMatchers(HttpMethod.GET, "/admin/demo-data-summary").permitAll()
-                .anyRequest().authenticated()
-        );
-
+     @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/**").permitAll()
+                .anyRequest().permitAll()
+            );
         return http.build();
     }
 

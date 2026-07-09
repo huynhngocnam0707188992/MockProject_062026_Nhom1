@@ -1,3 +1,4 @@
+<<<<<<< feature/admin-staffing-role-demo-HVT
 package com.eldercare.modules.human_resources.staffing_compliance.staffing;
 
 import jakarta.persistence.*;
@@ -31,3 +32,10 @@ public class StaffingConfigEntity {
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
 }
+=======
+package com.eldercare.modules.human_resources.staffing_compliance;
+
+public class StaffingConfigEntity {
+    
+}
+>>>>>>> develop
