@@ -1,9 +1,9 @@
-package com.eldercare.modules.facility.service;
+package com.eldercare.modules.admin.facility_setup.facility.facility_profile;
 
 import com.eldercare.common.dto.PagedResponse;
-import com.eldercare.modules.facility.dto.request.FacilityCreateRequest;
-import com.eldercare.modules.facility.dto.request.FacilityUpdateRequest;
-import com.eldercare.modules.facility.dto.response.FacilityResponse;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityCreateRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityUpdateRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.FacilityResponse;
 
 import java.util.List;
 

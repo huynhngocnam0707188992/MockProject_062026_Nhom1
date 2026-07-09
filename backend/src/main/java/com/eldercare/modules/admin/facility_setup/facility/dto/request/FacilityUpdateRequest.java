@@ -1,10 +1,10 @@
-package com.eldercare.modules.facility.dto.request;
+package com.eldercare.modules.admin.facility_setup.facility.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class FacilityCreateRequest {
+public class FacilityUpdateRequest {
     @JsonProperty("facility_code")
     private String facilityCode;
     

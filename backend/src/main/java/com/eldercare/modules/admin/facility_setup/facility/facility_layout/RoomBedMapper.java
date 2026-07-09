@@ -1,13 +1,13 @@
-package com.eldercare.modules.facility.mapper;
+package com.eldercare.modules.admin.facility_setup.facility.facility_layout;
 
 import com.eldercare.common.enums.BedStatus;
-import com.eldercare.modules.facility.dto.request.BedRequest;
-import com.eldercare.modules.facility.dto.request.RoomRequest;
-import com.eldercare.modules.facility.dto.response.BedResponse;
-import com.eldercare.modules.facility.dto.response.RoomResponse;
-import com.eldercare.modules.facility.entity.Bed;
-import com.eldercare.modules.facility.entity.Room;
-import com.eldercare.modules.facility.repository.BedRepository.BedProjection;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.BedRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.RoomRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.BedResponse;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.RoomResponse;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.BedEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.BedRepository.BedProjection;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Component
 public class RoomBedMapper {
 
-    public RoomResponse toResponse(Room room, List<BedProjection> enrichedBeds) {
+    public RoomResponse toResponse(RoomEntity room, List<BedProjection> enrichedBeds) {
         if (room == null) return null;
 
         List<BedResponse> bedResponses = enrichedBeds.stream()
@@ -51,7 +51,7 @@ public class RoomBedMapper {
         return res;
     }
 
-    public List<RoomResponse> toRoomResponseList(List<Room> rooms, List<BedProjection> allEnrichedBeds) {
+    public List<RoomResponse> toRoomResponseList(List<RoomEntity> rooms, List<BedProjection> allEnrichedBeds) {
         // Group enriched beds by roomId for O(1) lookup
         Map<Long, List<BedProjection>> bedsByRoomId = allEnrichedBeds.stream()
                 .collect(Collectors.groupingBy(BedProjection::getRoomId));
@@ -73,15 +73,15 @@ public class RoomBedMapper {
         return res;
     }
 
-    public Room toEntity(RoomRequest request) {
+    public RoomEntity toEntity(RoomRequest request) {
         if (request == null) return null;
-        Room room = new Room();
+        RoomEntity room = new RoomEntity();
         room.setRoomNumber(request.getRoomNumber());
         room.setRoomType(request.getRoomType());
         return room;
     }
 
-    public BedResponse toResponse(Bed bed) {
+    public BedResponse toResponse(BedEntity bed) {
         if (bed == null) return null;
         BedResponse res = new BedResponse();
         res.setId(bed.getId());
@@ -91,13 +91,13 @@ public class RoomBedMapper {
         return res;
     }
 
-    public List<BedResponse> toBedResponseList(List<Bed> beds) {
+    public List<BedResponse> toBedResponseList(List<BedEntity> beds) {
         return beds.stream().map(this::toResponse).collect(Collectors.toList());
     }
 
-    public Bed toEntity(BedRequest request) {
+    public BedEntity toEntity(BedRequest request) {
         if (request == null) return null;
-        Bed bed = new Bed();
+        BedEntity bed = new BedEntity();
         bed.setBedNumber(request.getBedNumber());
         bed.setStatus(request.getStatus());
         return bed;

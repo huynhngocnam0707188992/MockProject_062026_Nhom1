@@ -1,14 +1,10 @@
-package com.eldercare.modules.facility.dto.response;
+package com.eldercare.modules.admin.facility_setup.facility.dto.request;
 
-import com.eldercare.modules.facility.dto.request.AddressDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import java.time.OffsetDateTime;
 
 @Data
-public class FacilityResponse {
-    private Long id;
-    
+public class FacilityCreateRequest {
     @JsonProperty("facility_code")
     private String facilityCode;
     
@@ -24,7 +20,4 @@ public class FacilityResponse {
     
     @JsonProperty("phone_number")
     private String phoneNumber;
-    
-    @JsonProperty("updated_at")
-    private OffsetDateTime updatedAt;
 }

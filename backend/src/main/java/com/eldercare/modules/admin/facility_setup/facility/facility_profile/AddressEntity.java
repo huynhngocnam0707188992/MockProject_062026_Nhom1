@@ -1,4 +1,4 @@
-package com.eldercare.modules.facility.entity;
+package com.eldercare.modules.admin.facility_setup.facility.facility_profile;
 
 import com.eldercare.common.enums.AddressType;
 import jakarta.persistence.*;
@@ -19,7 +19,7 @@ import java.time.OffsetDateTime;
 @Builder
 @SQLDelete(sql = "UPDATE addresses SET is_deleted = 1 WHERE id = ?")
 @SQLRestriction("is_deleted = 0")
-public class Address {
+public class AddressEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package com.eldercare.modules.facility.dto.request;
+package com.eldercare.modules.admin.facility_setup.facility.dto.request;
 
 import com.eldercare.common.enums.BedStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;

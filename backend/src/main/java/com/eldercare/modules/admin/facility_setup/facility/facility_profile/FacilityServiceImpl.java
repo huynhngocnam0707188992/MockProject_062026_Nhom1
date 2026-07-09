@@ -1,15 +1,15 @@
-package com.eldercare.modules.facility.service.impl;
+package com.eldercare.modules.admin.facility_setup.facility.facility_profile;
 
 import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.exception.custom.BadRequestException;
 import com.eldercare.exception.custom.ResourceNotFoundException;
-import com.eldercare.modules.facility.dto.request.FacilityCreateRequest;
-import com.eldercare.modules.facility.dto.request.FacilityUpdateRequest;
-import com.eldercare.modules.facility.dto.response.FacilityResponse;
-import com.eldercare.modules.facility.entity.Facility;
-import com.eldercare.modules.facility.mapper.FacilityMapper;
-import com.eldercare.modules.facility.repository.FacilityRepository;
-import com.eldercare.modules.facility.service.FacilityService;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityCreateRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityUpdateRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.FacilityResponse;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityMapper;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityRepository;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +31,7 @@ public class FacilityServiceImpl implements FacilityService {
     @Transactional(readOnly = true)
     public PagedResponse<List<FacilityResponse>> getFacilities(int page, int size, String search) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Facility> facilityPage;
+        Page<FacilityEntity> facilityPage;
         
         if (search != null && !search.trim().isEmpty()) {
             facilityPage = facilityRepository.findByFacilityCodeContainingIgnoreCaseOrNameContainingIgnoreCaseOrLicenseNumberContainingIgnoreCase(
@@ -55,7 +55,7 @@ public class FacilityServiceImpl implements FacilityService {
             throw new BadRequestException("Facility code already exists");
         }
 
-        Facility facility = facilityMapper.toEntity(request);
+        FacilityEntity facility = facilityMapper.toEntity(request);
         facility = facilityRepository.save(facility);
         return facilityMapper.toResponse(facility);
     }
@@ -63,7 +63,7 @@ public class FacilityServiceImpl implements FacilityService {
     @Override
     @Transactional(readOnly = true)
     public FacilityResponse getFacilityInfo(Long facilityId) {
-        Facility facility = facilityRepository.findById(facilityId)
+        FacilityEntity facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Facility not found"));
         return facilityMapper.toResponse(facility);
     }
@@ -71,7 +71,7 @@ public class FacilityServiceImpl implements FacilityService {
     @Override
     @Transactional
     public FacilityResponse updateFacilityInfo(Long facilityId, FacilityUpdateRequest request) {
-        Facility facility = facilityRepository.findById(facilityId)
+        FacilityEntity facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Facility not found"));
         
         facilityMapper.updateEntity(facility, request);

@@ -1,12 +1,12 @@
-package com.eldercare.modules.facility.controller;
+package com.eldercare.modules.admin.facility_setup.facility.facility_layout;
 
 import com.eldercare.common.constants.RouteConstants;
 import com.eldercare.common.dto.PagedResponse;
-import com.eldercare.modules.facility.dto.request.BedRequest;
-import com.eldercare.modules.facility.dto.request.RoomRequest;
-import com.eldercare.modules.facility.dto.response.BedResponse;
-import com.eldercare.modules.facility.dto.response.RoomResponse;
-import com.eldercare.modules.facility.service.RoomBedService;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.BedRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.RoomRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.BedResponse;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.RoomResponse;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomBedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class RoomBedController {
 
     private final RoomBedService roomBedService;
 
-    // Room Endpoints
+    // RoomEntity Endpoints
 
     @GetMapping("/{facilityId}/rooms")
     // @PreAuthorize("hasRole('NHA_ADMIN')") // Bypassed for development
@@ -53,7 +53,7 @@ public class RoomBedController {
         return ResponseEntity.noContent().build();
     }
 
-    // Bed Endpoints
+    // BedEntity Endpoints
 
     @GetMapping("/{facilityId}/rooms/{roomId}/beds")
     // @PreAuthorize("hasRole('NHA_ADMIN')") // Bypassed for development

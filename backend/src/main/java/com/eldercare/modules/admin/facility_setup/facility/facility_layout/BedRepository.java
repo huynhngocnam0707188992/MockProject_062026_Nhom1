@@ -1,7 +1,6 @@
-package com.eldercare.modules.facility.repository;
+package com.eldercare.modules.admin.facility_setup.facility.facility_layout;
 
 import com.eldercare.common.enums.BedStatus;
-import com.eldercare.modules.facility.entity.Bed;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,10 +10,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface BedRepository extends JpaRepository<Bed, Long> {
+public interface BedRepository extends JpaRepository<BedEntity, Long> {
     boolean existsByRoomIdAndBedNumber(Long roomId, String bedNumber);
     boolean existsByRoomIdAndStatus(Long roomId, BedStatus status);
-    List<Bed> findByRoomId(Long roomId);
+    List<BedEntity> findByRoomId(Long roomId);
 
     @Query(value = """
             SELECT

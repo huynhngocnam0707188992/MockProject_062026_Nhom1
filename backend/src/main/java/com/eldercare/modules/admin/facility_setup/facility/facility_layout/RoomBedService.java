@@ -1,10 +1,10 @@
-package com.eldercare.modules.facility.service;
+package com.eldercare.modules.admin.facility_setup.facility.facility_layout;
 
 import com.eldercare.common.dto.PagedResponse;
-import com.eldercare.modules.facility.dto.request.BedRequest;
-import com.eldercare.modules.facility.dto.request.RoomRequest;
-import com.eldercare.modules.facility.dto.response.BedResponse;
-import com.eldercare.modules.facility.dto.response.RoomResponse;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.BedRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.RoomRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.BedResponse;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.RoomResponse;
 
 import java.util.List;
 

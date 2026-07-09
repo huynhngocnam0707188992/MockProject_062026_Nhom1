@@ -1,21 +1,21 @@
-package com.eldercare.modules.facility.service.impl;
+package com.eldercare.modules.admin.facility_setup.facility.facility_layout;
 
 import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.common.enums.BedStatus;
 import com.eldercare.exception.custom.BadRequestException;
 import com.eldercare.exception.custom.ResourceNotFoundException;
-import com.eldercare.modules.facility.dto.request.BedRequest;
-import com.eldercare.modules.facility.dto.request.RoomRequest;
-import com.eldercare.modules.facility.dto.response.BedResponse;
-import com.eldercare.modules.facility.dto.response.RoomResponse;
-import com.eldercare.modules.facility.entity.Bed;
-import com.eldercare.modules.facility.entity.Facility;
-import com.eldercare.modules.facility.entity.Room;
-import com.eldercare.modules.facility.mapper.RoomBedMapper;
-import com.eldercare.modules.facility.repository.BedRepository;
-import com.eldercare.modules.facility.repository.FacilityRepository;
-import com.eldercare.modules.facility.repository.RoomRepository;
-import com.eldercare.modules.facility.service.RoomBedService;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.BedRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.RoomRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.BedResponse;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.RoomResponse;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.BedEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomBedMapper;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.BedRepository;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityRepository;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomRepository;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.RoomBedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,7 +39,7 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Transactional(readOnly = true)
     public PagedResponse<List<RoomResponse>> getRoomList(Long facilityId, int page, int size, String search) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Room> roomPage;
+        Page<RoomEntity> roomPage;
         
         if (search != null && !search.trim().isEmpty()) {
             roomPage = roomRepository.findByFacilityIdAndRoomNumberContainingIgnoreCase(facilityId, search, pageable);
@@ -47,8 +47,8 @@ public class RoomBedServiceImpl implements RoomBedService {
             roomPage = roomRepository.findByFacilityId(facilityId, pageable);
         }
         
-        List<Room> rooms = roomPage.getContent();
-        List<Long> roomIds = rooms.stream().map(Room::getId).collect(Collectors.toList());
+        List<RoomEntity> rooms = roomPage.getContent();
+        List<Long> roomIds = rooms.stream().map(RoomEntity::getId).collect(Collectors.toList());
         
         List<BedRepository.BedProjection> enrichedBeds = List.of();
         if (!roomIds.isEmpty()) {
@@ -68,10 +68,10 @@ public class RoomBedServiceImpl implements RoomBedService {
             throw new BadRequestException("Room number already exists in this facility");
         }
 
-        Facility facility = facilityRepository.findById(facilityId)
+        FacilityEntity facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Facility not found"));
 
-        Room room = mapper.toEntity(request);
+        RoomEntity room = mapper.toEntity(request);
         room.setFacility(facility);
         room = roomRepository.save(room);
         
@@ -82,7 +82,7 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Override
     @Transactional
     public RoomResponse updateRoom(Long roomId, RoomRequest request) {
-        Room room = roomRepository.findById(roomId)
+        RoomEntity room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
 
         if (!room.getRoomNumber().equals(request.getRoomNumber()) &&
@@ -104,7 +104,7 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Override
     @Transactional
     public void deleteRoom(Long roomId) {
-        Room room = roomRepository.findById(roomId)
+        RoomEntity room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
 
         if (bedRepository.existsByRoomIdAndStatus(roomId, BedStatus.OCCUPIED)) {
@@ -117,7 +117,7 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Override
     @Transactional(readOnly = true)
     public List<BedResponse> getBedListByRoomId(Long roomId) {
-        List<Bed> beds = bedRepository.findByRoomId(roomId);
+        List<BedEntity> beds = bedRepository.findByRoomId(roomId);
         return mapper.toBedResponseList(beds);
     }
 
@@ -128,10 +128,10 @@ public class RoomBedServiceImpl implements RoomBedService {
             throw new BadRequestException("Bed number already exists in this room");
         }
 
-        Room room = roomRepository.findById(roomId)
+        RoomEntity room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
 
-        Bed bed = mapper.toEntity(request);
+        BedEntity bed = mapper.toEntity(request);
         bed.setRoom(room);
         bed = bedRepository.save(bed);
         return mapper.toResponse(bed);
@@ -140,7 +140,7 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Override
     @Transactional
     public BedResponse updateBedStatus(Long bedId, BedRequest request) {
-        Bed bed = bedRepository.findById(bedId)
+        BedEntity bed = bedRepository.findById(bedId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bed not found"));
 
         if (request.getStatus() != null) {
@@ -160,7 +160,7 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Override
     @Transactional
     public void deleteBed(Long bedId) {
-        Bed bed = bedRepository.findById(bedId)
+        BedEntity bed = bedRepository.findById(bedId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bed not found"));
 
         if (bed.getStatus() == BedStatus.OCCUPIED) {

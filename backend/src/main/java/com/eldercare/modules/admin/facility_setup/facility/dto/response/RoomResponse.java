@@ -1,4 +1,4 @@
-package com.eldercare.modules.facility.dto.response;
+package com.eldercare.modules.admin.facility_setup.facility.dto.response;
 
 import com.eldercare.common.enums.RoomType;
 import com.fasterxml.jackson.annotation.JsonProperty;

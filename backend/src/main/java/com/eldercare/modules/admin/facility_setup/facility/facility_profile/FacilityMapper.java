@@ -1,22 +1,22 @@
-package com.eldercare.modules.facility.mapper;
+package com.eldercare.modules.admin.facility_setup.facility.facility_profile;
 
-import com.eldercare.modules.facility.dto.request.AddressDto;
-import com.eldercare.modules.facility.dto.request.FacilityCreateRequest;
-import com.eldercare.modules.facility.dto.request.FacilityUpdateRequest;
-import com.eldercare.modules.facility.dto.response.FacilityResponse;
-import com.eldercare.modules.facility.entity.Address;
-import com.eldercare.modules.facility.entity.Facility;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.AddressDto;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityCreateRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityUpdateRequest;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.FacilityResponse;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.AddressEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.FacilityEntity;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FacilityMapper {
 
-    public Facility toEntity(FacilityCreateRequest request) {
+    public FacilityEntity toEntity(FacilityCreateRequest request) {
         if (request == null) {
             return null;
         }
 
-        Facility facility = new Facility();
+        FacilityEntity facility = new FacilityEntity();
         facility.setFacilityCode(request.getFacilityCode());
         facility.setName(request.getName());
         facility.setLicenseNumber(request.getLicenseNumber());
@@ -24,7 +24,7 @@ public class FacilityMapper {
         facility.setPhoneNumber(request.getPhoneNumber());
 
         if (request.getAddress() != null) {
-            Address address = new Address();
+            AddressEntity address = new AddressEntity();
             address.setStreetLine1(request.getAddress().getStreetLine1());
             address.setStreetLine2(request.getAddress().getStreetLine2());
             address.setCity(request.getAddress().getCity());
@@ -37,7 +37,7 @@ public class FacilityMapper {
         return facility;
     }
 
-    public FacilityResponse toResponse(Facility facility) {
+    public FacilityResponse toResponse(FacilityEntity facility) {
         if (facility == null) {
             return null;
         }
@@ -65,7 +65,7 @@ public class FacilityMapper {
         return response;
     }
 
-    public void updateEntity(Facility facility, FacilityUpdateRequest request) {
+    public void updateEntity(FacilityEntity facility, FacilityUpdateRequest request) {
         if (request.getName() != null) facility.setName(request.getName());
         if (request.getFacilityCode() != null) facility.setFacilityCode(request.getFacilityCode());
         if (request.getLicenseNumber() != null) facility.setLicenseNumber(request.getLicenseNumber());
@@ -73,9 +73,9 @@ public class FacilityMapper {
         if (request.getPhoneNumber() != null) facility.setPhoneNumber(request.getPhoneNumber());
 
         if (request.getAddress() != null) {
-            Address address = facility.getAddress();
+            AddressEntity address = facility.getAddress();
             if (address == null) {
-                address = new Address();
+                address = new AddressEntity();
                 facility.setAddress(address);
             }
             address.setStreetLine1(request.getAddress().getStreetLine1());

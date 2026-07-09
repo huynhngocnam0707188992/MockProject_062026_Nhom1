@@ -1,0 +1,16 @@
+package com.eldercare.modules.admin.facility_setup.facility.facility_profile;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface FacilityRepository extends JpaRepository<FacilityEntity, Long> {
+    Optional<FacilityEntity> findByFacilityCode(String facilityCode);
+    
+    Page<FacilityEntity> findByFacilityCodeContainingIgnoreCaseOrNameContainingIgnoreCaseOrLicenseNumberContainingIgnoreCase(
+            String code, String name, String license, Pageable pageable);
+}
