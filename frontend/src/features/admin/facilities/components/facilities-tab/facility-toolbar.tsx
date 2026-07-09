@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Filter } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 
 interface FacilityToolbarProps {
   onSearch: (value: string) => void;
@@ -25,10 +25,10 @@ export const FacilityToolbar = ({ onSearch, onAddFacility, activeCount }: Facili
               onChange={(e) => onSearch(e.target.value)}
             />
           </div>
-          <Button
-            onClick={onAddFacility}
-            className="bg-primary text-on-primary hover:bg-primary/90 px-4 py-2 rounded-lg text-label-md font-label-md shadow-sm transition-colors flex items-center gap-2"
-          >
+        <Button
+          onClick={onAddFacility}
+          className="bg-primary !text-white hover:bg-primary/90 px-4 py-2 rounded-lg text-label-md font-label-md shadow-sm transition-colors flex items-center gap-2"
+        >
             <Plus className="w-[18px] h-[18px]" />
             Add Facility
           </Button>
@@ -40,13 +40,9 @@ export const FacilityToolbar = ({ onSearch, onAddFacility, activeCount }: Facili
         <div className="flex items-center gap-2">
           <h3 className="text-headline-md font-headline-md text-on-surface">Registered Facilities</h3>
           <span className="bg-surface-container-high text-on-surface-variant text-label-md px-2 py-0.5 rounded-full">
-            {activeCount} Active
+            {activeCount} Total
           </span>
         </div>
-        <button className="text-primary text-label-md font-label-md hover:underline flex items-center gap-1">
-          <Filter className="w-[16px] h-[16px]" />
-          Filter
-        </button>
       </div>
     </>
   );

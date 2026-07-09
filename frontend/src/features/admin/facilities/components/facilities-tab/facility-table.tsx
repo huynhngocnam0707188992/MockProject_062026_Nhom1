@@ -1,5 +1,5 @@
 import type { Facility } from "@/services/facilities-api";
-import { UserPlus, Edit } from "lucide-react";
+import { Edit } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface FacilityTableProps {
@@ -14,7 +14,7 @@ export const FacilityTable = ({ facilities, onEdit }: FacilityTableProps) => {
         <thead>
           <tr className="border-b border-outline-variant bg-surface">
             <th className="p-[16px_16px] text-label-bold font-label-bold text-on-surface uppercase tracking-wider bg-surface-container-low font-bold">
-              Code
+              Facility Code
             </th>
             <th className="p-[16px_16px] text-label-bold font-label-bold text-on-surface uppercase tracking-wider bg-surface-container-low font-bold">
               Name
@@ -26,7 +26,7 @@ export const FacilityTable = ({ facilities, onEdit }: FacilityTableProps) => {
               Target State
             </th>
             <th className="p-[16px_16px] text-label-bold font-label-bold text-on-surface uppercase tracking-wider bg-surface-container-low font-bold">
-              Phone
+              Phone Number
             </th>
             <th className="p-[16px_16px] text-label-bold font-label-bold text-on-surface uppercase tracking-wider text-right bg-surface-container-low font-bold">
               Actions
@@ -49,28 +49,22 @@ export const FacilityTable = ({ facilities, onEdit }: FacilityTableProps) => {
                 }`}
               >
                 <td className="p-[16px_16px] font-mono-data text-mono-data text-on-surface-variant font-medium">
-                  {facility.code}
+                  {facility.facility_code}
                 </td>
                 <td className="p-[16px_16px] font-medium text-on-surface">{facility.name}</td>
                 <td className="p-[16px_16px] font-mono-data text-mono-data text-on-surface-variant">
-                  {facility.licenseNumber}
+                  {facility.license_number}
                 </td>
                 <td className="p-[16px_16px]">
                   <Badge variant="outline" className="border-secondary/30 bg-secondary/100 text-secondary-foreground hover:bg-secondary/20">
-                    {facility.state}
+                    {facility.target_state}
                   </Badge>
                 </td>
                 <td className="p-[16px_16px] font-mono-data text-mono-data text-on-surface-variant">
-                  {facility.phone}
+                  {facility.phone_number}
                 </td>
                 <td className="p-[16px_16px] text-right">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-md transition-colors tooltip-trigger"
-                      title="Assign User"
-                    >
-                      <UserPlus className="w-[18px] h-[18px]" />
-                    </button>
                     <button
                       onClick={() => onEdit(facility)}
                       className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-md transition-colors"

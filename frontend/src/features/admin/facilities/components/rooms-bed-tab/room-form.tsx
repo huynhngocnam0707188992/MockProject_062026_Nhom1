@@ -16,17 +16,15 @@ import type { Room } from "@/services/rooms-api";
 import type { Facility } from "@/services/facilities-api";
 
 const roomSchema = z.object({
-  name: z.string().min(1, "Room name is required"),
-  facilityId: z.string().min(1, "Facility is required"),
-  floor: z.string().min(1, "Floor is required"),
-  capacity: z.coerce.number().min(1, "Capacity must be at least 1"),
+  room_number: z.string().min(1, "Room number is required"),
+  room_type: z.enum(["PRIVATE", "SEMI_PRIVATE", "WARD"]),
+  facility_id: z.string().min(1, "Facility is required"),
 });
 
 type RoomFormValues = {
-  name: string;
-  facilityId: string;
-  floor: string;
-  capacity: number;
+  room_number: string;
+  room_type: "PRIVATE" | "SEMI_PRIVATE" | "WARD";
+  facility_id: string;
 };
 
 interface RoomFormProps {
@@ -39,11 +37,14 @@ interface RoomFormProps {
 export const RoomForm = ({ initialData, facilities, onSubmit, onCancel }: RoomFormProps) => {
   const form = useForm<RoomFormValues>({
     resolver: zodResolver(roomSchema) as any,
-    defaultValues: initialData || {
-      name: "",
-      facilityId: "",
-      floor: "",
-      capacity: 1,
+    defaultValues: initialData ? {
+      room_number: initialData.room_number,
+      room_type: initialData.room_type,
+      facility_id: String(initialData.facility_id),
+    } : {
+      room_number: "",
+      room_type: "PRIVATE",
+      facility_id: "",
     },
   });
 
@@ -52,12 +53,12 @@ export const RoomForm = ({ initialData, facilities, onSubmit, onCancel }: RoomFo
       <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-4">
         <FormField
           control={form.control as any}
-          name="name"
+          name="room_number"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Room Name</FormLabel>
+              <FormLabel>Room Number</FormLabel>
               <FormControl>
-                <Input placeholder="Enter room name" {...field} />
+                <Input placeholder="Enter room number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -65,7 +66,29 @@ export const RoomForm = ({ initialData, facilities, onSubmit, onCancel }: RoomFo
         />
         <FormField
           control={form.control as any}
-          name="facilityId"
+          name="room_type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Room Type</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select room type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="PRIVATE">Private</SelectItem>
+                  <SelectItem value="SEMI_PRIVATE">Semi-Private</SelectItem>
+                  <SelectItem value="WARD">Ward</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control as any}
+          name="facility_id"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Facility</FormLabel>
@@ -77,7 +100,7 @@ export const RoomForm = ({ initialData, facilities, onSubmit, onCancel }: RoomFo
                 </FormControl>
                 <SelectContent>
                   {facilities.map(f => (
-                    <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                    <SelectItem key={f.id} value={String(f.id)}>{f.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -85,34 +108,6 @@ export const RoomForm = ({ initialData, facilities, onSubmit, onCancel }: RoomFo
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control as any}
-            name="floor"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Floor</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g. 1st Floor" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control as any}
-            name="capacity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Capacity</FormLabel>
-                <FormControl>
-                  <Input type="number" min={1} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
         <div className="flex justify-end space-x-2 pt-4">
           <Button variant="outline" type="button" onClick={onCancel}>
             Cancel

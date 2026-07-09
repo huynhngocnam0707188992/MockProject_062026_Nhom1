@@ -1,15 +1,17 @@
 import { useState } from "react";
-import type { Room } from "@/services/rooms-api";
+import type { Room, Bed } from "@/services/rooms-api";
 import { BedRow } from "./bed-row";
-import { Edit, ChevronDown, ChevronRight, UserPlus } from "lucide-react";
+import { Edit, ChevronDown, ChevronRight, Plus } from "lucide-react";
 
 interface RoomRowProps {
   room: Room;
   onEdit: (room: Room) => void;
+  onAddBed: (roomId: number) => void;
+  onEditBed: (roomId: number, bed: Bed) => void;
   index: number;
 }
 
-export const RoomRow = ({ room, onEdit, index }: RoomRowProps) => {
+export const RoomRow = ({ room, onEdit, onAddBed, onEditBed, index }: RoomRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -20,16 +22,16 @@ export const RoomRow = ({ room, onEdit, index }: RoomRowProps) => {
             <button className="text-on-surface-variant hover:text-on-surface transition-colors">
               {isExpanded ? <ChevronDown className="w-[20px] h-[20px]" /> : <ChevronRight className="w-[20px] h-[20px]" />}
             </button>
-            <span className="font-medium text-on-surface">{room.name}</span>
+            <span className="font-medium text-on-surface">{room.room_number}</span>
           </div>
         </td>
-        <td className="p-[16px_16px] text-on-surface-variant">{room.facilityName}</td>
-        <td className="p-[16px_16px] text-on-surface-variant">{room.floor}</td>
+        <td className="p-[16px_16px] text-on-surface-variant">{room.room_type}</td>
+        <td className="p-[16px_16px] text-on-surface-variant">{room.facility_name}</td>
         <td className="p-[16px_16px]">
           <div className="flex items-center gap-2">
             <div className="flex -space-x-1">
               {[...Array(room.capacity)].map((_, i) => (
-                <div key={i} className={`w-4 h-4 rounded-full border border-surface ${i < room.beds.filter(b => b.status === 'Occupied').length ? 'bg-error' : 'bg-surface-container-highest'}`} title={i < room.beds.filter(b => b.status === 'Occupied').length ? "Occupied" : "Available"}></div>
+                <div key={i} className={`w-4 h-4 rounded-full border border-surface ${i < room.beds.filter(b => b.status === 'OCCUPIED').length ? 'bg-error' : 'bg-surface-container-highest'}`} title={i < room.beds.filter(b => b.status === 'OCCUPIED').length ? "Occupied" : "Available"}></div>
               ))}
             </div>
             <span className="text-body-sm text-on-surface-variant">{room.capacity} Beds</span>
@@ -46,8 +48,8 @@ export const RoomRow = ({ room, onEdit, index }: RoomRowProps) => {
         </td>
         <td className="p-[16px_16px] text-right" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-md transition-colors tooltip-trigger" title="Assign Resident">
-              <UserPlus className="w-[18px] h-[18px]" />
+            <button onClick={() => onAddBed(room.id)} className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-md transition-colors tooltip-trigger" title="Add Bed">
+              <Plus className="w-[18px] h-[18px]" />
             </button>
             <button onClick={() => onEdit(room)} className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-md transition-colors" title="Edit Room">
               <Edit className="w-[18px] h-[18px]" />
@@ -71,7 +73,7 @@ export const RoomRow = ({ room, onEdit, index }: RoomRowProps) => {
                 </thead>
                 <tbody className="divide-y divide-outline-variant/30">
                   {room.beds.map((bed, bedIndex) => (
-                    <BedRow key={bed.id} bed={bed} index={bedIndex} />
+                    <BedRow key={bed.id} bed={bed} onEdit={(bed) => onEditBed(room.id, bed)} index={bedIndex} />
                   ))}
                 </tbody>
               </table>

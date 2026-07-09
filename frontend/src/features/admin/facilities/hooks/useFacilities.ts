@@ -1,50 +1,49 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { facilitiesApi } from "@/services/facilities-api";
 import type { Facility } from "@/services/facilities-api";
 
-export function useFacilities() {
-  const [facilities, setFacilities] = useState<Facility[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function useFacilities(searchTerm?: string) {
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
-  const fetchFacilities = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const data = await facilitiesApi.getFacilities();
-      setFacilities(data);
-      setError(null);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch facilities");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
+  // Reset to first page when search changes
   useEffect(() => {
-    fetchFacilities();
-  }, [fetchFacilities]);
+    setPage(0);
+  }, [searchTerm]);
 
-  const addFacility = async (facility: Omit<Facility, "id">) => {
-    try {
-      const newFacility = await facilitiesApi.createFacility(facility);
-      setFacilities((prev) => [...prev, newFacility]);
-      return newFacility;
-    } catch (err: any) {
-      throw new Error(err.message || "Failed to add facility");
-    }
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['facilities', page, pageSize, searchTerm],
+    queryFn: () => facilitiesApi.getFacilities(page, pageSize, searchTerm),
+  });
+
+  const createFacilityMutation = useMutation({
+    mutationFn: facilitiesApi.createFacility,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['facilities'] });
+    },
+  });
+
+  const updateFacilityMutation = useMutation({
+    mutationFn: ({ id, updates }: { id: number; updates: Partial<Facility> }) => 
+      facilitiesApi.updateFacility(id, updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['facilities'] });
+    },
+  });
+
+  return { 
+    facilities: data?.data || [], 
+    metadata: data?.metadata || null, 
+    page, 
+    pageSize, 
+    setPage, 
+    setPageSize, 
+    isLoading, 
+    error: error?.message || null, 
+    fetchFacilities: refetch, 
+    addFacility: createFacilityMutation.mutateAsync, 
+    editFacility: (id: number, updates: Partial<Facility>) => updateFacilityMutation.mutateAsync({ id, updates }) 
   };
-
-  const editFacility = async (id: string, updates: Partial<Facility>) => {
-    try {
-      const updatedFacility = await facilitiesApi.updateFacility(id, updates);
-      setFacilities((prev) =>
-        prev.map((f) => (f.id === id ? updatedFacility : f))
-      );
-      return updatedFacility;
-    } catch (err: any) {
-      throw new Error(err.message || "Failed to update facility");
-    }
-  };
-
-  return { facilities, isLoading, error, fetchFacilities, addFacility, editFacility };
 }

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Filter } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 
 interface RoomToolbarProps {
   onSearch: (value: string) => void;
@@ -26,11 +26,7 @@ export const RoomToolbar = ({ onSearch, onAddRoom, totalRooms }: RoomToolbarProp
             onChange={(e) => onSearch(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="hidden sm:flex border-outline-variant text-on-surface hover:bg-surface-container-low gap-2">
-          <Filter className="w-[18px] h-[18px]" />
-          Filter
-        </Button>
-        <Button onClick={onAddRoom} className="bg-primary text-on-primary hover:bg-primary/90 px-4 py-2 rounded-lg text-label-md font-label-md shadow-sm transition-colors flex items-center gap-2">
+        <Button onClick={onAddRoom} className="bg-primary !text-white hover:bg-primary/90 px-4 py-2 rounded-lg text-label-md font-label-md shadow-sm transition-colors flex items-center gap-2">
           <Plus className="w-[18px] h-[18px]" />
           Add Room
         </Button>

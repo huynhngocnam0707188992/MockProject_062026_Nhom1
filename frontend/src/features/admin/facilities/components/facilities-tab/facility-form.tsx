@@ -15,11 +15,10 @@ import type { Facility } from "@/services/facilities-api";
 
 const facilitySchema = z.object({
   name: z.string().min(1, "Facility name is required"),
-  code: z.string().min(1, "Code is required"),
-  licenseNumber: z.string().min(1, "License number is required"),
-  state: z.string().min(1, "Target state is required"),
-  phone: z.string().min(1, "Phone is required"),
-  status: z.enum(["Active", "Inactive", "Maintenance"]),
+  facility_code: z.string().min(1, "Code is required"),
+  license_number: z.string().min(1, "License number is required"),
+  target_state: z.string().length(2, "State must be exactly 2 characters (e.g., CA)"),
+  phone_number: z.string().min(1, "Phone is required"),
 });
 
 type FacilityFormValues = z.infer<typeof facilitySchema>;
@@ -35,11 +34,10 @@ export const FacilityForm = ({ initialData, onSubmit, onCancel }: FacilityFormPr
     resolver: zodResolver(facilitySchema) as any,
     defaultValues: initialData || {
       name: "",
-      code: "",
-      licenseNumber: "",
-      state: "",
-      phone: "",
-      status: "Active",
+      facility_code: "",
+      license_number: "",
+      target_state: "",
+      phone_number: "",
     },
   });
 
@@ -61,10 +59,10 @@ export const FacilityForm = ({ initialData, onSubmit, onCancel }: FacilityFormPr
         />
         <FormField
           control={form.control as any}
-          name="code"
+          name="facility_code"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Code</FormLabel>
+              <FormLabel>Facility Code</FormLabel>
               <FormControl>
                 <Input placeholder="e.g. NHMS-CA-01" {...field} />
               </FormControl>
@@ -74,7 +72,7 @@ export const FacilityForm = ({ initialData, onSubmit, onCancel }: FacilityFormPr
         />
         <FormField
           control={form.control as any}
-          name="licenseNumber"
+          name="license_number"
           render={({ field }) => (
             <FormItem>
               <FormLabel>License Number</FormLabel>
@@ -88,12 +86,12 @@ export const FacilityForm = ({ initialData, onSubmit, onCancel }: FacilityFormPr
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control as any}
-            name="state"
+            name="target_state"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>State</FormLabel>
+                <FormLabel>Target State</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. California" {...field} />
+                  <Input placeholder="e.g. CA" maxLength={2} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -101,10 +99,10 @@ export const FacilityForm = ({ initialData, onSubmit, onCancel }: FacilityFormPr
           />
           <FormField
             control={form.control as any}
-            name="phone"
+            name="phone_number"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone</FormLabel>
+                <FormLabel>Phone Number</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter phone number" {...field} />
                 </FormControl>

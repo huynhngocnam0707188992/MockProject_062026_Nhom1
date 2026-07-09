@@ -1,5 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { useFacilities } from "../hooks/useFacilities";
+import { useDebounce } from "@/hooks/useDebounce";
 import type { Facility } from "@/services/facilities-api";
 import { FacilityToolbar } from "../components/facilities-tab/facility-toolbar";
 import { FacilityTable } from "../components/facilities-tab/facility-table";
@@ -8,17 +10,12 @@ import { FormModal } from "@/components/common/form-modal";
 import { FacilityForm } from "../components/facilities-tab/facility-form";
 
 export const FacilityTab = () => {
-  const { facilities, isLoading, addFacility, editFacility } = useFacilities();
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const { facilities, metadata, page, setPage, isLoading, addFacility, editFacility } = useFacilities(debouncedSearchTerm);
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFacility, setEditingFacility] = useState<Facility | undefined>(undefined);
-
-  const filteredFacilities = useMemo(() => {
-    return facilities.filter((f) =>
-      f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      f.code.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [facilities, searchTerm]);
 
   const handleAddClick = () => {
     setEditingFacility(undefined);
@@ -31,19 +28,25 @@ export const FacilityTab = () => {
   };
 
   const handleSubmit = async (data: any) => {
-    if (editingFacility) {
-      await editFacility(editingFacility.id, data);
-    } else {
-      await addFacility(data);
+    try {
+      if (editingFacility) {
+        await editFacility(editingFacility.id, data);
+        toast.success("Facility updated successfully");
+      } else {
+        await addFacility(data);
+        toast.success("Facility created successfully");
+      }
+      setIsModalOpen(false);
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred");
     }
-    setIsModalOpen(false);
   };
 
   if (isLoading) {
     return <div className="p-8 text-center text-on-surface-variant">Loading facilities...</div>;
   }
 
-  const activeCount = facilities.filter(f => f.status === "Active").length;
+  const activeCount = metadata?.totalElements || 0;
 
   return (
     <div className="flex-1 flex flex-col h-full">
@@ -54,8 +57,8 @@ export const FacilityTab = () => {
       />
       
       <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col mb-6 w-full">
-        <FacilityTable facilities={filteredFacilities} onEdit={handleEditClick} />
-        <FacilityPagination />
+        <FacilityTable facilities={facilities} onEdit={handleEditClick} />
+        <FacilityPagination metadata={metadata} page={page} onPageChange={setPage} />
       </div>
 
       <FormModal

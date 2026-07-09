@@ -1,64 +1,28 @@
-export type FacilityStatus = "Active" | "Inactive" | "Maintenance";
+import type { PaginationMetadata } from "@/types/api";
+import { apiClient } from "@/lib/api-client";
 
 export interface Facility {
-  id: string;
-  code: string;
+  id: number;
+  facility_code: string;
   name: string;
-  licenseNumber: string;
-  state: string;
-  phone: string;
-  status: FacilityStatus;
+  license_number: string;
+  target_state: string;
+  phone_number: string;
 }
 
-let mockFacilities: Facility[] = [
-  {
-    id: "1",
-    code: "NHMS-CA-01",
-    name: "Golden Years Care Center",
-    licenseNumber: "CA-SNF-000123",
-    state: "California",
-    phone: "916-555-1234",
-    status: "Active",
-  },
-  {
-    id: "2",
-    code: "NHMS-NV-02",
-    name: "Desert Rose Assisted Living",
-    licenseNumber: "NV-ALF-009876",
-    state: "Nevada",
-    phone: "702-555-8899",
-    status: "Active",
-  },
-  {
-    id: "3",
-    code: "NHMS-AZ-03",
-    name: "Canyon View Rehab",
-    licenseNumber: "AZ-REH-004561",
-    state: "Arizona",
-    phone: "602-555-3321",
-    status: "Inactive",
-  },
-];
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export const facilitiesApi = {
-  getFacilities: async (): Promise<Facility[]> => {
-    await delay(300);
-    return [...mockFacilities];
+  getFacilities: async (page: number = 0, size: number = 10, search?: string): Promise<{ data: Facility[], metadata: PaginationMetadata }> => {
+    const { data } = await apiClient.get('/admin/facility-settings', {
+      params: { page, size, search: search?.trim() || undefined }
+    });
+    return { data: data.data, metadata: data.metadata };
   },
   createFacility: async (facility: Omit<Facility, "id">): Promise<Facility> => {
-    await delay(500);
-    const newFacility = { ...facility, id: String(Date.now()) };
-    mockFacilities = [...mockFacilities, newFacility];
-    return newFacility;
+    const { data } = await apiClient.post('/admin/facility-settings', facility);
+    return data.data || data;
   },
-  updateFacility: async (id: string, updates: Partial<Facility>): Promise<Facility> => {
-    await delay(500);
-    const index = mockFacilities.findIndex((f) => f.id === id);
-    if (index === -1) throw new Error("Facility not found");
-    const updatedFacility = { ...mockFacilities[index], ...updates };
-    mockFacilities[index] = updatedFacility;
-    return updatedFacility;
+  updateFacility: async (id: number, updates: Partial<Facility>): Promise<Facility> => {
+    const { data } = await apiClient.put(`/admin/facility-settings/${id}`, updates);
+    return data.data || data;
   },
 };
