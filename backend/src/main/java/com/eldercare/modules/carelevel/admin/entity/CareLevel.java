@@ -1,4 +1,4 @@
-package com.eldercare.modules.carelevel.entity;
+package com.eldercare.modules.carelevel.admin.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

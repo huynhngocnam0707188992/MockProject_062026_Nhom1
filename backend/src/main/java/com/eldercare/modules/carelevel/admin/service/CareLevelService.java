@@ -1,12 +1,12 @@
-package com.eldercare.modules.carelevel.service;
-
-import com.eldercare.modules.carelevel.dto.request.CreateCareLevelRateRequest;
-import com.eldercare.modules.carelevel.dto.request.UpdateCareLevelRateRequest;
-import com.eldercare.modules.carelevel.dto.request.UpdateCareLevelRequest;
-import com.eldercare.modules.carelevel.dto.response.CareLevelRateResponse;
-import com.eldercare.modules.carelevel.dto.response.CareLevelResponse;
+package com.eldercare.modules.carelevel.admin.service;
 
 import java.util.List;
+
+import com.eldercare.modules.carelevel.admin.dto.request.CreateCareLevelRateRequest;
+import com.eldercare.modules.carelevel.admin.dto.request.UpdateCareLevelRateRequest;
+import com.eldercare.modules.carelevel.admin.dto.request.UpdateCareLevelRequest;
+import com.eldercare.modules.carelevel.admin.dto.response.CareLevelRateResponse;
+import com.eldercare.modules.carelevel.admin.dto.response.CareLevelResponse;
 
 public interface CareLevelService {
 

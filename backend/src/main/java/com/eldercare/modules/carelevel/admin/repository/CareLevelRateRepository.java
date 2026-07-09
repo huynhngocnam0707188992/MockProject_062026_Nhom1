@@ -1,7 +1,8 @@
-package com.eldercare.modules.carelevel.repository;
+package com.eldercare.modules.carelevel.admin.repository;
 
-import com.eldercare.modules.carelevel.entity.CareLevelRate;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.eldercare.modules.carelevel.admin.entity.CareLevelRate;
 
 import java.util.List;
 

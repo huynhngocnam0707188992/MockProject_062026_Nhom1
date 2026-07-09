@@ -1,4 +1,4 @@
-package com.eldercare.modules.carelevel.dto.response;
+package com.eldercare.modules.carelevel.admin.dto.response;
 
 import lombok.*;
 

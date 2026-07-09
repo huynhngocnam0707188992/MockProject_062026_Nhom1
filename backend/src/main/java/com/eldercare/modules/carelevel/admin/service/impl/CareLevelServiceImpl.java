@@ -1,15 +1,16 @@
-package com.eldercare.modules.carelevel.service.impl;
+package com.eldercare.modules.carelevel.admin.service.impl;
 
-import com.eldercare.modules.carelevel.dto.request.CreateCareLevelRateRequest;
-import com.eldercare.modules.carelevel.dto.request.UpdateCareLevelRateRequest;
-import com.eldercare.modules.carelevel.dto.request.UpdateCareLevelRequest;
-import com.eldercare.modules.carelevel.dto.response.CareLevelRateResponse;
-import com.eldercare.modules.carelevel.dto.response.CareLevelResponse;
-import com.eldercare.modules.carelevel.entity.CareLevel;
-import com.eldercare.modules.carelevel.entity.CareLevelRate;
-import com.eldercare.modules.carelevel.repository.CareLevelRateRepository;
-import com.eldercare.modules.carelevel.repository.CareLevelRepository;
-import com.eldercare.modules.carelevel.service.CareLevelService;
+import com.eldercare.modules.carelevel.admin.dto.request.CreateCareLevelRateRequest;
+import com.eldercare.modules.carelevel.admin.dto.request.UpdateCareLevelRateRequest;
+import com.eldercare.modules.carelevel.admin.dto.request.UpdateCareLevelRequest;
+import com.eldercare.modules.carelevel.admin.dto.response.CareLevelRateResponse;
+import com.eldercare.modules.carelevel.admin.dto.response.CareLevelResponse;
+import com.eldercare.modules.carelevel.admin.entity.CareLevel;
+import com.eldercare.modules.carelevel.admin.entity.CareLevelRate;
+import com.eldercare.modules.carelevel.admin.repository.CareLevelRateRepository;
+import com.eldercare.modules.carelevel.admin.repository.CareLevelRepository;
+import com.eldercare.modules.carelevel.admin.service.CareLevelService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
