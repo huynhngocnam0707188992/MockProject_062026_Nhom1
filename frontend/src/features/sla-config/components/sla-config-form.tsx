@@ -176,7 +176,7 @@ export function SlaConfigForm(): React.ReactElement {
                   <div className="target-dropdown-col">
                     <select
                       value={row.target}
-                      onChange={(e) => handleTargetChange(index, e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleTargetChange(index, e.target.value)}
                       disabled={isSaving}
                       className="w-full bg-transparent border border-gray-300 rounded px-2 py-1"
                     >
