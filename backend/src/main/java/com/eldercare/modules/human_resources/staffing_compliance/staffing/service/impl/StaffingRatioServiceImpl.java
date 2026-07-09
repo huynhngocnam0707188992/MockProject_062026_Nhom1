@@ -2,7 +2,7 @@ package com.eldercare.modules.human_resources.staffing_compliance.staffing.servi
 
 import com.eldercare.modules.human_resources.staffing_compliance.staffing.dto.request.UpdateStaffingRatioRequest;
 import com.eldercare.modules.human_resources.staffing_compliance.staffing.dto.response.StaffingRatioResponse;
-import com.eldercare.modules.human_resources.staffing_compliance.staffing.StaffingConfigEntity;
+import com.eldercare.modules.human_resources.staffing_compliance.StaffingConfigEntity;
 import com.eldercare.modules.human_resources.staffing_compliance.staffing.repository.StaffingConfigRepository;
 import com.eldercare.modules.human_resources.staffing_compliance.staffing.service.StaffingRatioService;
 import lombok.RequiredArgsConstructor;

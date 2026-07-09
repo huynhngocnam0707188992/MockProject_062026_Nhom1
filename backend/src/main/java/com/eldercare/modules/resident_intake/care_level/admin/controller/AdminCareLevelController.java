@@ -1,20 +1,20 @@
-package com.eldercare.modules.carelevel.admin.controller;
-
-import com.eldercare.modules.carelevel.admin.dto.request.CreateCareLevelRateRequest;
-import com.eldercare.modules.carelevel.admin.dto.request.UpdateCareLevelRateRequest;
-import com.eldercare.modules.carelevel.admin.dto.request.UpdateCareLevelRequest;
-import com.eldercare.modules.carelevel.admin.dto.response.CareLevelRateResponse;
-import com.eldercare.modules.carelevel.admin.dto.response.CareLevelResponse;
-import com.eldercare.modules.carelevel.admin.service.CareLevelService;
+package com.eldercare.modules.resident_intake.care_level.admin.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.eldercare.modules.resident_intake.care_level.admin.dto.request.CreateCareLevelRateRequest;
+import com.eldercare.modules.resident_intake.care_level.admin.dto.request.UpdateCareLevelRateRequest;
+import com.eldercare.modules.resident_intake.care_level.admin.dto.request.UpdateCareLevelRequest;
+import com.eldercare.modules.resident_intake.care_level.admin.dto.response.CareLevelRateResponse;
+import com.eldercare.modules.resident_intake.care_level.admin.dto.response.CareLevelResponse;
+import com.eldercare.modules.resident_intake.care_level.admin.service.CareLevelService;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/v1/admin")
 @RequiredArgsConstructor
 public class AdminCareLevelController {
 

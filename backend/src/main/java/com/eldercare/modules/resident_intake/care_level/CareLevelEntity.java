@@ -1,4 +1,4 @@
-package com.eldercare.modules.carelevel.admin.entity;
+package com.eldercare.modules.resident_intake.care_level;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CareLevel {
+public class CareLevelEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +23,6 @@ public class CareLevel {
     private String levelName;
 
     @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
 }

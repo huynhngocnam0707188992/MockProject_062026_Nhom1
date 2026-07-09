@@ -1,39 +1,48 @@
-package com.eldercare.modules.resident_intake.resident.entity;
+package com.eldercare.modules.resident_intake.family_contacts;
 
+import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "resident_contacts")
 @Getter
 @Setter
-public class ResidentContact {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ResidentContactEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resident_id", nullable = false)
-    private Resident resident;
+    private ResidentEntity resident;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_id", nullable = false)
-    private Contact contact;
+    private ContactEntity contact;
 
     @Column(name = "relationship_type", nullable = false)
     private String relationshipType;
 
     @Column(name = "is_guarantor", nullable = false)
+    @Builder.Default
     private boolean isGuarantor = false;
 
     @Column(name = "is_emergency_contact", nullable = false)
+    @Builder.Default
     private boolean isEmergencyContact = false;
 
     @Column(name = "is_primary", nullable = false)
+    @Builder.Default
     private boolean isPrimary = false;
 
     @Column(name = "created_at", nullable = false)
+    @Builder.Default
     private OffsetDateTime createdAt = OffsetDateTime.now();
 }

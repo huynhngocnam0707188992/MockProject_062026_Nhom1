@@ -1,18 +1,20 @@
-package com.eldercare.modules.carelevel.admin.service.impl;
+package com.eldercare.modules.resident_intake.care_level.admin.service.impl;
 
-import com.eldercare.modules.carelevel.admin.dto.request.CreateCareLevelRateRequest;
-import com.eldercare.modules.carelevel.admin.dto.request.UpdateCareLevelRateRequest;
-import com.eldercare.modules.carelevel.admin.dto.request.UpdateCareLevelRequest;
-import com.eldercare.modules.carelevel.admin.dto.response.CareLevelRateResponse;
-import com.eldercare.modules.carelevel.admin.dto.response.CareLevelResponse;
-import com.eldercare.modules.carelevel.admin.entity.CareLevel;
-import com.eldercare.modules.carelevel.admin.entity.CareLevelRate;
-import com.eldercare.modules.carelevel.admin.repository.CareLevelRateRepository;
-import com.eldercare.modules.carelevel.admin.repository.CareLevelRepository;
-import com.eldercare.modules.carelevel.admin.service.CareLevelService;
-
+import com.eldercare.modules.resident_intake.care_level.CareLevelRateEntity;
+import com.eldercare.modules.resident_intake.care_level.CareLevelEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import com.eldercare.modules.resident_intake.care_level.admin.dto.request.CreateCareLevelRateRequest;
+import com.eldercare.modules.resident_intake.care_level.admin.dto.request.UpdateCareLevelRateRequest;
+import com.eldercare.modules.resident_intake.care_level.admin.dto.request.UpdateCareLevelRequest;
+import com.eldercare.modules.resident_intake.care_level.admin.dto.response.CareLevelRateResponse;
+import com.eldercare.modules.resident_intake.care_level.admin.dto.response.CareLevelResponse;
+
+
+import com.eldercare.modules.resident_intake.care_level.admin.repository.CareLevelRateRepository;
+import com.eldercare.modules.resident_intake.care_level.admin.repository.CareLevelRepository;
+import com.eldercare.modules.resident_intake.care_level.admin.service.CareLevelService;
 
 import java.util.List;
 
@@ -44,14 +46,14 @@ public class CareLevelServiceImpl implements CareLevelService {
             Long careLevelId,
             UpdateCareLevelRequest request
     ) {
-        CareLevel careLevel = careLevelRepository.findById(careLevelId)
+        CareLevelEntity careLevel = careLevelRepository.findById(careLevelId)
                 .orElseThrow(() ->
                         new RuntimeException("Care level not found with id: " + careLevelId)
                 );
 
         careLevel.setIsDeleted(request.getIsDeleted());
 
-        CareLevel updatedCareLevel = careLevelRepository.save(careLevel);
+        CareLevelEntity updatedCareLevel = careLevelRepository.save(careLevel);
 
         return mapToCareLevelResponse(updatedCareLevel);
     }
@@ -63,7 +65,7 @@ public class CareLevelServiceImpl implements CareLevelService {
     @Override
 public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
 
-    List<CareLevelRate> rates;
+    List<CareLevelRateEntity> rates;
 
     if (careLevelId != null) {
         rates = careLevelRateRepository.findByCareLevel_Id(careLevelId);
@@ -83,7 +85,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
     public CareLevelRateResponse createCareLevelRate(
             CreateCareLevelRateRequest request
     ) {
-        CareLevel careLevel = careLevelRepository
+        CareLevelEntity careLevel = careLevelRepository
                 .findById(request.getCareLevelId())
                 .orElseThrow(() ->
                         new RuntimeException(
@@ -92,7 +94,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
                         )
                 );
 
-        CareLevelRate rate = CareLevelRate.builder()
+        CareLevelRateEntity rate = CareLevelRateEntity.builder()
                 .careLevel(careLevel)
                 .facilityId(request.getFacilityId())
                 .dailyRate(request.getDailyRate())
@@ -100,7 +102,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
                 .effectiveTo(null)
                 .build();
 
-        CareLevelRate savedRate = careLevelRateRepository.save(rate);
+        CareLevelRateEntity savedRate = careLevelRateRepository.save(rate);
 
         return mapToCareLevelRateResponse(savedRate);
     }
@@ -114,7 +116,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
             Long rateId,
             UpdateCareLevelRateRequest request
     ) {
-        CareLevelRate rate = careLevelRateRepository.findById(rateId)
+        CareLevelRateEntity rate = careLevelRateRepository.findById(rateId)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Care level rate not found with id: " + rateId
@@ -122,7 +124,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
                 );
 
         if (request.getCareLevelId() != null) {
-            CareLevel careLevel = careLevelRepository
+            CareLevelEntity careLevel = careLevelRepository
                     .findById(request.getCareLevelId())
                     .orElseThrow(() ->
                             new RuntimeException(
@@ -148,7 +150,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
 
         rate.setEffectiveTo(request.getEffectiveTo());
 
-        CareLevelRate updatedRate = careLevelRateRepository.save(rate);
+        CareLevelRateEntity updatedRate = careLevelRateRepository.save(rate);
 
         return mapToCareLevelRateResponse(updatedRate);
     }
@@ -174,7 +176,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
     // ============================
     @Override
     public List<CareLevelRateResponse> seedSampleCareLevelRates() {
-        CareLevel careLevel1 = careLevelRepository
+        CareLevelEntity careLevel1 = careLevelRepository
                 .findById(1L)
                 .orElseThrow(() ->
                         new RuntimeException(
@@ -182,7 +184,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
                         )
                 );
 
-        CareLevel careLevel4 = careLevelRepository
+        CareLevelEntity careLevel4 = careLevelRepository
                 .findById(4L)
                 .orElseThrow(() ->
                         new RuntimeException(
@@ -190,7 +192,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
                         )
                 );
 
-        CareLevelRate rate1 = CareLevelRate.builder()
+        CareLevelRateEntity rate1 = CareLevelRateEntity.builder()
                 .careLevel(careLevel1)
                 .facilityId(1L)
                 .dailyRate(new java.math.BigDecimal("150.00"))
@@ -198,7 +200,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
                 .effectiveTo(null)
                 .build();
 
-        CareLevelRate rate2 = CareLevelRate.builder()
+        CareLevelRateEntity rate2 = CareLevelRateEntity.builder()
                 .careLevel(careLevel4)
                 .facilityId(1L)
                 .dailyRate(new java.math.BigDecimal("285.00"))
@@ -206,7 +208,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
                 .effectiveTo(null)
                 .build();
 
-        List<CareLevelRate> savedRates = careLevelRateRepository.saveAll(
+        List<CareLevelRateEntity> savedRates = careLevelRateRepository.saveAll(
                 List.of(rate1, rate2)
         );
 
@@ -219,7 +221,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
     // Private Mappers
     // ============================
     private CareLevelResponse mapToCareLevelResponse(
-            CareLevel careLevel
+            CareLevelEntity careLevel
     ) {
         return CareLevelResponse.builder()
                 .id(careLevel.getId())
@@ -230,7 +232,7 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
     }
 
     private CareLevelRateResponse mapToCareLevelRateResponse(
-            CareLevelRate rate
+            CareLevelRateEntity rate
     ) {
         return CareLevelRateResponse.builder()
                 .id(rate.getId())

@@ -91,7 +91,7 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Transactional
     public RoomResponse createRoom(Long facilityId, RoomRequest request) {
         if (roomRepository.existsByFacilityIdAndRoomNumber(facilityId, request.getRoomNumber())) {
-            throw new BadRequestException("Room number already exists in this facility");
+            throw new BadRequestException("RoomEntity number already exists in this facility");
         }
 
         FacilityEntity facility = facilityRepository.findById(facilityId)
@@ -109,11 +109,11 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Transactional
     public RoomResponse updateRoom(Long roomId, RoomRequest request) {
         RoomEntity room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("RoomEntity not found"));
 
         if (!room.getRoomNumber().equals(request.getRoomNumber()) &&
                 roomRepository.existsByFacilityIdAndRoomNumber(room.getFacility().getId(), request.getRoomNumber())) {
-            throw new BadRequestException("Room number already exists in this facility");
+            throw new BadRequestException("RoomEntity number already exists in this facility");
         }
 
         room.setRoomNumber(request.getRoomNumber());
@@ -131,7 +131,7 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Transactional
     public void deleteRoom(Long roomId) {
         RoomEntity room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("RoomEntity not found"));
 
         if (bedRepository.existsByRoomIdAndStatus(roomId, BedStatus.OCCUPIED)) {
             throw new BadRequestException("Cannot delete room. It contains occupied beds.");
@@ -151,11 +151,11 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Transactional
     public BedResponse createBed(Long roomId, BedRequest request) {
         if (bedRepository.existsByRoomIdAndBedNumber(roomId, request.getBedNumber())) {
-            throw new BadRequestException("Bed number already exists in this room");
+            throw new BadRequestException("BedEntity number already exists in this room");
         }
 
         RoomEntity room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("RoomEntity not found"));
 
         BedEntity bed = mapper.toEntity(request);
         bed.setRoom(room);
@@ -167,14 +167,14 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Transactional
     public BedResponse updateBedStatus(Long bedId, BedRequest request) {
         BedEntity bed = bedRepository.findById(bedId)
-                .orElseThrow(() -> new ResourceNotFoundException("Bed not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("BedEntity not found"));
 
         if (request.getStatus() != null) {
             bed.setStatus(request.getStatus());
         }
         if (request.getBedNumber() != null && !request.getBedNumber().equals(bed.getBedNumber())) {
             if (bedRepository.existsByRoomIdAndBedNumber(bed.getRoom().getId(), request.getBedNumber())) {
-                throw new BadRequestException("Bed number already exists in this room");
+                throw new BadRequestException("BedEntity number already exists in this room");
             }
             bed.setBedNumber(request.getBedNumber());
         }
@@ -187,7 +187,7 @@ public class RoomBedServiceImpl implements RoomBedService {
     @Transactional
     public void deleteBed(Long bedId) {
         BedEntity bed = bedRepository.findById(bedId)
-                .orElseThrow(() -> new ResourceNotFoundException("Bed not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("BedEntity not found"));
 
         if (bed.getStatus() == BedStatus.OCCUPIED) {
             throw new BadRequestException("Cannot delete an occupied bed.");

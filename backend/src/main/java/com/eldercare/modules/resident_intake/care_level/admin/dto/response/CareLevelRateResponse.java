@@ -1,4 +1,4 @@
-package com.eldercare.modules.carelevel.admin.dto.request;
+package com.eldercare.modules.resident_intake.care_level.admin.dto.response;
 
 import lombok.*;
 
@@ -10,7 +10,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UpdateCareLevelRateRequest {
+public class CareLevelRateResponse {
+
+    private Long id;
 
     private Long careLevelId;
 
