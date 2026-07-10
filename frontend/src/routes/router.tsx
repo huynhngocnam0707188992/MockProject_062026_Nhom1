@@ -1,4 +1,11 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { adminRoutes } from "./admin-routes";
 
-export const router = createBrowserRouter([adminRoutes]);
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Navigate to="/admin" replace />,
+  },
+  adminRoutes,
+]);
+

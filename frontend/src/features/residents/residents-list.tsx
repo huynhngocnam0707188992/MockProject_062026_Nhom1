@@ -46,21 +46,7 @@ export default function ResidentsList({ onViewDetail }: ResidentsListProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('All')
   const [referralFilter, setReferralFilter] = useState<string>('All')
-  const [selectedMenu, setSelectedMenu] = useState('Residents')
   
-  // Theme state
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme')
-      if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    }
-    return 'light'
-  })
-
-  // Responsive mobile sidebar state
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-
   // Modals / Drawers state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [selectedResident, setSelectedResident] = useState<Resident | null>(null)
@@ -79,24 +65,9 @@ export default function ResidentsList({ onViewDetail }: ResidentsListProps) {
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false)
   const [isReferralDropdownOpen, setIsReferralDropdownOpen] = useState(false)
 
-  // Handle Theme Effects
-  useEffect(() => {
-    const root = document.documentElement
-    if (theme === 'dark') {
-      root.classList.add('dark')
-    } else {
-      root.classList.remove('dark')
-    }
-    localStorage.setItem('theme', theme)
-  }, [theme])
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light')
-  }
-
   const fetchResidents = async () => {
     try {
-      const data = await residentService.getResidents(searchTerm, statusFilter, referralFilter)
+      const data = await residentService.getResidents(searchTerm, 'All')
       const mapped: Resident[] = data.map((r) => ({
         id: String(r.id),
         name: r.name,
@@ -115,7 +86,7 @@ export default function ResidentsList({ onViewDetail }: ResidentsListProps) {
 
   useEffect(() => {
     fetchResidents()
-  }, [searchTerm, statusFilter, referralFilter])
+  }, [searchTerm])
 
   // Calculations for stats
   const stats = useMemo(() => {
@@ -132,8 +103,14 @@ export default function ResidentsList({ onViewDetail }: ResidentsListProps) {
     return ['All', ...Array.from(refs)]
   }, [residents])
 
-  // Filter residents based on search and filters (handled on backend)
-  const filteredResidents = residents
+  // Filter residents based on search and filters (handled client-side)
+  const filteredResidents = useMemo(() => {
+    return residents.filter((r) => {
+      if (statusFilter !== 'All' && r.status !== statusFilter) return false
+      if (referralFilter !== 'All' && r.referralSource !== referralFilter) return false
+      return true
+    })
+  }, [residents, statusFilter, referralFilter])
 
   // Handle adding new resident
   const handleAddNewResident = async (e: React.FormEvent) => {
@@ -189,174 +166,8 @@ export default function ResidentsList({ onViewDetail }: ResidentsListProps) {
   }
 
   return (
-    <div className="flex h-screen bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-300">
-      
-      {/* MOBILE SIDEBAR OVERLAY */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-xs z-30 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* SIDEBAR */}
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between z-40 transition-transform duration-300 transform lg:translate-x-0 lg:static lg:h-full ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        <div>
-          {/* Logo Brand area */}
-          <div className="p-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 h-16">
-            <div className="flex items-center gap-3">
-              <span className="font-extrabold text-2xl text-blue-600 dark:text-blue-500 tracking-tight">NHMS</span>
-              <div className="flex flex-col">
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase leading-none">Nursing Home</span>
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase leading-none">Management</span>
-              </div>
-            </div>
-            {/* Mobile Close Button */}
-            <button 
-              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <X className="size-5" />
-            </button>
-          </div>
-
-          {/* Navigation Links */}
-          <nav className="p-4 space-y-1">
-            <button
-              onClick={() => { setSelectedMenu('Dashboard'); setIsSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                selectedMenu === 'Dashboard'
-                  ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold shadow-xs'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-100'
-              }`}
-            >
-              <LayoutDashboard className="size-4" />
-              Dashboard
-            </button>
-            <button
-              onClick={() => { setSelectedMenu('Residents'); setIsSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                selectedMenu === 'Residents'
-                  ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold shadow-xs'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-100'
-              }`}
-            >
-              <Users className="size-4" />
-              Residents
-            </button>
-            <button
-              onClick={() => { setSelectedMenu('Care Planning'); setIsSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                selectedMenu === 'Care Planning'
-                  ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold shadow-xs'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-100'
-              }`}
-            >
-              <ClipboardList className="size-4" />
-              Care Planning
-            </button>
-            
-            {/* eMAR soon option */}
-            <div className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 dark:text-slate-500 cursor-not-allowed">
-              <div className="flex items-center gap-3">
-                <Pill className="size-4" />
-                <span>eMAR</span>
-              </div>
-              <span className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider scale-90">
-                soon
-              </span>
-            </div>
-
-            <button
-              onClick={() => { setSelectedMenu('Incident & Risk'); setIsSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                selectedMenu === 'Incident & Risk'
-                  ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold shadow-xs'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-100'
-              }`}
-            >
-              <ShieldAlert className="size-4" />
-              Incident & Risk
-            </button>
-            <button
-              onClick={() => { setSelectedMenu('Reports'); setIsSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                selectedMenu === 'Reports'
-                  ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold shadow-xs'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-100'
-              }`}
-            >
-              <BarChart3 className="size-4" />
-              Reports
-            </button>
-          </nav>
-        </div>
-
-        {/* Logout at bottom */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800">
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-all">
-            <LogOut className="size-4" />
-            Logout
-          </button>
-        </div>
-      </aside>
-
-      {/* MAIN WRAPPER */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* TOP NAVBAR */}
-        <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 z-20">
-          <div className="flex items-center gap-4">
-            {/* Hamburger for mobile */}
-            <button 
-              className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 lg:hidden p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              <Menu className="size-5" />
-            </button>
-            <div className="hidden sm:flex flex-col">
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">Nursing Home Management System</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* Theme Toggle Button */}
-            <button 
-              onClick={toggleTheme}
-              className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
-              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-            >
-              {theme === 'light' ? <Moon className="size-5" /> : <Sun className="size-5" />}
-            </button>
-
-            {/* Notification */}
-            <button className="relative p-2 text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
-              <Bell className="size-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
-            </button>
-            {/* Help */}
-            <button className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
-              <HelpCircle className="size-5" />
-            </button>
-
-            {/* Profile */}
-            <div className="flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-slate-800">
-              <div className="flex flex-col text-right hidden sm:flex">
-                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">Anna Lee</span>
-                <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium leading-none">Nurse</span>
-              </div>
-              <div className="size-9 bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center font-bold text-sm ring-2 ring-blue-50/50 dark:ring-blue-900/30">
-                AL
-              </div>
-              <ChevronDown className="size-4 text-slate-400" />
-            </div>
-          </div>
-        </header>
-
-        {/* SCROLLABLE MAIN CONTENT */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-          {/* Breadcrumbs & Header */}
+    <div className="space-y-6">
+      {/* Breadcrumbs & Header */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-medium">
               <span>Residents</span>
@@ -638,8 +449,6 @@ export default function ResidentsList({ onViewDetail }: ResidentsListProps) {
               </table>
             </div>
           </div>
-        </main>
-      </div>
 
       {/* VIEW RESIDENT DETAIL DRAWER/MODAL */}
       {selectedResident && (
