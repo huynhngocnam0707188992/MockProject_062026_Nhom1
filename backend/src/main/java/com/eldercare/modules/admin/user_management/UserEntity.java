@@ -3,14 +3,17 @@ package com.eldercare.modules.admin.user_management;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,7 +43,7 @@ public class UserEntity {
     private String phoneNumber;
 
     @Column(name = "status", nullable = false, length = 20)
-    private String status;
+    private String status = "ACTIVE";
 
     @Column(name = "mfa_enabled", nullable = false)
     private Boolean mfaEnabled = false;
