@@ -9,12 +9,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BedRepository extends JpaRepository<BedEntity, Long> {
     boolean existsByRoomIdAndBedNumber(Long roomId, String bedNumber);
     boolean existsByRoomIdAndStatus(Long roomId, BedStatus status);
     List<BedEntity> findByRoomId(Long roomId);
+    Optional<BedEntity> findByBedNumberAndRoomId(String bedNumber, Long roomId);
 
     @Query(value = """
             SELECT

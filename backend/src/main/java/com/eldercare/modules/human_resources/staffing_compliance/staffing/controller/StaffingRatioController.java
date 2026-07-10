@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/admin/staffing-ratio-config")
+@RequestMapping("/api/v1/admin/staffing-ratio-config")
 @RequiredArgsConstructor
 public class StaffingRatioController {
 

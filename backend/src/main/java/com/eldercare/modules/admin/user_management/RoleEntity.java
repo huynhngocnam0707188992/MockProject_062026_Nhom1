@@ -1,4 +1,4 @@
-package com.eldercare.modules.admin.user_management.role;
+package com.eldercare.modules.admin.user_management;
 
 import jakarta.persistence.*;
 import lombok.*;

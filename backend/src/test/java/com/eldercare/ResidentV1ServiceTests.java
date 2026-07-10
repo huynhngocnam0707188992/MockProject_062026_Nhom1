@@ -2,9 +2,17 @@ package com.eldercare;
 
 import com.eldercare.modules.resident_intake.resident.dto.request.*;
 import com.eldercare.modules.resident_intake.resident.dto.response.*;
-import com.eldercare.modules.resident_intake.resident.entity.*;
-import com.eldercare.modules.resident_intake.resident.repository.*;
+import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.BedEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.RoomEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.repository.BedRepository;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.repository.RoomRepository;
+import com.eldercare.modules.resident_intake.resident.repository.ResidentRepository;
 import com.eldercare.modules.resident_intake.resident.service.ResidentService;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.repository.FacilityRepository;
+import com.eldercare.common.enums.RoomType;
+import com.eldercare.common.enums.BedStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +38,12 @@ class ResidentV1ServiceTests {
     @Autowired
     private RoomRepository roomRepository;
 
-    private Resident testResident;
-    private Bed bed1;
-    private Bed bed2;
+    @Autowired
+    private FacilityRepository facilityRepository;
+
+    private ResidentEntity testResident;
+    private BedEntity bed1;
+    private BedEntity bed2;
 
     @BeforeEach
     void setUp() {
@@ -40,25 +51,35 @@ class ResidentV1ServiceTests {
         bedRepository.deleteAll();
         roomRepository.deleteAll();
 
-        Room room = new Room();
+        FacilityEntity facility = facilityRepository.findById(1L)
+                .orElseGet(() -> {
+                    FacilityEntity f = new FacilityEntity();
+                    f.setFacilityCode("FAC-001");
+                    f.setName("Default Facility");
+                    f.setLicenseNumber("LIC-12345");
+                    f.setTargetState("CA");
+                    return facilityRepository.save(f);
+                });
+
+        RoomEntity room = new RoomEntity();
         room.setRoomNumber("101");
-        room.setRoomType("SEMI_PRIVATE");
-        room.setFacilityId(1L);
+        room.setRoomType(RoomType.SEMI_PRIVATE);
+        room.setFacility(facility);
         room = roomRepository.save(room);
 
-        bed1 = new Bed();
+        bed1 = new BedEntity();
         bed1.setBedNumber("A");
-        bed1.setStatus("AVAILABLE");
+        bed1.setStatus(BedStatus.AVAILABLE);
         bed1.setRoom(room);
         bed1 = bedRepository.save(bed1);
 
-        bed2 = new Bed();
+        bed2 = new BedEntity();
         bed2.setBedNumber("B");
-        bed2.setStatus("AVAILABLE");
+        bed2.setStatus(BedStatus.AVAILABLE);
         bed2.setRoom(room);
         bed2 = bedRepository.save(bed2);
 
-        testResident = new Resident();
+        testResident = new ResidentEntity();
         testResident.setFirstName("John");
         testResident.setLastName("Doe");
         testResident.setDateOfBirth(LocalDate.of(1950, 1, 1));
@@ -120,7 +141,7 @@ class ResidentV1ServiceTests {
         assertEquals("DISCHARGED", updated.getStatus());
 
         // Verify bed assignment was cleared
-        Resident dbResident = residentRepository.findById(testResident.getId()).orElseThrow();
+        ResidentEntity dbResident = residentRepository.findById(testResident.getId()).orElseThrow();
         assertNull(dbResident.getBed());
     }
 
@@ -137,7 +158,7 @@ class ResidentV1ServiceTests {
     @Test
     void testAssignResidentBedOccupiedConflict() {
         // Create second active resident in bed2
-        Resident other = new Resident();
+        ResidentEntity other = new ResidentEntity();
         other.setFirstName("Bob");
         other.setLastName("Smith");
         other.setDateOfBirth(LocalDate.of(1955, 5, 5));

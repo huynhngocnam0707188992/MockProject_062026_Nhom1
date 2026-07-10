@@ -1,5 +1,7 @@
 package com.eldercare.modules.resident_intake.resident.dto.request;
 
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.AddressEntity;
+import com.eldercare.modules.resident_intake.family_contacts.ContactEntity;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
@@ -18,7 +20,7 @@ public class ResidentSaveRequestDto {
     private String maritalStatus;
     private String referringFacility;
 
-    // Contact & Address
+    // ContactEntity & AddressEntity
     private String phone;
     private String address;
     private String emergencyContact;

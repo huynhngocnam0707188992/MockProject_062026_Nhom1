@@ -1,5 +1,6 @@
 package com.eldercare.modules.demo.seeder;
 
+import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import com.eldercare.modules.demo.dto.csv.ResidentCsvRow;
 import com.eldercare.modules.demo.dto.response.SeedDemoDataResponse;
 import lombok.RequiredArgsConstructor;
@@ -159,7 +160,7 @@ public class DemoDataSeeder {
         Long severityId = lookupService.ensureIncidentSeverity();
 
         String[][] demoIncidents = {
-                {"FALL", "OPEN", "Resident fell while walking to dining area."},
+                {"FALL", "OPEN", "ResidentEntity fell while walking to dining area."},
                 {"MEDICATION_ERROR", "UNDER_INVESTIGATION", "Wrong medication dosage administered."},
                 {"ALTERCATION", "OPEN", "Verbal altercation between two residents."},
                 {"SKIN_TEAR", "CLOSED", "Skin tear on left arm during transfer."}

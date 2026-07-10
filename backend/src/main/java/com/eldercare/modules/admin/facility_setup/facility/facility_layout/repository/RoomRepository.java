@@ -7,9 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
+    Optional<RoomEntity> findByRoomNumberAndIsDeletedFalse(String roomNumber);
 
     @Query("SELECT r FROM RoomEntity r JOIN FETCH r.facility WHERE r.facility.id = :facilityId")
     Page<RoomEntity> findByFacilityId(@Param("facilityId") Long facilityId, Pageable pageable);
