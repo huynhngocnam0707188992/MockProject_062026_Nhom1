@@ -1,7 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SystemActionTab } from "../tabs/system-action-tab";
 import { PhiAccessTab } from "../tabs/phi-access-tab";
-import { ActiveSessionsTab } from "../tabs/active-sessions-tab";
 import { PERMISSIONS } from "@/common/permissions";
 import { usePermissions } from "@/features/auth/hooks/use-current-user";
 
@@ -17,12 +16,6 @@ const tabs = [
     label: "PHI Access",
     permission: PERMISSIONS.PHI_ACCESS_LOG_VIEW,
     content: <PhiAccessTab />,
-  },
-  {
-    value: "active-sessions",
-    label: "Active Sessions",
-    permission: PERMISSIONS.AUDIT_LOG_VIEW, // reuse audit log view perm
-    content: <ActiveSessionsTab />,
   },
 ];
 
