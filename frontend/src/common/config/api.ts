@@ -4,7 +4,7 @@ import { ENV } from './env';
 import { API_CONSTANTS } from './constants';
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: ENV.API_URL.endsWith("/api/v1") ? ENV.API_URL : `${ENV.API_URL}/api/v1`,
+  baseURL: ENV.API_URL,
   timeout: API_CONSTANTS.TIMEOUT,
   headers: API_CONSTANTS.DEFAULT_HEADERS,
   withCredentials: true,
