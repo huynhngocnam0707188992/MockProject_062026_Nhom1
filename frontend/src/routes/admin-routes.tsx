@@ -3,7 +3,6 @@ import PreAdmissionPage from "@/features/admin/pre-admission/pages/pre-admission
 import PreAdmissionDetailPage from "@/features/admin/pre-admission/pages/pre-admission-detail-page";
 import AuditlogPage from "@/features/admin/audit-logs/pages/audit-log-page";
 import CarePlanPage from "@/features/admin/care-plans/pages/care-plan-page";
-import CarePlanDetailPage from "@/features/admin/care-plans/pages/care-plan-detail-page";
 import CareTaskPage from "@/features/admin/care-tasks/pages/care-task-page";
 import DashboardPage from "@/features/admin/dashboard/pages/dashboard-page";
 import FacilityPage from "@/features/admin/facilities/pages/facility-page";
@@ -17,6 +16,8 @@ import { PERMISSIONS } from "@/common/permissions";
 import type { RouteObject } from "react-router";
 import { RequirePermission } from "@/components/common/require-permission";
 import { FacilityDetailPage } from "@/features/admin/facilities/pages/facility-detail-page";
+import CarePlanReviewPage from "@/features/admin/care-plans/pages/care-plan-review-page";
+import CarePlanDetailPage from "@/features/admin/care-plans/pages/care-plan-detail/care-plan-detail-page";
 
 export const adminRoutes: RouteObject = {
   path: "/admin",
@@ -96,6 +97,15 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.CARE_PLAN_VIEW}>
           <CarePlanDetailPage />
+
+        </RequirePermission>
+      ),
+    },
+    {
+      path: "care-plans/review",
+      element: (
+        <RequirePermission permission={PERMISSIONS.CARE_PLAN_VIEW}>
+          <CarePlanReviewPage />
         </RequirePermission>
       ),
     },
