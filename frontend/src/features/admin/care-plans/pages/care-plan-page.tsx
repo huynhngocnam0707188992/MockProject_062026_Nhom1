@@ -1,12 +1,15 @@
-import React from 'react';
+import CarePlanOptions from "../components/care-plan-options";
+import CarePlanTitle from "../components/care-plan-title";
 
-const CarePlanPage: React.FC = () => {
+import CarePlanStatistical from "../components/care-plan-statistical";
+import CarePlanTable from "../components/care-plan-table";
+const CarePlanPage = () => {
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
-      <h1 className="text-3xl font-semibold mb-4 text-gray-800">Care Plans</h1>
-      <p className="text-gray-500">
-        This is a placeholder page for Care Plans management.
-      </p>
+    <div>
+      <CarePlanTitle></CarePlanTitle>
+      <CarePlanOptions></CarePlanOptions>
+      <CarePlanStatistical></CarePlanStatistical>
+      <CarePlanTable></CarePlanTable>
     </div>
   );
 };
