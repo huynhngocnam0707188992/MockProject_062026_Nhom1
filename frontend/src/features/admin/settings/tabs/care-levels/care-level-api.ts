@@ -5,8 +5,8 @@ import type {
   UpdateCareLevelRateRequest,
   CareLevelResponse,
   UpdateCareLevelRequest,
-} from '../types';
-import { API_BASE_URL } from '../utils/constants';
+} from '../../../care-plans/types';
+import { API_BASE_URL } from '../../../care-plans/utils/constants';
 
 export const careLevelApi = {
   // Get all care levels
