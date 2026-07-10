@@ -44,10 +44,9 @@ public class AdminController {
             @RequestParam(required = false) String dateTo,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int pageSize) {
-        
+
         Map<String, Object> result = adminService.getAuditLogs(
-            table_name, record_id, performed_by, action, dateFrom, dateTo, page, pageSize
-        );
+                table_name, record_id, performed_by, action, dateFrom, dateTo, page, pageSize);
         return ResponseEntity.ok(result);
     }
 
@@ -60,10 +59,9 @@ public class AdminController {
             @RequestParam(required = false) String access_type,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int pageSize) {
-        
+
         Map<String, Object> result = adminService.getPHIAccessLogs(
-            table_name, record_id, accessed_by, access_type, page, pageSize
-        );
+                table_name, record_id, accessed_by, access_type, page, pageSize);
         return ResponseEntity.ok(result);
     }
 
@@ -79,15 +77,14 @@ public class AdminController {
         try {
             adminService.forceLogout(sessionId);
             return ResponseEntity.ok(Map.of(
-                "session_id", sessionId,
-                "status", "ForcedLogout"
-            ));
+                    "session_id", sessionId,
+                    "status", "ForcedLogout"));
         } catch (com.eldercare.exception.custom.ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("message", e.getMessage()));
+                    .body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", "An unexpected error occurred"));
+                    .body(Map.of("message", "An unexpected error occurred"));
         }
     }
 
@@ -100,10 +97,10 @@ public class AdminController {
             return ResponseEntity.ok(result);
         } catch (com.eldercare.exception.custom.ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("message", e.getMessage()));
+                    .body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", "An unexpected error occurred"));
+                    .body(Map.of("message", "An unexpected error occurred"));
         }
     }
 }

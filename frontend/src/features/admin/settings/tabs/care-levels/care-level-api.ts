@@ -10,7 +10,7 @@ import { API_BASE_URL } from '../../../care-plans/utils/constants';
 
 export const careLevelApi = {
   // Get all care levels
-  getCareLevels: () => 
+  getCareLevels: () =>
     axios.get<CareLevelResponse[]>(`${API_BASE_URL}/admin/care-levels`),
 
   // Update care level (enable/disable)
