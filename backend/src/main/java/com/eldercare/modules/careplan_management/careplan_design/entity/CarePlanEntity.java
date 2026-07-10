@@ -17,7 +17,7 @@ public class CarePlanEntity {
     private Date updatedAt;
     private Boolean isDeleted;
 
-   
+   public CarePlanEntity(){}
 
     public CarePlanEntity(int id, CarePlanStatusEnum status, Boolean significantFlag, int residentId,
             CarePlanGoalStatusEnum goal, String assingedRole, Date createdAt, Date updatedAt, Boolean isDeleted) {
