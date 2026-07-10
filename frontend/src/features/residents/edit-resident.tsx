@@ -26,33 +26,7 @@ interface EditResidentProps {
 }
 
 export default function EditResident({ residentId, onBack }: EditResidentProps) {
-  // Theme state
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme')
-      if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    }
-    return 'light'
-  })
-
-  // Responsive mobile sidebar state
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-
-  // Handle Theme Effects
-  useEffect(() => {
-    const root = document.documentElement
-    if (theme === 'dark') {
-      root.classList.add('dark')
-    } else {
-      root.classList.remove('dark')
-    }
-    localStorage.setItem('theme', theme)
-  }, [theme])
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light')
-  }
+  // Theme and sidebar states removed for integration with global layout
 
   // Personal Information fields state
   const [firstName, setFirstName] = useState('')
@@ -111,7 +85,7 @@ export default function EditResident({ residentId, onBack }: EditResidentProps) 
         setReferringFacility(data.room || '101-A')
         setPhone(data.demographics.phone || '')
         setAddress(data.demographics.address || '')
-        
+
         // Emergency contact name + relationship parsing
         if (data.demographics.emergencyContact && data.demographics.emergencyContact !== '—') {
           const rawContact = data.demographics.emergencyContact
@@ -125,11 +99,11 @@ export default function EditResident({ residentId, onBack }: EditResidentProps) 
           setEmergencyContact('')
         }
         setEmergencyPhone(data.demographics.phone || '')
-        
+
         setPoaOnFile(data.poa && data.poa.name !== '—')
         setPoaName(data.poa && data.poa.name !== '—' ? data.poa.name : '')
         setPoaRelationship(data.poa && data.poa.relationship !== '—' ? data.poa.relationship : '')
-        
+
         setPayerSource(data.insurance.provider || 'Medicare')
         setMedicareNum(data.insurance.medicareNum || '')
         setInsuranceProvider(data.insurance.provider || 'Medicare')
@@ -147,7 +121,7 @@ export default function EditResident({ residentId, onBack }: EditResidentProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     const payload = {
       firstName,
       lastName,
@@ -190,599 +164,444 @@ export default function EditResident({ residentId, onBack }: EditResidentProps) 
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 items-center justify-center">
+      <div className="flex items-center justify-center p-12 text-slate-800 dark:text-slate-100">
         <span className="font-semibold text-lg text-slate-400">Loading form details...</span>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans overflow-hidden transition-colors duration-300">
-      
-      {/* MOBILE SIDEBAR OVERLAY */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-xs z-30 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* SIDEBAR */}
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between z-40 transition-transform duration-300 transform lg:translate-x-0 lg:static lg:h-full ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        <div>
-          {/* Logo Brand area */}
-          <div className="p-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 h-16">
-            <div className="flex items-center gap-3">
-              <span className="font-extrabold text-2xl text-blue-600 dark:text-blue-500 tracking-tight">NHMS</span>
-              <div className="flex flex-col">
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase leading-none">Nursing Home</span>
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase leading-none">Management</span>
-              </div>
-            </div>
-            {/* Mobile Close Button */}
-            <button 
-              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <X className="size-5" />
-            </button>
-          </div>
-
-          {/* Navigation Links */}
-          <nav className="p-4 space-y-1">
-            <button
-              onClick={() => { onBack(); setIsSidebarOpen(false); }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-100 transition-all"
-            >
-              <LayoutDashboard className="size-4" />
-              Dashboard
-            </button>
-            <button
-              onClick={() => { onBack(); setIsSidebarOpen(false); }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 shadow-xs"
-            >
-              <Users className="size-4" />
-              Residents
-            </button>
-            <button
-              onClick={() => setIsSidebarOpen(false)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-100 transition-all"
-            >
-              <ClipboardList className="size-4" />
-              Care Planning
-            </button>
-            
-            {/* eMAR soon option */}
-            <div className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 dark:text-slate-500 cursor-not-allowed">
-              <div className="flex items-center gap-3">
-                <Pill className="size-4" />
-                <span>eMAR</span>
-              </div>
-              <span className="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider scale-90">
-                soon
-              </span>
-            </div>
-
-            <button
-              onClick={() => setIsSidebarOpen(false)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-100 transition-all"
-            >
-              <ShieldAlert className="size-4" />
-              Incident & Risk
-            </button>
-            <button
-              onClick={() => setIsSidebarOpen(false)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-100 transition-all"
-            >
-              <BarChart3 className="size-4" />
-              Reports
-            </button>
-          </nav>
+    <div className="flex-1 flex flex-col justify-between overflow-hidden">
+      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        {/* Breadcrumbs */}
+        <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-medium">
+          <button type="button" onClick={onBack} className="hover:text-blue-600 dark:hover:text-blue-400 transition-all flex items-center gap-1">
+            <ArrowLeft className="size-3" />
+            <span>Residents</span>
+          </button>
+          <ChevronRight className="size-3 text-slate-300 dark:text-slate-700" />
+          <span className="text-slate-600 dark:text-slate-300">Edit Resident</span>
         </div>
 
-        {/* Logout at bottom */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800">
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-all">
-            <LogOut className="size-4" />
-            Logout
+        {/* Header Block */}
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Edit Resident</h1>
+          <span className="inline-flex px-2.5 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 text-xs font-semibold rounded-full">
+            Pending
+          </span>
+        </div>
+        <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-500 font-semibold -mt-4">
+          Elena Ramos &middot; Room 106-A &middot; ID: {residentId || 'RES-00089'}
+        </p>
+
+        {/* TWO-COLUMN FORM LAYOUT */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start pb-10">
+
+          {/* LEFT COLUMN: Input Fields (2/3 width) */}
+          <div className="lg:col-span-2 space-y-6">
+
+            {/* Personal Information */}
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs relative">
+              {/* Initials Badge Avatar in top right */}
+              <div className="absolute top-6 right-6 size-12 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-250 dark:border-slate-700 rounded-xl flex items-center justify-center font-bold text-sm shadow-xs">
+                ER
+              </div>
+
+              <h2 className="text-base font-bold text-slate-950 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 mb-4">Personal Information</h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* First Name */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">First Name *</label>
+                  <input
+                    required
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Last Name */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Last Name *</label>
+                  <input
+                    required
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Date of Birth */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Date of Birth *</label>
+                  <input
+                    required
+                    type="date"
+                    value={dob}
+                    onChange={(e) => setDob(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Gender */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Gender</label>
+                  <input
+                    type="text"
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Status */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Status</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Active">Active</option>
+                    <option value="Discharged">Discharged</option>
+                  </select>
+                </div>
+                {/* Referral Source */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Referral Source *</label>
+                  <input
+                    required
+                    type="text"
+                    value={referralSource}
+                    onChange={(e) => setReferralSource(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* SSN */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">SSN *</label>
+                  <input
+                    required
+                    type="text"
+                    value={ssn}
+                    onChange={(e) => setSsn(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Marital Status */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Marital Status</label>
+                  <input
+                    type="text"
+                    value={maritalStatus}
+                    onChange={(e) => setMaritalStatus(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Referring Facility */}
+                <div className="sm:col-span-2">
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Referring Facility</label>
+                  <input
+                    type="text"
+                    value={referringFacility}
+                    onChange={(e) => setReferringFacility(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Contact & Address */}
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs">
+              <h2 className="text-base font-bold text-slate-955 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 mb-4">Contact & Address</h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Phone */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Phone *</label>
+                  <input
+                    required
+                    type="text"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Address */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Address</label>
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Emergency Contact */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Emergency Contact *</label>
+                  <input
+                    required
+                    type="text"
+                    value={emergencyContact}
+                    onChange={(e) => setEmergencyContact(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Emergency Phone */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Emergency Phone *</label>
+                  <input
+                    required
+                    type="text"
+                    value={emergencyPhone}
+                    onChange={(e) => setEmergencyPhone(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Authorized Representative / POA */}
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                <h2 className="text-base font-bold text-slate-950 dark:text-white">Authorized Representative / POA</h2>
+                {/* POA Switch */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-400">POA on file</span>
+                  <button
+                    type="button"
+                    onClick={() => setPoaOnFile(!poaOnFile)}
+                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${poaOnFile ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'
+                      }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block size-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${poaOnFile ? 'translate-x-4' : 'translate-x-0'
+                        }`}
+                    />
+                  </button>
+                </div>
+              </div>
+
+              {poaOnFile && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in">
+                  {/* POA Name */}
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">POA Name</label>
+                    <input
+                      type="text"
+                      value={poaName}
+                      onChange={(e) => setPoaName(e.target.value)}
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                    />
+                  </div>
+                  {/* Relationship */}
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Relationship</label>
+                    <input
+                      type="text"
+                      value={poaRelationship}
+                      onChange={(e) => setPoaRelationship(e.target.value)}
+                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Insurance / Payer */}
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs">
+              <h2 className="text-base font-bold text-slate-955 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 mb-4">Insurance / Payer</h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Payer Source */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Payer Source *</label>
+                  <input
+                    required
+                    type="text"
+                    value={payerSource}
+                    onChange={(e) => setPayerSource(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Payer Type */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Payer Type</label>
+                  <input
+                    type="text"
+                    value={payerType}
+                    onChange={(e) => setPayerType(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Medicare Number */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Medicare Number</label>
+                  <input
+                    type="text"
+                    value={medicareNum}
+                    onChange={(e) => setMedicareNum(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Insurance Provider */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Insurance Provider</label>
+                  <input
+                    type="text"
+                    value={insuranceProvider}
+                    onChange={(e) => setInsuranceProvider(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Auth Start Date */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Auth Start Date</label>
+                  <input
+                    type="text"
+                    value={authStartDate}
+                    onChange={(e) => setAuthStartDate(e.target.value)}
+                    placeholder="—"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+                {/* Auth End Date */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Auth End Date</label>
+                  <input
+                    type="text"
+                    value={authEndDate}
+                    onChange={(e) => setAuthEndDate(e.target.value)}
+                    placeholder="—"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Do Not Resuscitate (DNR) */}
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs">
+              <h2 className="text-base font-bold text-slate-955 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 mb-4">Do Not Resuscitate (DNR)</h2>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setDnrActive(!dnrActive)}
+                  className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${dnrActive ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'
+                    }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block size-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${dnrActive ? 'translate-x-4' : 'translate-x-0'
+                      }`}
+                  />
+                </button>
+                <span className="text-sm font-semibold text-slate-600 dark:text-slate-350">
+                  {dnrActive ? 'Yes — DNR is active' : 'No — DNR not active'}
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* RIGHT COLUMN: Validations & Role Info (1/3 width) */}
+          <div className="space-y-6">
+
+            {/* Warning Alert Banner */}
+            <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 rounded-xl p-4 flex gap-3 shadow-xs">
+              <AlertTriangle className="size-5 text-amber-650 dark:text-amber-400 shrink-0" />
+              <div className="space-y-0.5">
+                <h4 className="text-xs font-bold text-amber-900 dark:text-amber-300">Similar resident name exists.</h4>
+                <p className="text-[11px] font-semibold text-amber-700/90 dark:text-amber-400/80">Please verify before saving.</p>
+              </div>
+            </div>
+
+            {/* Validation Checklist */}
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs space-y-4">
+              <h2 className="text-base font-bold text-slate-950 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2">Validation</h2>
+
+              <div className="space-y-3">
+                <label className="flex items-center gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={validationReqComplete}
+                    onChange={(e) => setValidationReqComplete(e.target.checked)}
+                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 size-4 dark:border-slate-850 dark:bg-slate-950"
+                  />
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Required fields complete</span>
+                </label>
+
+                <label className="flex items-center gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={validationSsnValid}
+                    onChange={(e) => setValidationSsnValid(e.target.checked)}
+                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 size-4 dark:border-slate-850 dark:bg-slate-950"
+                  />
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">SSN format valid</span>
+                </label>
+
+                <label className="flex items-center gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={validationContactReq}
+                    onChange={(e) => setValidationContactReq(e.target.checked)}
+                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 size-4 dark:border-slate-850 dark:bg-slate-950"
+                  />
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Emergency contact required</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Role Card */}
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs space-y-2">
+              <h2 className="text-base font-bold text-slate-950 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 mb-3">Role</h2>
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Admission Staff</h3>
+              <p className="text-xs font-medium text-slate-400 dark:text-slate-550 leading-relaxed">
+                Can create/edit intake fields. Clinical fields are read-only here.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </form>
+
+      {/* BOTTOM ACTIONS BAR - Sticky style footer */}
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-6 py-4 flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between shrink-0">
+        {/* Left Actions */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="flex-1 sm:flex-none px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg text-sm font-semibold transition-all cursor-pointer"
+          >
+            Discharge
+          </button>
+          <button
+            type="button"
+            className="flex-1 sm:flex-none px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg text-sm font-semibold transition-all cursor-pointer"
+          >
+            Change Status
           </button>
         </div>
-      </aside>
 
-      {/* MAIN WRAPPER */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* TOP NAVBAR - Displaying Priya Shah - Admission Staff as in the mockup */}
-        <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 shrink-0 z-20">
-          <div className="flex items-center gap-4">
-            {/* Hamburger for mobile */}
-            <button 
-              className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 lg:hidden p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
-              onClick={() => setIsSidebarOpen(true)}
-            >
-              <Menu className="size-5" />
-            </button>
-            <div className="hidden sm:flex flex-col">
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">Nursing Home Management System</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* Theme Toggle Button */}
-            <button 
-              onClick={toggleTheme}
-              className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
-              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-            >
-              {theme === 'light' ? <Moon className="size-5" /> : <Sun className="size-5" />}
-            </button>
-
-            {/* Notification */}
-            <button className="relative p-2 text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
-              <Bell className="size-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
-            </button>
-            {/* Help */}
-            <button className="p-2 text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
-              <HelpCircle className="size-5" />
-            </button>
-
-            {/* Profile - Priya Shah */}
-            <div className="flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-slate-800">
-              <div className="flex flex-col text-right hidden sm:flex">
-                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">Priya Shah</span>
-                <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium leading-none">Admission Staff</span>
-              </div>
-              <div className="size-9 bg-purple-100 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center font-bold text-sm ring-2 ring-purple-50/50 dark:ring-purple-900/30">
-                PS
-              </div>
-              <ChevronDown className="size-4 text-slate-400" />
-            </div>
-          </div>
-        </header>
-
-        {/* SCROLLABLE MAIN FORM CONTENT */}
-        <div className="flex-1 flex flex-col justify-between overflow-hidden">
-          <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-            
-            {/* Breadcrumbs */}
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-medium">
-              <button type="button" onClick={onBack} className="hover:text-blue-600 dark:hover:text-blue-400 transition-all flex items-center gap-1">
-                <ArrowLeft className="size-3" />
-                <span>Residents</span>
-              </button>
-              <ChevronRight className="size-3 text-slate-300 dark:text-slate-700" />
-              <span className="text-slate-600 dark:text-slate-300">Edit Resident</span>
-            </div>
-
-            {/* Header Block */}
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Edit Resident</h1>
-              <span className="inline-flex px-2.5 py-0.5 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30 text-xs font-semibold rounded-full">
-                Pending
-              </span>
-            </div>
-            <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-500 font-semibold -mt-4">
-              Elena Ramos &middot; Room 106-A &middot; ID: {residentId || 'RES-00089'}
-            </p>
-
-            {/* TWO-COLUMN FORM LAYOUT */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start pb-10">
-              
-              {/* LEFT COLUMN: Input Fields (2/3 width) */}
-              <div className="lg:col-span-2 space-y-6">
-                
-                {/* Personal Information */}
-                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs relative">
-                  {/* Initials Badge Avatar in top right */}
-                  <div className="absolute top-6 right-6 size-12 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-250 dark:border-slate-700 rounded-xl flex items-center justify-center font-bold text-sm shadow-xs">
-                    ER
-                  </div>
-
-                  <h2 className="text-base font-bold text-slate-950 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 mb-4">Personal Information</h2>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* First Name */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">First Name *</label>
-                      <input
-                        required
-                        type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Last Name */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Last Name *</label>
-                      <input
-                        required
-                        type="text"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Date of Birth */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Date of Birth *</label>
-                      <input
-                        required
-                        type="date"
-                        value={dob}
-                        onChange={(e) => setDob(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Gender */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Gender</label>
-                      <input
-                        type="text"
-                        value={gender}
-                        onChange={(e) => setGender(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Status */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Status</label>
-                      <select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden"
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Active">Active</option>
-                        <option value="Discharged">Discharged</option>
-                      </select>
-                    </div>
-                    {/* Referral Source */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Referral Source *</label>
-                      <input
-                        required
-                        type="text"
-                        value={referralSource}
-                        onChange={(e) => setReferralSource(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* SSN */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">SSN *</label>
-                      <input
-                        required
-                        type="text"
-                        value={ssn}
-                        onChange={(e) => setSsn(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Marital Status */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Marital Status</label>
-                      <input
-                        type="text"
-                        value={maritalStatus}
-                        onChange={(e) => setMaritalStatus(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Referring Facility */}
-                    <div className="sm:col-span-2">
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Referring Facility</label>
-                      <input
-                        type="text"
-                        value={referringFacility}
-                        onChange={(e) => setReferringFacility(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Contact & Address */}
-                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs">
-                  <h2 className="text-base font-bold text-slate-955 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 mb-4">Contact & Address</h2>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Phone */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Phone *</label>
-                      <input
-                        required
-                        type="text"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Address */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Address</label>
-                      <input
-                        type="text"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Emergency Contact */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Emergency Contact *</label>
-                      <input
-                        required
-                        type="text"
-                        value={emergencyContact}
-                        onChange={(e) => setEmergencyContact(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Emergency Phone */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Emergency Phone *</label>
-                      <input
-                        required
-                        type="text"
-                        value={emergencyPhone}
-                        onChange={(e) => setEmergencyPhone(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Authorized Representative / POA */}
-                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                    <h2 className="text-base font-bold text-slate-950 dark:text-white">Authorized Representative / POA</h2>
-                    {/* POA Switch */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-slate-400">POA on file</span>
-                      <button
-                        type="button"
-                        onClick={() => setPoaOnFile(!poaOnFile)}
-                        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                          poaOnFile ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'
-                        }`}
-                      >
-                        <span
-                          className={`pointer-events-none inline-block size-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                            poaOnFile ? 'translate-x-4' : 'translate-x-0'
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {poaOnFile && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in">
-                      {/* POA Name */}
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">POA Name</label>
-                        <input
-                          type="text"
-                          value={poaName}
-                          onChange={(e) => setPoaName(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                        />
-                      </div>
-                      {/* Relationship */}
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Relationship</label>
-                        <input
-                          type="text"
-                          value={poaRelationship}
-                          onChange={(e) => setPoaRelationship(e.target.value)}
-                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Insurance / Payer */}
-                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs">
-                  <h2 className="text-base font-bold text-slate-955 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 mb-4">Insurance / Payer</h2>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Payer Source */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Payer Source *</label>
-                      <input
-                        required
-                        type="text"
-                        value={payerSource}
-                        onChange={(e) => setPayerSource(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Payer Type */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Payer Type</label>
-                      <input
-                        type="text"
-                        value={payerType}
-                        onChange={(e) => setPayerType(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Medicare Number */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Medicare Number</label>
-                      <input
-                        type="text"
-                        value={medicareNum}
-                        onChange={(e) => setMedicareNum(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Insurance Provider */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Insurance Provider</label>
-                      <input
-                        type="text"
-                        value={insuranceProvider}
-                        onChange={(e) => setInsuranceProvider(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Auth Start Date */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Auth Start Date</label>
-                      <input
-                        type="text"
-                        value={authStartDate}
-                        onChange={(e) => setAuthStartDate(e.target.value)}
-                        placeholder="—"
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                    {/* Auth End Date */}
-                    <div>
-                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Auth End Date</label>
-                      <input
-                        type="text"
-                        value={authEndDate}
-                        onChange={(e) => setAuthEndDate(e.target.value)}
-                        placeholder="—"
-                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Do Not Resuscitate (DNR) */}
-                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs">
-                  <h2 className="text-base font-bold text-slate-955 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 mb-4">Do Not Resuscitate (DNR)</h2>
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setDnrActive(!dnrActive)}
-                      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                        dnrActive ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'
-                      }`}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block size-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                          dnrActive ? 'translate-x-4' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
-                    <span className="text-sm font-semibold text-slate-600 dark:text-slate-350">
-                      {dnrActive ? 'Yes — DNR is active' : 'No — DNR not active'}
-                    </span>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* RIGHT COLUMN: Validations & Role Info (1/3 width) */}
-              <div className="space-y-6">
-                
-                {/* Warning Alert Banner */}
-                <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 rounded-xl p-4 flex gap-3 shadow-xs">
-                  <AlertTriangle className="size-5 text-amber-650 dark:text-amber-400 shrink-0" />
-                  <div className="space-y-0.5">
-                    <h4 className="text-xs font-bold text-amber-900 dark:text-amber-300">Similar resident name exists.</h4>
-                    <p className="text-[11px] font-semibold text-amber-700/90 dark:text-amber-400/80">Please verify before saving.</p>
-                  </div>
-                </div>
-
-                {/* Validation Checklist */}
-                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs space-y-4">
-                  <h2 className="text-base font-bold text-slate-950 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2">Validation</h2>
-                  
-                  <div className="space-y-3">
-                    <label className="flex items-center gap-3 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={validationReqComplete}
-                        onChange={(e) => setValidationReqComplete(e.target.checked)}
-                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 size-4 dark:border-slate-850 dark:bg-slate-950"
-                      />
-                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Required fields complete</span>
-                    </label>
-
-                    <label className="flex items-center gap-3 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={validationSsnValid}
-                        onChange={(e) => setValidationSsnValid(e.target.checked)}
-                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 size-4 dark:border-slate-850 dark:bg-slate-950"
-                      />
-                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">SSN format valid</span>
-                    </label>
-
-                    <label className="flex items-center gap-3 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={validationContactReq}
-                        onChange={(e) => setValidationContactReq(e.target.checked)}
-                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 size-4 dark:border-slate-850 dark:bg-slate-950"
-                      />
-                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Emergency contact required</span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* Role Card */}
-                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs space-y-2">
-                  <h2 className="text-base font-bold text-slate-950 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 mb-3">Role</h2>
-                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Admission Staff</h3>
-                  <p className="text-xs font-medium text-slate-400 dark:text-slate-550 leading-relaxed">
-                    Can create/edit intake fields. Clinical fields are read-only here.
-                  </p>
-                </div>
-
-              </div>
-
-            </div>
-          </form>
-
-          {/* BOTTOM ACTIONS BAR - Sticky style footer */}
-          <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-6 py-4 flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between shrink-0">
-            {/* Left Actions */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="flex-1 sm:flex-none px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg text-sm font-semibold transition-all cursor-pointer"
-              >
-                Discharge
-              </button>
-              <button
-                type="button"
-                className="flex-1 sm:flex-none px-4 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg text-sm font-semibold transition-all cursor-pointer"
-              >
-                Change Status
-              </button>
-            </div>
-
-            {/* Right Actions */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={onBack}
-                className="flex-1 sm:flex-none px-5 py-2 border border-slate-250 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg text-sm font-semibold transition-all cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="flex-1 sm:flex-none px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-all shadow-xs cursor-pointer active:scale-98"
-              >
-                Save Resident
-              </button>
-            </div>
-          </footer>
+        {/* Right Actions */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex-1 sm:flex-none px-5 py-2 border border-slate-250 dark:border-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg text-sm font-semibold transition-all cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="flex-1 sm:flex-none px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-all shadow-xs cursor-pointer active:scale-98"
+          >
+            Save Resident
+          </button>
         </div>
-
-      </div>
-
+      </footer>
     </div>
   )
 }
