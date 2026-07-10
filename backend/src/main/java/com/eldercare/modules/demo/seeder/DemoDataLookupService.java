@@ -1,5 +1,6 @@
 package com.eldercare.modules.demo.seeder;
 
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.BedEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -36,7 +37,7 @@ public class DemoDataLookupService {
 
         if (bedIds.isEmpty()) {
             throw new RuntimeException(
-                    "Bed not found: facility_code=" + facilityCode
+                    "BedEntity not found: facility_code=" + facilityCode
                             + ", room_number=" + roomNumber
                             + ", bed_number=" + bedNumber
             );
