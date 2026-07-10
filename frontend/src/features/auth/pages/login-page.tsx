@@ -32,6 +32,7 @@ export const LoginPage = () => {
       const response = await authService.Login(data);
       // In a real app, save token to context/Zustand and localStorage
       localStorage.setItem("token", response.token);
+      localStorage.setItem("eldcare_token", response.token);
       navigate("/admin"); // Redirect to dashboard
     } catch (err: any) {
       setError(err.response?.data?.message || "Invalid credentials. Please try again.");
