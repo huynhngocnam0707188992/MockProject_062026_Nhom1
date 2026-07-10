@@ -21,6 +21,7 @@ public class RoleEntity {
     private String description;
 
     @Column(name = "is_deleted")
+    @Builder.Default
     private Boolean isDeleted = false;
 
     @Column(name = "created_at")
