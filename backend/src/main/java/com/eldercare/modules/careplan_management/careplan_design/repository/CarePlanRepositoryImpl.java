@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,16 +45,28 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
         }
 
         @Override
+        @Transactional
         public CarePlanEntity findById(int id) {
                 Optional<CarePlanSchema> optionalCarePlanSchema = this.jpaCarePlanRepository.findById(Long.valueOf(id));
                 CarePlanSchema carePlanSchema = optionalCarePlanSchema.get();
+
+               List<CareGoalEntity> listCareGoalEntity = carePlanSchema.getListCareGoal().stream().map(goal -> new CareGoalEntity(
+                                goal.getId().intValue(),
+                                goal.getStatus()))
+                        .toList();
+
+               List<CareInterventionEntity> listCareInterventionEntity = carePlanSchema.getListCareIntervention().stream().map(intervention -> new CareInterventionEntity(
+                        intervention.getId().intValue(),
+                        intervention.getAssignedRole()))
+                        .toList();
+
                 CarePlanEntity carePlanEntity = new CarePlanEntity(
                                 carePlanSchema.getId().intValue(),
                                 CarePlanStatusEnum.valueOf(carePlanSchema.getStatus()),
                                 carePlanSchema.getSignificantChangeFlag(),
                                 carePlanSchema.getResidentId().intValue(),
-                                null,
-                                null,
+                                listCareGoalEntity,
+                                listCareInterventionEntity,
                                 carePlanSchema.getCreatedAt(),
                                 carePlanSchema.getUpdatedAt(),
                                 carePlanSchema.getIsDeleted());
@@ -159,5 +172,50 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
                                                 schema.getUpdatedAt(),
                                                 schema.getIsDeleted()))
                                 .toList();
+        }
+
+       @Override
+        @Transactional()
+        public List<CarePlanEntity> search(SearchCarePlanRequestDTO request) {
+
+            Pageable pageable = PageRequest.of(
+                    request.page,
+                    request.size,
+                    Sort.by(Sort.Direction.DESC, "updatedAt"));
+
+            Specification<CarePlanSchema> spec = Specification.unrestricted();
+
+            // TODO:
+            // Search by resident name / resident id
+            // Waiting for Resident module
+            if (request.keyword != null && !request.keyword.isBlank()) {
+            }
+
+          if (request.status != null) {
+    spec = spec.and((root, query, cb) ->
+        cb.equal(root.get("status"), request.status.name()));
+}
+
+            if (request.significantChangeFlag != null) {
+                spec = spec.and((root, query, cb) ->
+                        cb.equal(root.get("significantChangeFlag"),
+                                request.significantChangeFlag));
+            }
+
+            Page<CarePlanSchema> page = jpaCarePlanRepository.findAll(spec, pageable);
+
+            return page.getContent()
+                    .stream()
+                    .map(schema -> new CarePlanEntity(
+                            schema.getId().intValue(),
+                            CarePlanStatusEnum.valueOf(schema.getStatus()),
+                            schema.getSignificantChangeFlag(),
+                            schema.getResidentId().intValue(),
+                            Collections.emptyList(),
+                            Collections.emptyList(),
+                            schema.getCreatedAt(),
+                            schema.getUpdatedAt(),
+                            schema.getIsDeleted()))
+                    .toList();
         }
 }
