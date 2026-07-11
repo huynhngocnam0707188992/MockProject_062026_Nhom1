@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.eldercare.modules.careplan_management.careplan_design.dto.getCarePlanDetailDTO.GetCarePlanDetailRequestDTO;
+import com.eldercare.modules.careplan_management.careplan_design.dto.getCarePlanDetailDTO.GetCarePlanDetailResponseDTO;
+import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
+import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanResponseDTO;
 import org.springframework.stereotype.Service;
 
 import com.eldercare.modules.careplan_management.careplan_design.dto.activeCarePlanDTO.ActiveCarePlanRequestDTO;
@@ -87,6 +91,64 @@ public class CarePlanServiceImpl implements ICarePlanService {
                 .toList();
 
         return new ListCarePlanResponseDTO(listCarePlanOutputs);
+    }
+
+    @Override
+    public GetCarePlanDetailResponseDTO getCarePlanDetail(GetCarePlanDetailRequestDTO requestDTO) {
+
+        CarePlanEntity carePlanEntity = this.carePlanRepository.findById(requestDTO.id);
+
+        GetCarePlanDetailResponseDTO responseDTO = new GetCarePlanDetailResponseDTO();
+
+        responseDTO.id = carePlanEntity.getId();
+        responseDTO.status = carePlanEntity.getStatus().name();
+        responseDTO.significantFlag = carePlanEntity.getSignificantFlag();
+        responseDTO.residentId = carePlanEntity.getResidentId();
+        responseDTO.createdAt = carePlanEntity.getCreatedAt().toString();
+        responseDTO.updatedAt = carePlanEntity.getUpdatedAt().toString();
+        responseDTO.isDeleted = carePlanEntity.getIsDeleted();
+
+        responseDTO.goals = carePlanEntity.getListCareGoal()
+                .stream()
+                .map(goal -> {
+                    GetCarePlanDetailResponseDTO.Goal dto = new GetCarePlanDetailResponseDTO.Goal();
+                    dto.id = goal.getId();
+                    dto.status = goal.getStatus().name();
+                    return dto;
+                })
+                .toList();
+
+        responseDTO.interventions = carePlanEntity.getListCareIntervention()
+                .stream()
+                .map(intervention -> {
+                    GetCarePlanDetailResponseDTO.Intervention dto = new GetCarePlanDetailResponseDTO.Intervention();
+                    dto.id = intervention.getId();
+                    dto.assignedRole = intervention.getAssinedRole();
+                    dto.taskCount = 0;
+                    return dto;
+                })
+                .toList();
+        return responseDTO;
+    }
+
+    @Override
+    public List<SearchCarePlanResponseDTO> searchCarePlan(SearchCarePlanRequestDTO requestDTO) {
+        List<CarePlanEntity> entities = carePlanRepository.search(requestDTO);
+
+        return entities.stream()
+                .map(entity -> {
+                    SearchCarePlanResponseDTO dto = new SearchCarePlanResponseDTO();
+
+                    dto.id = entity.getId();
+                    dto.residentId = entity.getResidentId();
+                    dto.residentName = "RESIDENT_NAME";
+                    dto.status = entity.getStatus().name();
+                    dto.significantChangeFlag = entity.getSignificantFlag();
+                    dto.createdAt = entity.getCreatedAt().toString();
+                    dto.updatedAt = entity.getUpdatedAt().toString();
+
+                    return dto;
+                }).toList();
     }
 
 }
