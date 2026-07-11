@@ -36,4 +36,19 @@ public class CarePlanSchema {
 
     @Column(name = "updated_at", nullable = false)
     public OffsetDateTime updatedAt;
+
+    public CarePlanSchema() {
+    }
+
+    public CarePlanSchema(Long id, String status, Boolean significantChangeFlag, Long residentId, Boolean isDeleted,
+            OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+        this.id = id;
+        this.status = status;
+        this.significantChangeFlag = significantChangeFlag;
+        this.residentId = residentId;
+        this.isDeleted = isDeleted;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
 }
