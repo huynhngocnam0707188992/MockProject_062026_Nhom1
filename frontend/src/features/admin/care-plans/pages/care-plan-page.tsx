@@ -1,9 +1,9 @@
 import React from 'react';
 import { Save } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useLOCRates } from '../hooks/useLOCRates';
-import InfoBox from '../components/InfoBox';
-import LOCRateTable from '../components/LOCRateTable';
+import { useLOCRates } from '../../facilities/hooks/useLOCRates';
+import InfoBox from '../../facilities/components/InfoBox';
+import LOCRateTable from '../../facilities/components/LOCRateTable';
 
 const CarePlanPage: React.FC = () => {
   const {

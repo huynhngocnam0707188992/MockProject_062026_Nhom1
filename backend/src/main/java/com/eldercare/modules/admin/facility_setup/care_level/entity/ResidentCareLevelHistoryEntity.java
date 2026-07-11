@@ -1,4 +1,4 @@
-package com.eldercare.modules.resident_intake.care_level;
+package com.eldercare.modules.admin.facility_setup.care_level.entity;
 
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import jakarta.persistence.*;
@@ -33,3 +33,4 @@ public class ResidentCareLevelHistoryEntity {
     @JoinColumn(name = "care_level_id", nullable = false)
     private CareLevelEntity careLevel;
 }
+

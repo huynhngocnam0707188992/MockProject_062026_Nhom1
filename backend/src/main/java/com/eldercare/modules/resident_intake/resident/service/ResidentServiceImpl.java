@@ -3,16 +3,16 @@ package com.eldercare.modules.resident_intake.resident.service;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.repository.AddressRepository;
 import com.eldercare.modules.admin.facility_setup.facility.facility_layout.repository.BedRepository;
 import com.eldercare.modules.admin.facility_setup.facility.facility_layout.repository.RoomRepository;
-import com.eldercare.modules.resident_intake.care_level.admin.repository.CareLevelRepository;
+import com.eldercare.modules.admin.facility_setup.care_level.repository.CareLevelRepository;
 
-import com.eldercare.modules.resident_intake.care_level.ResidentCareLevelHistoryEntity;
+import com.eldercare.modules.admin.facility_setup.care_level.entity.ResidentCareLevelHistoryEntity;
 import com.eldercare.modules.finance_billing.insurance_coverage.ResidentInsurancePolicyEntity;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentSensitiveInfoEntity;
 import com.eldercare.modules.finance_billing.insurance_coverage.InsuranceProviderEntity;
 import com.eldercare.modules.resident_intake.family_contacts.ResidentContactEntity;
 import com.eldercare.modules.clinical.clinical_record.ClinicalRecordEntity;
 import com.eldercare.modules.resident_intake.admission_ledger.AdmissionEntity;
-import com.eldercare.modules.resident_intake.care_level.CareLevelEntity;
+import com.eldercare.modules.admin.facility_setup.care_level.entity.CareLevelEntity;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.AddressEntity;
 import com.eldercare.modules.resident_intake.family_contacts.ContactEntity;
@@ -544,3 +544,4 @@ public class ResidentServiceImpl implements ResidentService {
         return residentMapper.toResponseDto(resident);
     }
 }
+

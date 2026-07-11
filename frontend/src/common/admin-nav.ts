@@ -97,6 +97,12 @@ export const adminNavGroups: AdminNavGroup[] = [
         permission: PERMISSIONS.FACILITY_VIEW,
       },
       {
+        label: "LOC Rates",
+        path: "/admin/loc-rates",
+        icon: ScrollText,
+        permission: PERMISSIONS.FACILITY_VIEW,
+      },
+      {
         label: "Staffing",
         path: "/admin/staffing-ratios",
         icon: Clock3,

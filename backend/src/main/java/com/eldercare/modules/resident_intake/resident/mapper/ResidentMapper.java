@@ -3,7 +3,7 @@ package com.eldercare.modules.resident_intake.resident.mapper;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.AddressEntity;
 import com.eldercare.modules.finance_billing.insurance_coverage.ResidentInsurancePolicyEntity;
 import com.eldercare.modules.resident_intake.admission_ledger.AdmissionEntity;
-import com.eldercare.modules.resident_intake.care_level.ResidentCareLevelHistoryEntity;
+import com.eldercare.modules.admin.facility_setup.care_level.entity.ResidentCareLevelHistoryEntity;
 import com.eldercare.modules.resident_intake.family_contacts.ContactEntity;
 import com.eldercare.modules.resident_intake.family_contacts.ResidentContactEntity;
 import com.eldercare.modules.resident_intake.resident.dto.response.ResidentDetailResponseDto;
@@ -273,3 +273,4 @@ public class ResidentMapper {
         }
     }
 }
+

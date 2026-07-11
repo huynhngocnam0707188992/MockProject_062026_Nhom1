@@ -11,5 +11,4 @@ export const CURRENT_USER = {
   initials: 'VA',
 };
 
-// Sửa từ process.env thành import.meta.env cho Vite
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';

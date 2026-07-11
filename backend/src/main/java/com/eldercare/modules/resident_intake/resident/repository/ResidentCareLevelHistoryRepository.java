@@ -1,7 +1,7 @@
 package com.eldercare.modules.resident_intake.resident.repository;
 
 
-import com.eldercare.modules.resident_intake.care_level.ResidentCareLevelHistoryEntity;
+import com.eldercare.modules.admin.facility_setup.care_level.entity.ResidentCareLevelHistoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
@@ -10,3 +10,4 @@ import java.util.List;
 public interface ResidentCareLevelHistoryRepository extends JpaRepository<ResidentCareLevelHistoryEntity, Long> {
     List<ResidentCareLevelHistoryEntity> findByResidentId(Long residentId);
 }
+

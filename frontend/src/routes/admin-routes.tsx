@@ -23,6 +23,8 @@ import DemoDataPage from "@/features/admin/demo-data/pages/demo-data-page";
 import StaffingRatioPage from "@/features/admin/staffing-ratios/pages/staffing-ratio-page";
 import RolePage from "@/features/admin/roles/pages/role-page";
 
+import { LOCRatesPage } from "@/features/admin/facilities/pages/loc-rates-page";
+
 export const adminRoutes: RouteObject = {
   path: "/admin",
   element: <AdminLayout />,
@@ -95,6 +97,14 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.FACILITY_VIEW}>
           <FacilityDetailPage />
+        </RequirePermission>
+      ),
+    },
+    {
+      path: "loc-rates",
+      element: (
+        <RequirePermission permission={PERMISSIONS.FACILITY_VIEW}>
+          <LOCRatesPage />
         </RequirePermission>
       ),
     },

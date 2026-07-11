@@ -1,4 +1,4 @@
-package com.eldercare.modules.resident_intake.care_level;
+package com.eldercare.modules.admin.facility_setup.care_level.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,3 +35,4 @@ public class CareLevelRateEntity {
     @Column(name = "effective_to")
     private LocalDate effectiveTo;
 }
+

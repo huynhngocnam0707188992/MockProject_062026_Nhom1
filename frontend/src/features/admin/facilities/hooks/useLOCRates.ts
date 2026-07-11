@@ -20,17 +20,17 @@ export const useLOCRates = () => {
       
       for (let i = 1; i <= 4; i++) {
         const response = await careLevelApi.getCareLevelRates(i);
-        if (response.data && response.data.length > 0) {
-          allRates.push(response.data[0]);
+        if (response && response.length > 0) {
+          allRates.push(response[0]);
         } else {
           // Create default rate if none exists
           const createResponse = await careLevelApi.createCareLevelRate({
-            careLevelId: i,
-            facilityId: 1,
-            dailyRate: parseFloat(TIERS[i - 1].defaultRate),
-            effectiveFrom: new Date().toISOString().split('T')[0],
+            care_level_id: i,
+            facility_id: 1,
+            daily_rate: parseFloat(TIERS[i - 1].defaultRate),
+            effective_from: new Date().toISOString().split('T')[0],
           });
-          allRates.push(createResponse.data);
+          allRates.push(createResponse);
         }
       }
       
@@ -50,8 +50,8 @@ export const useLOCRates = () => {
   const handleEdit = (rate: CareLevelRateResponse) => {
     setEditingId(rate.id);
     setEditData({
-      dailyRate: rate.dailyRate.toString(),
-      effectiveFrom: rate.effectiveFrom,
+      dailyRate: rate.daily_rate.toString(),
+      effectiveFrom: rate.effective_from,
     });
   };
 
@@ -63,10 +63,10 @@ export const useLOCRates = () => {
   const handleSave = async (rateId: number) => {
     try {
       const updateData = {
-        careLevelId: rates.find(r => r.id === rateId)?.careLevelId,
-        dailyRate: parseFloat(editData.dailyRate),
-        effectiveFrom: editData.effectiveFrom,
-        effectiveTo: null,
+        care_level_id: rates.find(r => r.id === rateId)?.care_level_id,
+        daily_rate: parseFloat(editData.dailyRate),
+        effective_from: editData.effectiveFrom,
+        effective_to: null,
       };
 
       await careLevelApi.updateCareLevelRate(rateId, updateData);
@@ -75,8 +75,8 @@ export const useLOCRates = () => {
         rate.id === rateId 
           ? { 
               ...rate, 
-              dailyRate: parseFloat(editData.dailyRate),
-              effectiveFrom: editData.effectiveFrom,
+              daily_rate: parseFloat(editData.dailyRate),
+              effective_from: editData.effectiveFrom,
             }
           : rate
       ));
@@ -95,7 +95,7 @@ export const useLOCRates = () => {
       if (editingId) {
         await handleSave(editingId);
       }
-      toast.success('✅ Đã lưu thay đổi thành công!');
+      toast.success('✅ Changes saved successfully!');
     } catch (error) {
       toast.error('Failed to save changes');
     }
