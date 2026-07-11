@@ -2,6 +2,7 @@ package com.eldercare.modules.careplan_management.careplan_design.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -71,8 +72,8 @@ public class CarePlanServiceImpl implements ICarePlanService {
                     output.status = entity.getStatus().name();
                     output.significantFlag = entity.getSignificantFlag();
                     output.residentId = entity.getResidentId();
-                    output.goal = entity.getGoal() == null ? null : entity.getGoal().name();
-                    output.assingedRole = entity.getAssingedRole();
+                    output.goalCount = entity.getListCareGoal().size();
+                    output.interventionCount = entity.getListCareIntervention().size();
                     output.createdAt = entity.getCreatedAt() == null
                             ? null
                             : entity.getCreatedAt().toString();
