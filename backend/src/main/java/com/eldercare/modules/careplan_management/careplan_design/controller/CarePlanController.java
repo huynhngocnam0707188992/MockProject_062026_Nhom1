@@ -29,7 +29,7 @@ import com.eldercare.modules.careplan_management.careplan_design.service.ICarePl
 import java.util.List;
 
 @RestController
-@RequestMapping("/care-plans")
+@RequestMapping("/api/v1/care-plans")
 public class CarePlanController {
     private final ICarePlanService carePlanService;
 
@@ -79,11 +79,12 @@ public class CarePlanController {
     }
 
     @GetMapping("/{carePlanId}")
-    public ResponseEntity<ApiResponse<GetCarePlanDetailResponseDTO>> getCarePlanDetail(@PathVariable int carePlanId){
+    public ResponseEntity<ApiResponse<GetCarePlanDetailResponseDTO>> getCarePlanDetail(@PathVariable int carePlanId) {
         GetCarePlanDetailRequestDTO requestDTO = new GetCarePlanDetailRequestDTO();
         requestDTO.id = carePlanId;
 
-        ApiResponse<GetCarePlanDetailResponseDTO> response = ApiResponse.success(this.carePlanService.getCarePlanDetail(requestDTO));
+        ApiResponse<GetCarePlanDetailResponseDTO> response = ApiResponse
+                .success(this.carePlanService.getCarePlanDetail(requestDTO));
         return ResponseEntity.ok(response);
     }
 
@@ -93,7 +94,7 @@ public class CarePlanController {
             @RequestParam(required = false) CarePlanStatusEnum status,
             @RequestParam(required = false) Boolean significantChangeFlag,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size){
+            @RequestParam(defaultValue = "20") int size) {
         SearchCarePlanRequestDTO requestDTO = new SearchCarePlanRequestDTO();
 
         requestDTO.keyword = keyword;
@@ -103,8 +104,7 @@ public class CarePlanController {
         requestDTO.size = size;
 
         ApiResponse<List<SearchCarePlanResponseDTO>> response = ApiResponse.success(
-                this.carePlanService.searchCarePlan(requestDTO)
-        );
+                this.carePlanService.searchCarePlan(requestDTO));
         return ResponseEntity.ok(response);
     }
 }
