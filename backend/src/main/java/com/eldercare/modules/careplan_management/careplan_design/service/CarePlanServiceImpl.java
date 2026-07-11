@@ -85,7 +85,6 @@ public class CarePlanServiceImpl implements ICarePlanService {
                 })
                 .toList();
 
-        // TODO: tạo ListCarePlanResponseDTO rồi return
         return new ListCarePlanResponseDTO(listCarePlanOutputs);
     }
 
