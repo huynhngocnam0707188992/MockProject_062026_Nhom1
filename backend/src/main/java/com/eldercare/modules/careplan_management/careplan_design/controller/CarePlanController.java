@@ -1,5 +1,6 @@
 package com.eldercare.modules.careplan_management.careplan_design.controller;
 
+import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanResponseDTO;
 import org.springframework.data.domain.Sort;
@@ -63,19 +64,33 @@ public class CarePlanController {
         return ResponseEntity.ok(response);
     }
 
+    //    @GetMapping("")
+//    public ResponseEntity<ApiResponse<ListCarePlanResponseDTO>> listCarePlans(
+//            @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "20") Integer size,
+//            @RequestParam(required = false) Long residentId, @RequestParam(required = false) CarePlanStatusEnum status,
+//            @RequestParam(required = false) Boolean significantChangeFlag,
+//            @RequestParam(defaultValue = "updatedAt") String sortBy,
+//            @RequestParam(defaultValue = "DESC") Sort.Direction sortDir) {
+//        ListCarePlanRequestDTO request = new ListCarePlanRequestDTO(page, size, residentId, status,
+//                significantChangeFlag, sortBy, sortDir);
+//        ApiResponse<ListCarePlanResponseDTO> response = ApiResponse
+//                .success(this.carePlanService.listCarePlans(request));
+//
+//        return ResponseEntity.ok(response);
+//    }
     @GetMapping("")
-    public ResponseEntity<ApiResponse<ListCarePlanResponseDTO>> listCarePlans(
+    public ResponseEntity<PagedResponse<ListCarePlanResponseDTO>> listCarePlans(
             @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "20") Integer size,
             @RequestParam(required = false) Long residentId, @RequestParam(required = false) CarePlanStatusEnum status,
             @RequestParam(required = false) Boolean significantChangeFlag,
             @RequestParam(defaultValue = "updatedAt") String sortBy,
             @RequestParam(defaultValue = "DESC") Sort.Direction sortDir) {
-        ListCarePlanRequestDTO request = new ListCarePlanRequestDTO(page, size, residentId, status,
-                significantChangeFlag, sortBy, sortDir);
-        ApiResponse<ListCarePlanResponseDTO> response = ApiResponse
-                .success(this.carePlanService.listCarePlans(request));
 
-        return ResponseEntity.ok(response);
+        ListCarePlanRequestDTO request = new ListCarePlanRequestDTO(
+                page, size, residentId, status,
+                significantChangeFlag, sortBy, sortDir);
+        PagedResponse<ListCarePlanResponseDTO> pagenatedResponse = carePlanService.listCarePlans(request);
+        return ResponseEntity.ok(pagenatedResponse);
     }
 
     @GetMapping("/{carePlanId}")
@@ -88,8 +103,28 @@ public class CarePlanController {
         return ResponseEntity.ok(response);
     }
 
+//    @GetMapping("/search")
+//    public ResponseEntity<ApiResponse<List<SearchCarePlanResponseDTO>>> searchCarePlan(
+//            @RequestParam(required = false) String keyword,
+//            @RequestParam(required = false) CarePlanStatusEnum status,
+//            @RequestParam(required = false) Boolean significantChangeFlag,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "20") int size) {
+//        SearchCarePlanRequestDTO requestDTO = new SearchCarePlanRequestDTO();
+//
+//        requestDTO.keyword = keyword;
+//        requestDTO.status = status;
+//        requestDTO.significantChangeFlag = significantChangeFlag;
+//        requestDTO.page = page;
+//        requestDTO.size = size;
+//
+//        ApiResponse<List<SearchCarePlanResponseDTO>> response = ApiResponse.success(
+//                this.carePlanService.searchCarePlan(requestDTO));
+//        return ResponseEntity.ok(response);
+//    }
+
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<SearchCarePlanResponseDTO>>> searchCarePlan(
+    public ResponseEntity<PagedResponse<List<SearchCarePlanResponseDTO>>> searchCarePlan(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) CarePlanStatusEnum status,
             @RequestParam(required = false) Boolean significantChangeFlag,
@@ -103,8 +138,8 @@ public class CarePlanController {
         requestDTO.page = page;
         requestDTO.size = size;
 
-        ApiResponse<List<SearchCarePlanResponseDTO>> response = ApiResponse.success(
-                this.carePlanService.searchCarePlan(requestDTO));
-        return ResponseEntity.ok(response);
+
+        PagedResponse<List<SearchCarePlanResponseDTO>> pagenatedResponse = carePlanService.searchCarePlan(requestDTO);
+        return ResponseEntity.ok(pagenatedResponse);
     }
 }

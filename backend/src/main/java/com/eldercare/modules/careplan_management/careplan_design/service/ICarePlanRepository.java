@@ -5,6 +5,7 @@ import java.util.List;
 import com.eldercare.modules.careplan_management.careplan_design.dto.listCarePlansDTO.ListCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.entity.CarePlanEntity;
+import org.springframework.data.domain.Page;
 
 public interface ICarePlanRepository {
 
@@ -14,6 +15,10 @@ public interface ICarePlanRepository {
 
     List<CarePlanEntity> getAll(ListCarePlanRequestDTO request);
 
+    Page<CarePlanEntity> getAllPagination(ListCarePlanRequestDTO request);
+
     List<CarePlanEntity> search(SearchCarePlanRequestDTO request);
+
+    Page<CarePlanEntity> searchPagination(SearchCarePlanRequestDTO request);
 
 }

@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.modules.careplan_management.careplan_design.dto.getCarePlanDetailDTO.GetCarePlanDetailRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.getCarePlanDetailDTO.GetCarePlanDetailResponseDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.eldercare.modules.careplan_management.careplan_design.dto.activeCarePlanDTO.ActiveCarePlanRequestDTO;
@@ -64,10 +67,10 @@ public class CarePlanServiceImpl implements ICarePlanService {
     }
 
     @Override
-    public ListCarePlanResponseDTO listCarePlans(ListCarePlanRequestDTO requestDTO) {
-
-        List<CarePlanEntity> listCarePlanEntity = carePlanRepository.getAll(requestDTO);
-
+    public PagedResponse<ListCarePlanResponseDTO> listCarePlans(ListCarePlanRequestDTO requestDTO) {
+//        List<CarePlanEntity> listCarePlanEntity = carePlanRepository.getAll(requestDTO);
+        Page<CarePlanEntity> pageCarePlanEntity = carePlanRepository.getAllPagination(requestDTO);
+        List<CarePlanEntity> listCarePlanEntity = pageCarePlanEntity.getContent();
         List<CarePlanOutput> listCarePlanOutputs = listCarePlanEntity.stream()
                 .map(entity -> {
                     CarePlanOutput output = new CarePlanOutput();
@@ -89,8 +92,15 @@ public class CarePlanServiceImpl implements ICarePlanService {
                     return output;
                 })
                 .toList();
-
-        return new ListCarePlanResponseDTO(listCarePlanOutputs);
+        return PagedResponse.of(
+                new ListCarePlanResponseDTO(listCarePlanOutputs),
+                HttpStatus.OK.value(),
+                "Success",
+                pageCarePlanEntity.getNumber(),
+                pageCarePlanEntity.getTotalPages(),
+                pageCarePlanEntity.getSize(),
+                pageCarePlanEntity.getTotalElements()
+        );
     }
 
     @Override
@@ -132,23 +142,42 @@ public class CarePlanServiceImpl implements ICarePlanService {
     }
 
     @Override
-    public List<SearchCarePlanResponseDTO> searchCarePlan(SearchCarePlanRequestDTO requestDTO) {
-        List<CarePlanEntity> entities = carePlanRepository.search(requestDTO);
+    public PagedResponse<List<SearchCarePlanResponseDTO>> searchCarePlan(
+            SearchCarePlanRequestDTO requestDTO) {
 
-        return entities.stream()
+        Page<CarePlanEntity> pageCarePlanEntity =
+                carePlanRepository.searchPagination(requestDTO);
+
+        List<SearchCarePlanResponseDTO> list = pageCarePlanEntity.getContent()
+                .stream()
                 .map(entity -> {
                     SearchCarePlanResponseDTO dto = new SearchCarePlanResponseDTO();
 
                     dto.id = entity.getId();
                     dto.residentId = entity.getResidentId();
-                    dto.residentName = "RESIDENT_NAME";
+                    dto.residentName = "RESIDENT_NAME"; // TODO: lấy từ Resident module
                     dto.status = entity.getStatus().name();
                     dto.significantChangeFlag = entity.getSignificantFlag();
-                    dto.createdAt = entity.getCreatedAt().toString();
-                    dto.updatedAt = entity.getUpdatedAt().toString();
+                    dto.createdAt = entity.getCreatedAt() == null
+                            ? null
+                            : entity.getCreatedAt().toString();
+                    dto.updatedAt = entity.getUpdatedAt() == null
+                            ? null
+                            : entity.getUpdatedAt().toString();
 
                     return dto;
-                }).toList();
+                })
+                .toList();
+
+        return PagedResponse.of(
+                list,
+                HttpStatus.OK.value(),
+                "Success",
+                pageCarePlanEntity.getNumber(),
+                pageCarePlanEntity.getTotalPages(),
+                pageCarePlanEntity.getSize(),
+                pageCarePlanEntity.getTotalElements()
+        );
     }
 
 }

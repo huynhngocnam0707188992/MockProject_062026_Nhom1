@@ -1,5 +1,6 @@
 package com.eldercare.modules.careplan_management.careplan_design.service;
 
+import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.modules.careplan_management.careplan_design.dto.activeCarePlanDTO.ActiveCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.activeCarePlanDTO.ActiveCarePlanResponseDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.discontinueCarePlanDTO.DiscontinueCarePlanRequestDTO;
@@ -22,9 +23,9 @@ public interface ICarePlanService {
 
     public MarkSignificantChangeResponseDTO markSignificantChange(MarkSignificantChangeRequestDTO requestDTO);
 
-    public ListCarePlanResponseDTO listCarePlans(ListCarePlanRequestDTO requestDTO);
+    public PagedResponse<ListCarePlanResponseDTO> listCarePlans(ListCarePlanRequestDTO requestDTO);
 
     public GetCarePlanDetailResponseDTO getCarePlanDetail (GetCarePlanDetailRequestDTO requestDTO);
 
-    public List<SearchCarePlanResponseDTO> searchCarePlan (SearchCarePlanRequestDTO requestDTO);
+    public PagedResponse<List<SearchCarePlanResponseDTO>> searchCarePlan (SearchCarePlanRequestDTO requestDTO);
 }
