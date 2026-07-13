@@ -1,48 +1,18 @@
-import { useState } from 'react'
 import ResidentsList from './residents-list'
-import ResidentDetail from './resident-detail'
-import EditResident from './edit-resident'
+import { useNavigate } from 'react-router'
 
 export default function ResidentsFeature() {
-  const [currentView, setCurrentView] = useState<'list' | 'detail' | 'edit'>('list')
-  const [selectedResidentId, setSelectedResidentId] = useState<string>('')
+  const navigate = useNavigate()
 
   const handleViewDetail = (id: string) => {
-    setSelectedResidentId(id)
-    setCurrentView('detail')
-  }
-
-  const handleEdit = (id: string) => {
-    setSelectedResidentId(id)
-    setCurrentView('edit')
-  }
-
-  const handleBackToList = () => {
-    setCurrentView('list')
-  }
-
-  if (currentView === 'detail') {
-    return (
-      <ResidentDetail 
-        residentId={selectedResidentId} 
-        onBack={handleBackToList} 
-        onEdit={() => handleEdit(selectedResidentId)}
-      />
-    )
-  }
-
-  if (currentView === 'edit') {
-    return (
-      <EditResident
-        residentId={selectedResidentId}
-        onBack={handleBackToList}
-      />
-    )
+    navigate(`/admin/residents/${id}`)
   }
 
   return (
-    <ResidentsList 
-      onViewDetail={handleViewDetail} 
-    />
+    <div className="w-full">
+      <ResidentsList 
+        onViewDetail={handleViewDetail} 
+      />
+    </div>
   )
 }
