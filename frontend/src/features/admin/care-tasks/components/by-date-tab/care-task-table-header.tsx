@@ -7,26 +7,33 @@ import {
 export const CareTaskTableHeader = () => {
   return (
     <TableHeader>
-      <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border">
-        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground w-[22%]">
+      <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border">
+        {/* Resident — 240px */}
+        <TableHead className="h-10 px-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[240px] min-w-[200px]">
           Resident
         </TableHead>
-        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground w-[14%]">
+        {/* Task Type — 130px */}
+        <TableHead className="h-10 px-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[130px]">
           Task Type
         </TableHead>
-        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground w-[22%]">
+        {/* Goal — auto, fills remaining space */}
+        <TableHead className="h-10 px-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           Goal
         </TableHead>
-        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-center w-[10%]">
-          Time
+        {/* Time — 110px, centred */}
+        <TableHead className="h-10 px-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground text-center w-[110px]">
+          Scheduled
         </TableHead>
-        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-center w-[10%]">
+        {/* Status — 110px, centred */}
+        <TableHead className="h-10 px-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground text-center w-[110px]">
           Status
         </TableHead>
-        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-center w-[8%]">
+        {/* Flags — 70px, centred */}
+        <TableHead className="h-10 px-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground text-center w-[70px]">
           Flags
         </TableHead>
-        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right w-[14%]">
+        {/* Actions — 160px, right-aligned */}
+        <TableHead className="h-10 px-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground text-right w-[160px]">
           Actions
         </TableHead>
       </TableRow>

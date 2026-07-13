@@ -24,30 +24,30 @@ const CareTaskPage = () => {
   const visibleTabs = tabs.filter((t) => can(t.permission));
 
   return (
-    <div className="flex flex-col w-full gap-6 pb-6 max-w-full mx-auto px-6 py-6">
+    <div className="flex flex-col w-full gap-5">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
-        <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-border pb-5">
+        <div className="flex flex-col gap-0.5">
+          <h1 className="text-[22px] font-semibold tracking-tight text-foreground leading-tight">
             Care Tasks
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground">
             Manage daily assignments and task execution.
           </p>
         </div>
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={visibleTabs[0]?.value}>
-        <TabsList className="w-full sm:w-auto self-start">
+      <Tabs defaultValue={visibleTabs[0]?.value} className="gap-0">
+        <TabsList className="self-start px-1">
           {visibleTabs.map((t) => (
-            <TabsTrigger key={t.value} value={t.value}>
+            <TabsTrigger key={t.value} value={t.value} className="px-5">
               {t.label}
             </TabsTrigger>
           ))}
         </TabsList>
         {visibleTabs.map((t) => (
-          <TabsContent key={t.value} value={t.value}>
+          <TabsContent key={t.value} value={t.value} className="mt-0">
             {t.content}
           </TabsContent>
         ))}

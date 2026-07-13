@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, MoreVertical } from "lucide-react";
+import { AlertTriangle, CheckCircle2, MoreVertical, Clock } from "lucide-react";
 import type { CareTask } from "@/services/care-tasks-api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,57 +19,56 @@ export const CareTaskRow = ({ task }: CareTaskRowProps) => {
   const isCompleted = task.status === "Done";
   const isMissed = task.status === "Missed";
 
+  // ── Status badge ─────────────────────────────────────────────────────────
   const statusBadge = () => {
     if (isCompleted) {
       return (
-        <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-transparent gap-1">
-          <CheckCircle2 className="size-3" />
+        <Badge className="gap-1 border-transparent bg-emerald-50 text-emerald-700 dark:bg-emerald-900/25 dark:text-emerald-400 font-medium text-[11px] px-2 py-0.5 h-auto whitespace-nowrap">
+          <CheckCircle2 className="size-3 shrink-0" />
           Done
         </Badge>
       );
     }
     if (isMissed) {
       return (
-        <Badge variant="destructive" className="gap-1">
+        <Badge className="gap-1 border-transparent bg-red-50 text-red-600 dark:bg-red-900/25 dark:text-red-400 font-medium text-[11px] px-2 py-0.5 h-auto whitespace-nowrap">
+          <AlertTriangle className="size-3 shrink-0" />
           Missed
         </Badge>
       );
     }
     return (
-      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800">
+      <Badge className="gap-1 border-transparent bg-amber-50 text-amber-700 dark:bg-amber-900/25 dark:text-amber-400 font-medium text-[11px] px-2 py-0.5 h-auto whitespace-nowrap">
+        <Clock className="size-3 shrink-0" />
         Pending
       </Badge>
     );
   };
 
+  // ── Row accent colour applied via first-cell left border ─────────────────
+  const accentBorder = isMissed
+    ? "border-l-[3px] border-l-red-400"
+    : isCompleted
+    ? "border-l-[3px] border-l-emerald-400"
+    : "border-l-[3px] border-l-amber-400";
+
+  const rowBg = isMissed
+    ? "bg-red-50/40 hover:bg-red-50/70 dark:bg-red-950/10 dark:hover:bg-red-950/20"
+    : "hover:bg-muted/40";
+
   return (
     <TableRow
-      className={`
-        group relative transition-colors
-        ${isMissed ? "bg-destructive/5 hover:bg-destructive/10" : "hover:bg-muted/50"}
-      `}
+      className={`group transition-colors border-b border-border/60 last:border-b-0 ${rowBg}`}
     >
-      {/* Left status indicator stripe */}
-      <td
-        className={`absolute left-0 top-0 bottom-0 w-0.5 ${
-          isMissed
-            ? "bg-destructive"
-            : isCompleted
-            ? "bg-emerald-500"
-            : "bg-amber-400"
-        }`}
-        aria-hidden="true"
-      />
-
-      {/* Resident */}
-      <TableCell className="px-4 py-3">
-        <div className="flex items-center gap-3">
-          <Avatar className="size-9 flex-shrink-0">
+      {/* ── Resident ─────────────────────────────────────── w-[240px] */}
+      <TableCell className={`px-4 py-3 w-[240px] min-w-[200px] ${accentBorder}`}>
+        <div className="flex items-center gap-2.5">
+          <Avatar className="size-8 flex-shrink-0">
             <AvatarImage
               src={task.residentImageUrl}
               alt={`Portrait of ${task.residentName}`}
             />
-            <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+            <AvatarFallback className="bg-primary/10 text-primary text-[11px] font-semibold">
               {task.residentName
                 .split(" ")
                 .map((n) => n[0])
@@ -81,42 +80,41 @@ export const CareTaskRow = ({ task }: CareTaskRowProps) => {
             <span className="text-sm font-medium text-foreground truncate leading-tight">
               {task.residentName}
             </span>
-            <span className="text-xs text-muted-foreground mt-0.5">
+            <span className="text-[11px] text-muted-foreground leading-tight mt-0.5">
               Room {task.room}
             </span>
           </div>
         </div>
       </TableCell>
 
-      {/* Task Type */}
-      <TableCell className="px-4 py-3">
+      {/* ── Task Type ─────────────────────────────────────── w-[130px] */}
+      <TableCell className="px-4 py-3 w-[130px]">
         <Badge
-          variant="secondary"
-          className={`text-xs gap-1 ${
+          className={`text-[11px] font-medium px-2 py-0.5 h-auto border-transparent whitespace-nowrap ${
             isMissed
               ? "bg-muted text-muted-foreground"
               : isCompleted
-              ? "bg-primary/10 text-primary"
-              : "bg-secondary text-secondary-foreground"
+              ? "bg-blue-50 text-blue-700 dark:bg-blue-900/25 dark:text-blue-400"
+              : "bg-violet-50 text-violet-700 dark:bg-violet-900/25 dark:text-violet-400"
           }`}
         >
           {task.taskType}
         </Badge>
       </TableCell>
 
-      {/* Goal */}
+      {/* ── Goal ──────────────────────────────────────────── auto width */}
       <TableCell className="px-4 py-3">
-        <p className="text-xs text-muted-foreground line-clamp-2 max-w-[200px]">
+        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed max-w-xs">
           {task.goal}
         </p>
       </TableCell>
 
-      {/* Scheduled Time */}
-      <TableCell className="px-4 py-3 text-center">
+      {/* ── Scheduled Time ───────────────────────────────── w-[110px] */}
+      <TableCell className="px-4 py-3 w-[110px] text-center">
         <span
-          className={`inline-block text-xs font-mono font-medium px-2 py-1 rounded ${
+          className={`inline-flex items-center justify-center text-[11px] font-mono font-semibold px-2 py-1 rounded-md tabular-nums ${
             isMissed
-              ? "bg-destructive/10 text-destructive"
+              ? "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400"
               : isCompleted
               ? "bg-muted text-muted-foreground"
               : "bg-muted text-foreground"
@@ -126,59 +124,64 @@ export const CareTaskRow = ({ task }: CareTaskRowProps) => {
         </span>
       </TableCell>
 
-      {/* Status */}
-      <TableCell className="px-4 py-3 text-center">
-        {statusBadge()}
+      {/* ── Status ───────────────────────────────────────── w-[110px] */}
+      <TableCell className="px-4 py-3 w-[110px] text-center">
+        <div className="flex items-center justify-center">
+          {statusBadge()}
+        </div>
       </TableCell>
 
-      {/* Flags */}
-      <TableCell className="px-4 py-3 text-center">
-        {task.isAbnormal ? (
-          <div
-            className="inline-flex items-center justify-center size-7 rounded-full bg-destructive/10 text-destructive animate-pulse"
-            title="Abnormal findings flagged"
-          >
-            <AlertTriangle className="size-3.5" />
-          </div>
-        ) : (
-          <div
-            className="inline-flex items-center justify-center size-7 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors"
-            title="No abnormal findings"
-          >
-            <CheckCircle2 className="size-4" />
-          </div>
-        )}
-      </TableCell>
-
-      {/* Actions */}
-      <TableCell className="px-4 py-3">
-        <div className={`flex items-center justify-end gap-2 ${isCompleted ? "opacity-60" : ""}`}>
-          {isCompleted ? (
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled
-              className="h-7 text-xs"
+      {/* ── Flags ────────────────────────────────────────── w-[70px] */}
+      <TableCell className="px-4 py-3 w-[70px] text-center">
+        <div className="flex items-center justify-center">
+          {task.isAbnormal ? (
+            <span
+              className="inline-flex size-6 items-center justify-center rounded-full bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-400 ring-1 ring-red-200 dark:ring-red-800"
+              title="Abnormal findings flagged"
             >
+              <AlertTriangle className="size-3.5" />
+            </span>
+          ) : (
+            <span
+              className="inline-flex size-6 items-center justify-center rounded-full text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors"
+              title="No abnormal findings"
+            >
+              <CheckCircle2 className="size-3.5" />
+            </span>
+          )}
+        </div>
+      </TableCell>
+
+      {/* ── Actions ──────────────────────────────────────── w-[160px] */}
+      <TableCell className="px-4 py-3 w-[160px]">
+        <div className="flex items-center justify-end gap-1.5">
+          {isCompleted ? (
+            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-muted px-2.5 py-1 rounded-md">
+              <CheckCircle2 className="size-3 text-emerald-500 shrink-0" />
               Completed
-            </Button>
+            </span>
           ) : (
             <>
               <Button
                 variant={isMissed ? "outline" : "default"}
                 size="sm"
-                className="h-7 text-xs"
+                className={`h-7 text-xs px-3 font-medium ${
+                  isMissed
+                    ? "border-border text-foreground hover:bg-muted"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+                }`}
               >
                 {isMissed ? "Reschedule" : "Complete"}
               </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger
-                  className="inline-flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none"
+                  className="inline-flex size-7 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                   aria-label="More options"
                 >
                   <MoreVertical className="size-3.5" />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="min-w-[150px]">
                   <DropdownMenuItem>View Details</DropdownMenuItem>
                   <DropdownMenuItem>Flag as Abnormal</DropdownMenuItem>
                   <DropdownMenuItem variant="destructive">

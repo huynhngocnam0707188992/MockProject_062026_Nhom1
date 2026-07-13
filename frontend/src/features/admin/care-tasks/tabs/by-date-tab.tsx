@@ -4,28 +4,43 @@ import { CareTaskTableHeader } from "../components/by-date-tab/care-task-table-h
 import { CareTaskRow } from "../components/by-date-tab/care-task-row";
 import { CareTaskFilterBar } from "../components/by-date-tab/care-task-filter-bar";
 import { Table, TableBody } from "@/components/ui/table";
+import { ClipboardList } from "lucide-react";
 
 export const ByDateTab = () => {
   const { cnaGroups, isLoading } = useCareTasks();
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
-        Loading care tasks...
+      <div className="flex items-center justify-center py-20 text-muted-foreground text-sm gap-2">
+        <div className="size-4 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
+        Loading care tasks…
+      </div>
+    );
+  }
+
+  if (cnaGroups.length === 0) {
+    return (
+      <div className="mt-5 flex flex-col items-center justify-center gap-3 py-20 rounded-xl border bg-card text-center">
+        <ClipboardList className="size-10 text-muted-foreground/40" />
+        <p className="text-sm text-muted-foreground">
+          No care tasks found for the selected date.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col w-full gap-6 pb-6 mt-4">
+    <div className="flex flex-col w-full gap-5 mt-5">
+      {/* Filter bar */}
       <CareTaskFilterBar />
 
+      {/* One card per CNA */}
       {cnaGroups.map((cnaGroup) => (
         <div
           key={cnaGroup.id}
-          className="rounded-xl border bg-card shadow-sm overflow-hidden"
+          className="rounded-xl border border-border bg-card shadow-sm overflow-hidden"
         >
-          {/* CNA Card Header */}
+          {/* Card header — CNA identity + progress */}
           <CnaCardHeader
             name={cnaGroup.name}
             role={cnaGroup.role}
@@ -36,23 +51,22 @@ export const ByDateTab = () => {
             missedTasks={cnaGroup.missedTasks}
           />
 
-          {/* Task Table — Table component already provides overflow-x-auto */}
-          <Table>
-            <CareTaskTableHeader />
-            <TableBody>
-              {cnaGroup.tasks.map((task) => (
-                <CareTaskRow key={task.id} task={task} />
-              ))}
-            </TableBody>
-          </Table>
+          {/*
+            Table with table-fixed so the explicit widths on <th> are
+            honoured — this is what makes columns perfectly aligned.
+          */}
+          <div className="overflow-x-auto">
+            <Table className="table-fixed min-w-[720px]">
+              <CareTaskTableHeader />
+              <TableBody>
+                {cnaGroup.tasks.map((task) => (
+                  <CareTaskRow key={task.id} task={task} />
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       ))}
-
-      {cnaGroups.length === 0 && (
-        <div className="rounded-xl border bg-card shadow-sm p-12 text-center text-muted-foreground text-sm">
-          No care tasks found for the selected date.
-        </div>
-      )}
     </div>
   );
 };

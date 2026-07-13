@@ -8,86 +8,108 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 export const CareTaskFilterBar = () => {
   return (
-    <div className="rounded-xl border bg-card shadow-sm p-4">
-      <div className="flex flex-wrap items-center gap-3">
+    <div className="rounded-xl border bg-card shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 px-4 py-3">
+
         {/* Date Picker */}
-        <Button variant="outline" className="flex items-center gap-2 h-9 px-3">
-          <CalendarDays className="size-4 text-muted-foreground" />
-          <span className="text-sm font-medium">Oct 24, 2026</span>
+        <Button
+          variant="outline"
+          className="h-8 gap-2 px-3 text-sm font-medium border-border bg-background hover:bg-muted"
+        >
+          <CalendarDays className="size-3.5 text-muted-foreground" />
+          Oct 24, 2026
         </Button>
 
-        <div className="w-px h-6 bg-border" />
+        <Separator orientation="vertical" className="h-5 mx-1" />
 
-        {/* Shift Select */}
-        <Select defaultValue="all-shifts">
-          <SelectTrigger className="h-9 w-36">
-            <span className="text-xs text-muted-foreground mr-1">Shift:</span>
-            <SelectValue placeholder="All" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all-shifts">All</SelectItem>
-            <SelectItem value="morning">Morning</SelectItem>
-            <SelectItem value="afternoon">Afternoon</SelectItem>
-            <SelectItem value="night">Night</SelectItem>
-          </SelectContent>
-        </Select>
+        {/* Shift */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+            Shift
+          </span>
+          <Select defaultValue="all-shifts">
+            <SelectTrigger className="h-8 w-28 text-xs border-border bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all-shifts">All</SelectItem>
+              <SelectItem value="morning">Morning</SelectItem>
+              <SelectItem value="afternoon">Afternoon</SelectItem>
+              <SelectItem value="night">Night</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        {/* Status Select */}
-        <Select defaultValue="all-status">
-          <SelectTrigger className="h-9 w-40">
-            <span className="text-xs text-muted-foreground mr-1">Status:</span>
-            <SelectValue placeholder="All" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all-status">All</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="done">Completed</SelectItem>
-            <SelectItem value="missed">Missed</SelectItem>
-          </SelectContent>
-        </Select>
+        {/* Status */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+            Status
+          </span>
+          <Select defaultValue="all-status">
+            <SelectTrigger className="h-8 w-28 text-xs border-border bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all-status">All</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="done">Completed</SelectItem>
+              <SelectItem value="missed">Missed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        {/* CNA Select */}
-        <Select defaultValue="all-cnas">
-          <SelectTrigger className="h-9 w-40">
-            <span className="text-xs text-muted-foreground mr-1">CNA:</span>
-            <SelectValue placeholder="All CNAs" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all-cnas">All CNAs</SelectItem>
-            <SelectItem value="sarah">Sarah G.</SelectItem>
-            <SelectItem value="mark">Mark J.</SelectItem>
-          </SelectContent>
-        </Select>
+        {/* CNA */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+            CNA
+          </span>
+          <Select defaultValue="all-cnas">
+            <SelectTrigger className="h-8 w-32 text-xs border-border bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all-cnas">All CNAs</SelectItem>
+              <SelectItem value="sarah">Sarah G.</SelectItem>
+              <SelectItem value="mark">Mark J.</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        {/* Task Type Select */}
-        <Select defaultValue="all-types">
-          <SelectTrigger className="h-9 w-40">
-            <span className="text-xs text-muted-foreground mr-1">Type:</span>
-            <SelectValue placeholder="All Types" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all-types">All Types</SelectItem>
-            <SelectItem value="bathing">Bathing</SelectItem>
-            <SelectItem value="medication">Medication</SelectItem>
-            <SelectItem value="meals">Meals</SelectItem>
-          </SelectContent>
-        </Select>
+        {/* Task Type */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+            Type
+          </span>
+          <Select defaultValue="all-types">
+            <SelectTrigger className="h-8 w-32 text-xs border-border bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all-types">All Types</SelectItem>
+              <SelectItem value="bathing">Bathing</SelectItem>
+              <SelectItem value="medication">Medication</SelectItem>
+              <SelectItem value="meals">Meals</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        {/* Spacer */}
-        <div className="flex-1 min-w-[80px]" />
+        {/* Push search to the right */}
+        <div className="flex-1" />
 
         {/* Resident Search */}
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+        <div className="relative min-w-[200px]">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
           <Input
-            className="pl-9 h-9 w-52"
-            placeholder="Search resident..."
+            className="pl-8 h-8 text-sm border-border bg-background"
+            placeholder="Search resident…"
             type="text"
           />
         </div>
+
       </div>
     </div>
   );
