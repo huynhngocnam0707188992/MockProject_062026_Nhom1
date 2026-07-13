@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import Text from "../ui/Text";
 import {
   Table,
@@ -11,38 +10,13 @@ import {
 } from "../ui/table";
 import Flag from "../ui/flag";
 import { Link } from "react-router";
-type Resident = {
-  id: number;
-  name: string;
-  locTier: string;
-  status: string;
-  lastReview: string;
-  nextReview: string;
-  assinged: string;
+import type { CarePlan } from "@/services/care-plan/care-plan-types";
+
+type CarePlanTableProps = {
+  carePlans: CarePlan[];
 };
 
-const listResident: Resident[] = [
-  {
-    id: 1,
-    name: "Susan Wright",
-    locTier: "Tier 1",
-    status: "Needs Update",
-    lastReview: "2026-03-30",
-    nextReview: "overdue",
-    assinged: "Anna lee",
-  },
-  {
-    id: 2,
-    name: "Susan Wright2",
-    locTier: "Tier 2",
-    status: "Active ",
-    lastReview: "2026-04-04",
-    nextReview: "2026-07-07",
-    assinged: "Anna lee",
-  },
-];
-
-export default function CarePlanTable() {
+export default function CarePlanTable(props: CarePlanTableProps) {
   return (
     <div className="mt-[16px]">
       <Table className=" border-2 border-gray-300 rounded-lg p-4">
@@ -51,64 +25,61 @@ export default function CarePlanTable() {
           <TableRow className="font-bold font text-lg ">
             <TableHead className="w-[180ppx] text-left text-gray-600">
               {/* Resident */}
-              <Text>Resident</Text>
+              <Text>Care Plan ID</Text>
             </TableHead>
             <TableHead className="text-left  text-gray-600">
-              <Text>LOC Tier</Text>
+              <Text>Resident Name</Text>
             </TableHead>
             <TableHead className="text-left text-gray-600">
               <Text>Status</Text>
             </TableHead>
             <TableHead className="text-left text-gray-600">
-              <Text>Last Review</Text>
+              <Text>Total Goal</Text>
             </TableHead>
             <TableHead className="text-left text-gray-600">
-              <Text>Next Review</Text>
+              <Text>Total Intervention</Text>
             </TableHead>
-            <TableHead className="text-left">
-              <Text>Assigned</Text>
-            </TableHead>
-            <TableHead className="text-left"></TableHead>
+            <TableHead className="text-left">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {listResident.map((resident) => (
-            <TableRow key={resident.id}>
+          {props.carePlans.map((carePlan) => (
+            <TableRow key={carePlan.id}>
               <TableCell className="font-medium">
-                <Text className="text-black">{resident.name}</Text>
+                <Text className="text-black">{carePlan.id}</Text>
               </TableCell>
 
               <TableCell className="text-left">
-                <Text>{resident.locTier}</Text>
+                <Text>Resident Name</Text>
               </TableCell>
 
               <TableCell className="text-left">
                 <Flag
-                  title={resident.status}
+                  title={carePlan.status}
                   className={`rounded-full ${
-                    resident.status === "Needs Update"
-                      ? "bg-red-300 text-red-700 border-red-400"
-                      : "bg-green-300 text-green-700 border-green-400"
+                    carePlan.status === "DRAFT"
+                      ? "bg-gray-300 text-gray-700 border-gray-400"
+                      : carePlan.status === "ACTIVE"
+                        ? "bg-green-300 text-green-700 border-green-400"
+                        : carePlan.status === "RESOLVED"
+                          ? "bg-blue-300 text-blue-700 border-blue-400"
+                          : "bg-red-300 text-red-700 border-red-400"
                   }`}
-                ></Flag>
+                />
               </TableCell>
 
               <TableCell className="text-left">
-                <Text>{resident.lastReview}</Text>
+                <Text>{carePlan.goalCount}</Text>
               </TableCell>
 
               <TableCell className="text-left ">
-                <Text>{resident.nextReview}</Text>
-              </TableCell>
-
-              <TableCell className="text-left">
-                <Text>{resident.assinged}</Text>
+                <Text>{carePlan.interventionCount}</Text>
               </TableCell>
 
               <TableCell className="text-left cursor-pointer">
                 <TableCell className="text-left">
-                  <Link to={`/admin/care-plans/${resident.id}`}>
-                <Text className="text-blue-700 font-bold ">View</Text>
+                  <Link to={`/admin/care-plans/${carePlan.id}`}>
+                    <Text className="text-blue-700 font-bold ">View</Text>
                   </Link>
                 </TableCell>
               </TableCell>

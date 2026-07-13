@@ -1,6 +1,5 @@
 import AdmissionPage from "@/features/admin/admissions/pages/admission-page";
 import PreAdmissionPage from "@/features/admin/pre-admission/pages/pre-admission-page";
-import PreAdmissionDetailPage from "@/features/admin/pre-admission/pages/pre-admission-detail-page";
 import AuditlogPage from "@/features/admin/audit-logs/pages/audit-log-page";
 import CarePlanPage from "@/features/admin/care-plans/pages/care-plan-page";
 import CareTaskPage from "@/features/admin/care-tasks/pages/care-task-page";
@@ -22,6 +21,7 @@ import { FacilityDetailPage } from "@/features/admin/facilities/pages/facility-d
 import DemoDataPage from "@/features/admin/demo-data/pages/demo-data-page";
 import StaffingRatioPage from "@/features/admin/staffing-ratios/pages/staffing-ratio-page";
 import RolePage from "@/features/admin/roles/pages/role-page";
+import { AssessmentPage } from "@/features/admin/assessment/pages/assessment-page";
 import CarePlanReviewPage from "@/features/admin/care-plans/pages/care-plan-review-page";
 import CarePlanDetailPage from "@/features/admin/care-plans/pages/care-plan-detail/care-plan-detail-page";
 
@@ -59,20 +59,16 @@ export const adminRoutes: RouteObject = {
     {
       path: "pre-admission",
       element: (
-        <RequirePermission
-          permission={[PERMISSIONS.SCREENING_VIEW, PERMISSIONS.ASSESSMENT_VIEW]}
-        >
+        <RequirePermission permission={PERMISSIONS.SCREENING_VIEW}>
           <PreAdmissionPage />
         </RequirePermission>
       ),
     },
     {
-      path: "pre-admission/:id",
+      path: "assessment",
       element: (
-        <RequirePermission
-          permission={[PERMISSIONS.SCREENING_VIEW, PERMISSIONS.ASSESSMENT_VIEW]}
-        >
-          <PreAdmissionDetailPage />
+        <RequirePermission permission={PERMISSIONS.ASSESSMENT_VIEW}>
+          <AssessmentPage />
         </RequirePermission>
       ),
     },
@@ -132,7 +128,7 @@ export const adminRoutes: RouteObject = {
           <SlaConfigPage />
         </RequirePermission>
       ),
-},
+    },
     {
       path: "care-plans",
       element: (

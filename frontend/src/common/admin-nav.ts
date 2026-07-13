@@ -57,10 +57,7 @@ export const adminNavGroups: AdminNavGroup[] = [
         label: "Roles",
         path: "/admin/roles",
         icon: Shield,
-        permission: [
-          PERMISSIONS.ROLE_VIEW,
-          PERMISSIONS.PERMISSION_VIEW,
-        ],
+        permission: [PERMISSIONS.ROLE_VIEW, PERMISSIONS.PERMISSION_VIEW],
       },
     ],
   },
@@ -74,10 +71,16 @@ export const adminNavGroups: AdminNavGroup[] = [
         permission: PERMISSIONS.RESIDENT_VIEW,
       },
       {
-        label: "Pre-Admission & Assessment",
+        label: "Pre-Admission",
         path: "/admin/pre-admission",
         icon: ClipboardCheck,
-        permission: [PERMISSIONS.SCREENING_VIEW, PERMISSIONS.ASSESSMENT_VIEW],
+        permission: PERMISSIONS.SCREENING_VIEW,
+      },
+      {
+        label: "Assessment",
+        path: "/admin/assessment",
+        icon: ClipboardList,
+        permission: PERMISSIONS.ASSESSMENT_VIEW,
       },
       {
         label: "Admissions & Bed Assignment",
