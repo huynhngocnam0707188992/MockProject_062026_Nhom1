@@ -56,6 +56,9 @@ export interface ResidentGroup {
   careLevel: ResidentCareLevel;
   /** Green dot = active, Yellow = fall-risk, Red = alert */
   statusDot: "active" | "fall-risk" | "alert";
+  totalTasks: number;
+  completedTasks: number;
+  missedTasks?: number;
   tasks: ResidentTask[];
 }
 
@@ -234,6 +237,8 @@ let mockResidentGroups: ResidentGroup[] = [
     statusDot: "active",
     imageUrl:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAb5jmImGeqW0Vs7jYdO11SIOGbqrRRpdmZALbrZ0_IlM0n5e-5_deYwHcXZ7bi1bAa5jML-EE6GhA7FtLimXAkCEkZXdloI8wlJEd6P61TKdVuHzrP24HOBe2epSz72xt8UWFwZNiW9xdI8uNsVPZRJ7LeD7ex1yt3RS7GRWlpDuY973bmIB4QA9NNuajw4JYggT8jpfWhWkJFYxqX-w3dIBb8lQQrQ2vZ82w6KqpAsqM1rGFuHYZY",
+    totalTasks: 5,
+    completedTasks: 1,
     tasks: [
       {
         id: "task-101",
@@ -280,6 +285,8 @@ let mockResidentGroups: ResidentGroup[] = [
     statusDot: "fall-risk",
     imageUrl:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBWvqSsqIslHngDBTWsfvvqACrY6NkXeuPmnJfO1yxis6QbLcli8KqIcE4MjeaXzcoA3cpfqdOmpcU67OI3HBkL21WjO-6jeUVw9_LIgEUIPwLCUtKr5N_-hQmniLm7Pzs4dBGyavyCMdr8LTuw2lCQCFE68CTHYglt4adQ0gXnQ9qw0MxagD2cvfOT9i-Jr_8zpvlie2cv0n3eiCXaM5i2hEqtYmJ4GA0eO4I5wp9UMruOtWQ0p7Rc",
+    totalTasks: 3,
+    completedTasks: 0,
     tasks: [
       {
         id: "task-104",

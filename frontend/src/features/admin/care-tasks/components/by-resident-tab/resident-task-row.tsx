@@ -45,6 +45,13 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
     );
   };
 
+  // ── Row accent colour applied via first-cell left border ─────────────────
+  const accentBorder = isMissed
+    ? "border-l-[3px] border-l-red-400"
+    : isCompleted
+    ? "border-l-[3px] border-l-emerald-400"
+    : "border-l-[3px] border-l-amber-400";
+
   const rowBg = isMissed
     ? "bg-red-50/40 hover:bg-red-50/70 dark:bg-red-950/10 dark:hover:bg-red-950/20"
     : "hover:bg-muted/40";
@@ -53,14 +60,37 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
     <TableRow
       className={`group transition-colors border-b border-border/60 last:border-b-0 ${rowBg}`}
     >
-      {/* ── Time ────────────────────────────────────────── w-[110px] */}
-      <TableCell className="px-4 py-3 w-[110px]">
-        <span className="text-[12px] font-semibold text-foreground">
-          {task.time}
-        </span>
+      {/* ── Assigned Staff ───────────────────────────────── w-[240px] */}
+      <TableCell className={`px-4 py-3 w-[240px] min-w-[200px] ${accentBorder}`}>
+        <div className="flex items-center gap-2.5">
+          {task.assignedCnaImageUrl ? (
+            <Avatar className="size-8 flex-shrink-0">
+              <AvatarImage src={task.assignedCnaImageUrl} alt={task.assignedCnaName} />
+              <AvatarFallback className="bg-primary/10 text-primary text-[11px] font-semibold">
+                {task.assignedCnaName
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2)}
+              </AvatarFallback>
+            </Avatar>
+          ) : (
+            <div className="size-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0 border border-border">
+              <span className="text-[10px] font-bold text-muted-foreground">Un</span>
+            </div>
+          )}
+          <div className="flex flex-col min-w-0">
+            <span className={`text-sm truncate leading-tight ${!task.assignedCnaImageUrl ? "text-muted-foreground italic font-normal" : "text-foreground font-medium"}`}>
+              {task.assignedCnaName}
+            </span>
+            <span className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+              Assigned CNA
+            </span>
+          </div>
+        </div>
       </TableCell>
 
-      {/* ── Task Type ───────────────────────────────────── w-[130px] */}
+      {/* ── Task Type ────────────────────────────────────── w-[130px] */}
       <TableCell className="px-4 py-3 w-[130px]">
         <Badge
           className={`text-[11px] font-medium px-2 py-0.5 h-auto border-transparent whitespace-nowrap ${
@@ -75,77 +105,100 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
         </Badge>
       </TableCell>
 
-      {/* ── Goal / Details ──────────────────────────────── auto width */}
+      {/* ── Goal ─────────────────────────────────────────── auto width */}
       <TableCell className="px-4 py-3">
-        <div className="flex flex-col gap-0.5 max-w-sm">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-semibold text-foreground">
-              {task.goalTitle}
-            </span>
-            {task.hasFlag && (
-              <span
-                className="inline-flex items-center justify-center size-4 rounded bg-red-100 text-red-500 dark:bg-red-900/30"
-                title={task.flagNote || "Attention required"}
-              >
-                <AlertTriangle className="size-2.5" />
-              </span>
-            )}
-          </div>
-          <span className="text-[11px] text-muted-foreground line-clamp-1 leading-snug">
+        <div className="flex flex-col max-w-[250px] gap-0.5">
+          <span className="text-xs font-semibold text-foreground truncate">
+            {task.goalTitle}
+          </span>
+          <p className="text-xs text-muted-foreground line-clamp-1">
             {task.goalDetail}
-          </span>
+          </p>
         </div>
       </TableCell>
 
-      {/* ── Assigned CNA ────────────────────────────────── w-[200px] */}
-      <TableCell className="px-4 py-3 w-[200px]">
-        <div className="flex items-center gap-2">
-          {task.assignedCnaImageUrl ? (
-            <Avatar className="size-6 flex-shrink-0">
-              <AvatarImage src={task.assignedCnaImageUrl} alt={task.assignedCnaName} />
-              <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
-                {task.assignedCnaName.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-          ) : (
-            <div className="size-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">
-              Un
-            </div>
-          )}
-          <span className={`text-[12px] truncate ${!task.assignedCnaImageUrl ? "text-muted-foreground italic" : "text-foreground font-medium"}`}>
-            {task.assignedCnaName}
-          </span>
-        </div>
+      {/* ── Scheduled Time ───────────────────────────────── w-[110px] */}
+      <TableCell className="px-4 py-3 w-[110px] text-center">
+        <span
+          className={`inline-flex items-center justify-center text-[11px] font-mono font-semibold px-2 py-1 rounded-md tabular-nums ${
+            isMissed
+              ? "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400"
+              : isCompleted
+              ? "bg-muted text-muted-foreground"
+              : "bg-muted text-foreground"
+          }`}
+        >
+          {task.time}
+        </span>
       </TableCell>
 
-      {/* ── Status ──────────────────────────────────────── w-[110px] */}
+      {/* ── Status ───────────────────────────────────────── w-[110px] */}
       <TableCell className="px-4 py-3 w-[110px] text-center">
         <div className="flex items-center justify-center">
           {statusBadge()}
         </div>
       </TableCell>
 
-      {/* ── Actions ─────────────────────────────────────── w-[70px] */}
-      <TableCell className="px-4 py-3 w-[70px]">
-        <div className="flex items-center justify-end">
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-              aria-label="More options"
+      {/* ── Flags ────────────────────────────────────────── w-[70px] */}
+      <TableCell className="px-4 py-3 w-[70px] text-center">
+        <div className="flex items-center justify-center">
+          {task.hasFlag ? (
+            <span
+              className="inline-flex size-6 items-center justify-center rounded-full bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-400 ring-1 ring-red-200 dark:ring-red-800"
+              title={task.flagNote || "Attention required"}
             >
-              <MoreVertical className="size-3.5" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-[150px]">
-              {!isCompleted && <DropdownMenuItem>Complete Task</DropdownMenuItem>}
-              <DropdownMenuItem>View Details</DropdownMenuItem>
-              <DropdownMenuItem>Reassign</DropdownMenuItem>
-              {!isMissed && !isCompleted && (
-                <DropdownMenuItem variant="destructive">
-                  Mark as Missed
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <AlertTriangle className="size-3.5" />
+            </span>
+          ) : (
+            <span
+              className="inline-flex size-6 items-center justify-center rounded-full text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors"
+              title="No flags"
+            >
+              <CheckCircle2 className="size-3.5" />
+            </span>
+          )}
+        </div>
+      </TableCell>
+
+      {/* ── Actions ──────────────────────────────────────── w-[160px] */}
+      <TableCell className="px-4 py-3 w-[160px]">
+        <div className="flex items-center justify-end gap-1.5">
+          {isCompleted ? (
+            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-muted px-2.5 py-1 rounded-md">
+              <CheckCircle2 className="size-3 text-emerald-500 shrink-0" />
+              Completed
+            </span>
+          ) : (
+            <>
+              <Button
+                variant={isMissed ? "outline" : "default"}
+                size="sm"
+                className={`h-7 text-xs px-3 font-medium ${
+                  isMissed
+                    ? "border-border text-foreground hover:bg-muted"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+                }`}
+              >
+                {isMissed ? "Reschedule" : "Complete"}
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  className="inline-flex size-7 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                  aria-label="More options"
+                >
+                  <MoreVertical className="size-3.5" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[150px]">
+                  <DropdownMenuItem>View Details</DropdownMenuItem>
+                  <DropdownMenuItem>Flag as Abnormal</DropdownMenuItem>
+                  <DropdownMenuItem variant="destructive">
+                    Mark as Missed
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          )}
         </div>
       </TableCell>
     </TableRow>
