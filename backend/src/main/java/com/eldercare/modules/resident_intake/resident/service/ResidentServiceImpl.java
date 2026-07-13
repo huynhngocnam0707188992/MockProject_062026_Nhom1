@@ -39,9 +39,14 @@ import java.time.Period;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.eldercare.modules.resident_intake.resident.mapper.ResidentMapper;
+
 @Service
 @Transactional
 public class ResidentServiceImpl implements ResidentService {
+
+    @Autowired
+    private ResidentMapper residentMapper;
 
     @Autowired
     private ResidentRepository residentRepository;
@@ -97,7 +102,13 @@ public class ResidentServiceImpl implements ResidentService {
                     .collect(Collectors.toList());
         }
 
-        List<ResidentListResponseDto> dtos = residents.stream().map(this::mapToListDto).collect(Collectors.toList());
+        List<ResidentListResponseDto> dtos = residents.stream()
+                .map(r -> {
+                    List<ResidentInsurancePolicyEntity> policies = residentInsurancePolicyRepository
+                            .findByResidentIdAndIsDeletedFalse(r.getId());
+                    return residentMapper.toListDto(r, policies);
+                })
+                .collect(Collectors.toList());
 
         // Filter by search
         if (search != null && !search.trim().isEmpty()) {
@@ -193,186 +204,21 @@ public class ResidentServiceImpl implements ResidentService {
         ResidentEntity resident = residentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("ResidentEntity not found with id: " + id));
 
-        ResidentDetailResponseDto dto = new ResidentDetailResponseDto();
-        dto.setId(resident.getId());
-        dto.setName(resident.getFirstName() + " " + resident.getLastName());
-
-        // Initials
-        String initials = "";
-        if (resident.getFirstName() != null && !resident.getFirstName().isEmpty())
-            initials += resident.getFirstName().charAt(0);
-        if (resident.getLastName() != null && !resident.getLastName().isEmpty())
-            initials += resident.getLastName().charAt(0);
-        dto.setInitials(initials.toUpperCase());
-
-        // RoomEntity
-        String roomStr = "—";
-        if (resident.getBed() != null) {
-            roomStr = resident.getBed().getRoom().getRoomNumber() + resident.getBed().getBedNumber();
-        }
-        dto.setRoom(roomStr);
-
-        String statusStr = resident.getStatus();
-        if (statusStr != null && !statusStr.isEmpty()) {
-            dto.setStatus(Character.toUpperCase(statusStr.charAt(0)) + statusStr.substring(1).toLowerCase());
-        } else {
-            dto.setStatus("Pending");
-        }
-        dto.setDob(resident.getDateOfBirth());
-
-        int ageVal = 75;
-        if (resident.getDateOfBirth() != null) {
-            ageVal = Period.between(resident.getDateOfBirth(), LocalDate.now()).getYears();
-        }
-        dto.setAge(ageVal);
-
-        // Badges
-        List<ResidentDetailResponseDto.Badge> badges = new ArrayList<>();
-        badges.add(new ResidentDetailResponseDto.Badge(dto.getStatus(), "active"));
-
-        // DNR (mocked)
-        boolean isDnr = false;
-        badges.add(new ResidentDetailResponseDto.Badge(isDnr ? "DNR" : "No DNR", isDnr ? "dnr" : "nodnr"));
-
-        // LOC level
         List<ResidentCareLevelHistoryEntity> careHistory = residentCareLevelHistoryRepository
                 .findByResidentId(resident.getId());
-        String careLevelName = "Level 3";
-        if (!careHistory.isEmpty()) {
-            careLevelName = careHistory.get(0).getCareLevel().getLevelName();
-        }
-        badges.add(new ResidentDetailResponseDto.Badge(careLevelName, "level3"));
-
-        // Payer badge
         List<ResidentInsurancePolicyEntity> policies = residentInsurancePolicyRepository
                 .findByResidentIdAndIsDeletedFalse(resident.getId());
-        Optional<ResidentInsurancePolicyEntity> primaryPolicy = policies.stream()
-                .filter(ResidentInsurancePolicyEntity::isPrimary).findFirst();
-        String payerSource = primaryPolicy.isPresent() ? primaryPolicy.get().getInsuranceProvider().getProviderName()
-                : "Private Pay";
-        badges.add(new ResidentDetailResponseDto.Badge(payerSource, "payer"));
-        dto.setBadges(badges);
-
-        // Demographics
-        ResidentDetailResponseDto.Demographics demo = new ResidentDetailResponseDto.Demographics();
-        demo.setLegalName(resident.getFirstName() + " "
-                + (resident.getMiddleName() != null ? resident.getMiddleName() + " " : "") + resident.getLastName());
-
-        // AddressEntity
-        if (resident.getAddress() != null) {
-            AddressEntity addr = resident.getAddress();
-            demo.setAddress(addr.getStreetLine1() + (addr.getStreetLine2() != null ? ", " + addr.getStreetLine2() : "")
-                    + ", " + addr.getCity() + ", " + addr.getState());
-        } else {
-            demo.setAddress("—");
-        }
-        demo.setDob(resident.getDateOfBirth());
-
-        // AdmissionEntity Date
-        List<AdmissionEntity> admissions = admissionRepository.findByResidentId(resident.getId());
-        if (!admissions.isEmpty()) {
-            demo.setAdmissionDate(admissions.get(0).getAdmissionDate());
-        } else {
-            demo.setAdmissionDate(LocalDate.now().minusYears(1));
-        }
-
-        // SSN from sensitive info
         Optional<ResidentSensitiveInfoEntity> sensitive = residentSensitiveInfoRepository
                 .findByResidentId(resident.getId());
-        demo.setSsn(sensitive.isPresent() ? sensitive.get().getSsnEncrypted() : "XXX-XX-0000");
-
-        demo.setRoomBed(resident.getBed() != null
-                ? resident.getBed().getRoom().getRoomNumber() + " / " + resident.getBed().getBedNumber()
-                : "—");
-        demo.setGender(resident.getGender());
-        demo.setReferralSource(getMockReferralSource(resident.getId()));
-        demo.setMaritalStatus(resident.getMaritalStatus());
-
-        // Contacts / Emergency ContactEntity / POA
+        List<AdmissionEntity> admissions = admissionRepository.findByResidentId(resident.getId());
         List<ResidentContactEntity> residentContacts = residentContactRepository.findByResidentId(resident.getId());
-        Optional<ResidentContactEntity> emergencyContact = residentContacts.stream()
-                .filter(ResidentContactEntity::isEmergencyContact).findFirst();
-
-        if (emergencyContact.isPresent()) {
-            ContactEntity contact = emergencyContact.get().getContact();
-            demo.setEmergencyContact(contact.getFirstName() + " " + contact.getLastName() + " ("
-                    + emergencyContact.get().getRelationshipType() + ")");
-            demo.setPhone(contact.getPhonePrimary());
-        } else {
-            demo.setEmergencyContact("—");
-            demo.setPhone("—");
-        }
-        demo.setPayerSource(payerSource);
-        dto.setDemographics(demo);
-
-        // POA mapping
-        ResidentDetailResponseDto.Poa poaDto = new ResidentDetailResponseDto.Poa();
-        Optional<ResidentContactEntity> poaContact = residentContacts.stream()
-                .filter(rc -> rc.getRelationshipType().equalsIgnoreCase("SON") ||
-                        rc.getRelationshipType().equalsIgnoreCase("DAUGHTER") ||
-                        rc.getRelationshipType().equalsIgnoreCase("SPOUSE") ||
-                        rc.getRelationshipType().equalsIgnoreCase("LEGAL_GUARDIAN"))
-                .findFirst();
-
-        if (poaContact.isPresent()) {
-            ContactEntity contact = poaContact.get().getContact();
-            poaDto.setName(contact.getFirstName() + " " + contact.getLastName());
-            poaDto.setRelationship(poaContact.get().getRelationshipType());
-            poaDto.setContact(contact.getPhonePrimary());
-        } else {
-            poaDto.setName("—");
-            poaDto.setRelationship("—");
-            poaDto.setContact("—");
-        }
-        poaDto.setDnrFlag(isDnr ? "Yes" : "No");
-        dto.setPoa(poaDto);
-
-        // Diagnoses (Clinical records)
-        List<ClinicalRecordEntity> diagnosesRecords = clinicalRecordRepository
+        List<ClinicalRecordEntity> diagnoses = clinicalRecordRepository
                 .findByResidentIdAndRecordTypeAndIsDeletedFalse(resident.getId(), "DIAGNOSIS");
-        if (!diagnosesRecords.isEmpty()) {
-            dto.setDiagnoses(
-                    diagnosesRecords.stream().map(ClinicalRecordEntity::getDescription).collect(Collectors.toList()));
-        } else {
-            dto.setDiagnoses(Arrays.asList("Type 2 DM (E11.9)", "HTN (I10)", "CKD Stage 3 (N18.3)"));
-        }
-
-        // Allergies (Clinical records)
-        List<ClinicalRecordEntity> allergiesRecords = clinicalRecordRepository
+        List<ClinicalRecordEntity> allergies = clinicalRecordRepository
                 .findByResidentIdAndRecordTypeAndIsDeletedFalse(resident.getId(), "ALLERGY");
-        if (!allergiesRecords.isEmpty()) {
-            dto.setAllergies(
-                    allergiesRecords.stream().map(ClinicalRecordEntity::getDescription).collect(Collectors.toList()));
-        } else {
-            dto.setAllergies(Arrays.asList("Penicillin", "Sulfa drugs", "Latex"));
-        }
 
-        // Insurance
-        ResidentDetailResponseDto.Insurance insDto = new ResidentDetailResponseDto.Insurance();
-        if (primaryPolicy.isPresent()) {
-            ResidentInsurancePolicyEntity policy = primaryPolicy.get();
-            insDto.setMedicareNum(policy.getPolicyNumberEncrypted());
-            insDto.setProvider(policy.getInsuranceProvider().getProviderName());
-            insDto.setPayerName(policy.getInsuranceProvider().getProviderName() + " CA");
-            insDto.setAuthNum("AUTH-" + policy.getGroupNumber());
-            insDto.setAuthStartEnd(policy.getEffectiveFrom() + " / "
-                    + (policy.getEffectiveTo() != null ? policy.getEffectiveTo() : "Present"));
-        } else {
-            insDto.setMedicareNum("—");
-            insDto.setProvider("Private Pay");
-            insDto.setPayerName("Self Pay");
-            insDto.setAuthNum("—");
-            insDto.setAuthStartEnd("—");
-        }
-        dto.setInsurance(insDto);
-
-        // LOC Summary
-        ResidentDetailResponseDto.LocSummary loc = new ResidentDetailResponseDto.LocSummary();
-        loc.setLevel(careLevelName);
-        loc.setAdlScore("20 / 32 (Tier 3)");
-        dto.setLocSummary(loc);
-
-        return dto;
+        return residentMapper.toDetailResponseDto(resident, careHistory, policies, sensitive, admissions,
+                residentContacts, diagnoses, allergies);
     }
 
     @Override
@@ -629,7 +475,7 @@ public class ResidentServiceImpl implements ResidentService {
         ResidentEntity resident = residentRepository.findById(id)
                 .filter(r -> !r.isDeleted())
                 .orElseThrow(() -> new IllegalArgumentException("ResidentEntity not found with id: " + id));
-        return mapToResponseDto(resident);
+        return residentMapper.toResponseDto(resident);
     }
 
     @Override
@@ -653,7 +499,7 @@ public class ResidentServiceImpl implements ResidentService {
         }
 
         resident = residentRepository.save(resident);
-        return mapToResponseDto(resident);
+        return residentMapper.toResponseDto(resident);
     }
 
     @Override
@@ -687,7 +533,7 @@ public class ResidentServiceImpl implements ResidentService {
         resident.setUpdatedAt(OffsetDateTime.now());
 
         resident = residentRepository.save(resident);
-        return mapToResponseDto(resident);
+        return residentMapper.toResponseDto(resident);
     }
 
     @Override
@@ -713,7 +559,7 @@ public class ResidentServiceImpl implements ResidentService {
         }
 
         resident = residentRepository.save(resident);
-        return mapToResponseDto(resident);
+        return residentMapper.toResponseDto(resident);
     }
 
     @Override
@@ -749,7 +595,7 @@ public class ResidentServiceImpl implements ResidentService {
         resident.setUpdatedAt(OffsetDateTime.now());
 
         resident = residentRepository.save(resident);
-        return mapToResponseDto(resident);
+        return residentMapper.toResponseDto(resident);
     }
 
     @Override
@@ -767,7 +613,7 @@ public class ResidentServiceImpl implements ResidentService {
         resident.setUpdatedAt(OffsetDateTime.now());
 
         resident = residentRepository.save(resident);
-        return mapToResponseDto(resident);
+        return residentMapper.toResponseDto(resident);
     }
 
     @Override
@@ -800,16 +646,6 @@ public class ResidentServiceImpl implements ResidentService {
     }
 
     private ResidentResponseDto mapToResponseDto(ResidentEntity resident) {
-        return ResidentResponseDto.builder()
-                .id(resident.getId())
-                .firstName(resident.getFirstName())
-                .middleName(resident.getMiddleName())
-                .lastName(resident.getLastName())
-                .dateOfBirth(resident.getDateOfBirth())
-                .gender(resident.getGender())
-                .status(resident.getStatus())
-                .bedId(resident.getBed() != null ? resident.getBed().getId() : null)
-                .isChartLocked(resident.isChartLocked())
-                .build();
+        return residentMapper.toResponseDto(resident);
     }
 }

@@ -11,7 +11,7 @@ import com.eldercare.modules.admin.user_management.users.dto.request.UpdateUserR
 import com.eldercare.modules.admin.user_management.users.dto.response.UserDetailResponse;
 import com.eldercare.modules.admin.user_management.users.dto.response.UserResponse;
 import com.eldercare.modules.admin.user_management.users.mapper.UserMapper;
-import com.eldercare.modules.admin.user_management.users.repository.UserRepository;
+import com.eldercare.modules.admin.user_management.UserRepository;
 import com.eldercare.modules.admin.user_management.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
