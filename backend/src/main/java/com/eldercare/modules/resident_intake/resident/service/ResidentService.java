@@ -21,4 +21,9 @@ public interface ResidentService {
     ResidentResponseDto assignResidentBedV1(Long id, ResidentAssignBedRequestDto dto);
     ResidentResponseDto lockResidentChartV1(Long id, ResidentChartLockRequestDto dto);
     ResidentResponseDto unlockResidentChartV1(Long id, ResidentChartLockRequestDto dto);
+
+    ResidentInfoResponseDto getResidentInfo(Long id);
+    List<ResidentContactResponseDto> getResidentContacts(Long id);
+    List<ResidentCareLevelHistoryResponseDto> getResidentCareLevelHistory(Long id);
+    ResidentSensitiveInfoResponseDto getResidentSensitiveInfo(Long id);
 }
