@@ -7,6 +7,7 @@ import CareTaskPage from "@/features/admin/care-tasks/pages/care-task-page";
 import DashboardPage from "@/features/admin/dashboard/pages/dashboard-page";
 import FacilityPage from "@/features/admin/facilities/pages/facility-page";
 import IncidentSeverityPage from "@/features/admin/incident-severity/pages/incident-severity-page";
+import IncidentPage from "@/features/admin/incidents/pages/incident-page";
 import NotificationPage from "@/features/admin/notifications/pages/notification-page";
 import ProfilePage from "@/features/admin/profile/pages/profile-page";
 import ResidentPage from "@/features/admin/residents/pages/resident-page";
@@ -115,6 +116,15 @@ export const adminRoutes: RouteObject = {
         </RequirePermission>
       ),
     },
+    {
+      path: "incidents",
+      element: (
+        <RequirePermission permission={PERMISSIONS.INCIDENTS_VIEW}>
+          <IncidentPage />
+        </RequirePermission>
+      ),
+    },
+
     {
       path: "sla-config",
       element: (
