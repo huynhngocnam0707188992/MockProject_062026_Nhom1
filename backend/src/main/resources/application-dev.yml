@@ -27,3 +27,6 @@ spring:
 app:
   cors:
     allowed-origins: ${ALLOWED_ORIGINS}
+
+server:
+  port: 8080
