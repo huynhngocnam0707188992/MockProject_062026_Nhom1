@@ -8,7 +8,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.eldercare.modules.admin.facility_setup.inventory.consumablesupplies.ConsumableSupplyEntity;
-import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.DurableMedicalEquipmentEntity;
+import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.entity.DurableMedicalEquipmentEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

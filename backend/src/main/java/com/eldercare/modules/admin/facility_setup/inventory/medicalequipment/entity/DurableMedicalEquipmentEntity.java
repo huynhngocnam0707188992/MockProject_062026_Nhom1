@@ -1,4 +1,4 @@
-package com.eldercare.modules.admin.facility_setup.inventory.medicalequipment;
+package com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.entity;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -10,11 +10,14 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
 import com.eldercare.modules.admin.facility_setup.inventory.category.entity.InventoryCategoryEntity;
+import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.enums.DurableMedicalEquipmentEnum;
 import com.eldercare.modules.admin.user_management.UserEntity;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -50,8 +53,10 @@ public class DurableMedicalEquipmentEntity {
     @Column(name = "asset_tag", length = 50)
     private String assetTag;
 
-    @Column(length = 30)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    @Builder.Default
+    private DurableMedicalEquipmentEnum status = DurableMedicalEquipmentEnum.AVAILABLE;
 
     @ManyToOne
     @JoinColumn(name = "facility_id", referencedColumnName = "id")

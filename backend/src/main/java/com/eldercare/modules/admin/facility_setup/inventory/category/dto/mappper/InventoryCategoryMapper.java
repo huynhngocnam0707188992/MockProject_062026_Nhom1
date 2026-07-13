@@ -1,7 +1,6 @@
 package com.eldercare.modules.admin.facility_setup.inventory.category.dto.mappper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
 import com.eldercare.modules.admin.facility_setup.inventory.category.dto.request.InventoryCategoryRequest;
 import com.eldercare.modules.admin.facility_setup.inventory.category.dto.response.InventoryCategoryResponse;
@@ -12,7 +11,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface InventoryCategoryMapper {
     
-    InventoryCategoryMapper INSTANCE = Mappers.getMapper(InventoryCategoryMapper.class);
 
     @Mapping(target = "id", ignore = true)
     InventoryCategoryEntity toEntity(InventoryCategoryRequest request);
