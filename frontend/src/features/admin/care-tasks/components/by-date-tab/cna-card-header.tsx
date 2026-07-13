@@ -1,3 +1,6 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+
 interface CnaCardHeaderProps {
   name: string;
   role: string;
@@ -17,58 +20,73 @@ export const CnaCardHeader = ({
   completedTasks,
   missedTasks,
 }: CnaCardHeaderProps) => {
+  const remaining = totalTasks - completedTasks;
+  const progressPct = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+
   return (
-    <div className="bg-surface-container-high px-gutter py-stack-md flex items-center justify-between">
-      <div className="flex items-center gap-stack-md">
-        <div className="w-12 h-12 rounded-full overflow-hidden bg-primary-container flex-shrink-0 shadow-sm relative">
-          <img
-            className="w-full h-full object-cover"
-            alt={imageAlt}
-            src={imageUrl}
-          />
-        </div>
-        <div>
-          <h2 className="font-headline-md text-headline-md text-on-surface">{name}</h2>
-          <p className="font-label-md text-label-md text-on-surface-variant mt-0.5 tracking-wide">
+    <div className="flex items-center justify-between px-6 py-4 bg-muted/40 border-b border-border">
+      {/* Left: Avatar + Name + Role */}
+      <div className="flex items-center gap-3">
+        <Avatar size="lg" className="ring-2 ring-background shadow-sm">
+          <AvatarImage src={imageUrl} alt={imageAlt} />
+          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+            {name
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .slice(0, 2)}
+          </AvatarFallback>
+        </Avatar>
+
+        <div className="flex flex-col">
+          <span className="text-sm font-semibold text-foreground leading-tight">
+            {name}
+          </span>
+          <span className="text-xs text-muted-foreground uppercase tracking-wide mt-0.5">
             {role}
-          </p>
+          </span>
         </div>
       </div>
-      <div className="flex items-center gap-3 bg-surface-container-lowest px-4 py-2 rounded-xl shadow-sm">
-        <div className="relative w-8 h-8 flex items-center justify-center">
-          <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+
+      {/* Right: Task summary */}
+      <div className="flex items-center gap-3 bg-card rounded-lg px-4 py-2 border border-border shadow-sm">
+        {/* Circular progress */}
+        <div className="relative size-9 flex items-center justify-center flex-shrink-0">
+          <svg className="size-full -rotate-90" viewBox="0 0 36 36">
             <path
-              className="text-surface-variant"
+              className="text-border"
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
-            ></path>
+            />
             <path
               className="text-primary"
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               fill="none"
               stroke="currentColor"
-              strokeDasharray={`${(completedTasks / totalTasks) * 100}, 100`}
+              strokeDasharray={`${progressPct}, 100`}
               strokeLinecap="round"
               strokeWidth="3"
-            ></path>
+            />
           </svg>
-          <span className="absolute font-label-bold text-[10px] text-on-surface">
+          <span className="absolute text-[9px] font-bold text-foreground">
             {completedTasks}/{totalTasks}
           </span>
         </div>
+
+        {/* Task count text */}
         <div className="flex flex-col">
-          <span className="font-label-bold text-label-bold text-on-surface">
+          <span className="text-sm font-semibold text-foreground leading-tight">
             {totalTasks} Tasks Today
           </span>
-          {missedTasks ? (
-            <span className="font-body-sm text-[11px] text-error font-medium">
-              {missedTasks} Missed Task
-            </span>
+          {missedTasks && missedTasks > 0 ? (
+            <Badge variant="destructive" className="mt-0.5 w-fit text-[11px] h-auto py-0.5">
+              {missedTasks} Missed
+            </Badge>
           ) : (
-            <span className="font-body-sm text-[11px] text-on-surface-variant">
-              {totalTasks - completedTasks} remaining
+            <span className="text-xs text-muted-foreground mt-0.5">
+              {remaining} remaining
             </span>
           )}
         </div>

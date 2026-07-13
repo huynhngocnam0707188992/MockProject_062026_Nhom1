@@ -1,13 +1,35 @@
+import {
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
 export const CareTaskTableHeader = () => {
   return (
-    <div className="hidden sm:grid grid-cols-12 gap-4 px-gutter py-3 bg-surface-container-low font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider">
-      <div className="col-span-3">Resident</div>
-      <div className="col-span-2">Task Type</div>
-      <div className="col-span-2">Goal</div>
-      <div className="col-span-1 text-center">Time</div>
-      <div className="col-span-1 text-center">Status</div>
-      <div className="col-span-1 text-center">Flags</div>
-      <div className="col-span-2 text-right">Actions</div>
-    </div>
+    <TableHeader>
+      <TableRow className="bg-muted/30 hover:bg-muted/30 border-b border-border">
+        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground w-[22%]">
+          Resident
+        </TableHead>
+        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground w-[14%]">
+          Task Type
+        </TableHead>
+        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground w-[22%]">
+          Goal
+        </TableHead>
+        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-center w-[10%]">
+          Time
+        </TableHead>
+        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-center w-[10%]">
+          Status
+        </TableHead>
+        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-center w-[8%]">
+          Flags
+        </TableHead>
+        <TableHead className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right w-[14%]">
+          Actions
+        </TableHead>
+      </TableRow>
+    </TableHeader>
   );
 };

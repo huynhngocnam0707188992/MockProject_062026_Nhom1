@@ -1,49 +1,93 @@
+import { CalendarDays, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 export const CareTaskFilterBar = () => {
   return (
-    <div className="bg-surface-container-lowest p-stack-sm rounded-xl shadow-sm flex flex-wrap items-center gap-stack-sm mb-6 mt-4">
-      <button className="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high px-4 py-2 rounded-lg transition-colors text-on-surface">
-        <span className="material-symbols-outlined text-[18px] text-on-surface-variant">
-          calendar_today
-        </span>
-        <span className="font-label-bold text-label-bold">Oct 24, 2026</span>
-      </button>
-      <div className="w-px h-6 bg-surface-variant mx-1"></div>
-      
-      <button className="flex items-center gap-2 bg-surface hover:bg-surface-container px-3 py-2 rounded-lg transition-colors text-on-surface-variant">
-        <span className="font-body-md text-body-md">Shift:</span>
-        <span className="font-label-bold text-label-bold text-on-surface">All</span>
-        <span className="material-symbols-outlined text-[16px]">expand_more</span>
-      </button>
-      
-      <button className="flex items-center gap-2 bg-surface hover:bg-surface-container px-3 py-2 rounded-lg transition-colors text-on-surface-variant">
-        <span className="font-body-md text-body-md">Status:</span>
-        <span className="font-label-bold text-label-bold text-on-surface">All</span>
-        <span className="material-symbols-outlined text-[16px]">expand_more</span>
-      </button>
-      
-      <button className="flex items-center gap-2 bg-surface hover:bg-surface-container px-3 py-2 rounded-lg transition-colors text-on-surface-variant">
-        <span className="font-body-md text-body-md">CNA:</span>
-        <span className="font-label-bold text-label-bold text-on-surface">All CNAs</span>
-        <span className="material-symbols-outlined text-[16px]">expand_more</span>
-      </button>
-      
-      <button className="flex items-center gap-2 bg-surface hover:bg-surface-container px-3 py-2 rounded-lg transition-colors text-on-surface-variant">
-        <span className="font-body-md text-body-md">Type:</span>
-        <span className="font-label-bold text-label-bold text-on-surface">All Types</span>
-        <span className="material-symbols-outlined text-[16px]">expand_more</span>
-      </button>
-      
-      <div className="flex-1 min-w-[200px]"></div>
-      
-      <div className="flex items-center bg-surface-container px-3 py-2 rounded-lg">
-        <span className="material-symbols-outlined text-on-surface-variant text-[18px] mr-2">
-          search
-        </span>
-        <input
-          className="bg-transparent border-none focus:ring-0 font-body-md text-body-md w-full text-on-surface outline-none placeholder:text-on-surface-variant/70"
-          placeholder="Search resident..."
-          type="text"
-        />
+    <div className="rounded-xl border bg-card shadow-sm p-4">
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Date Picker */}
+        <Button variant="outline" className="flex items-center gap-2 h-9 px-3">
+          <CalendarDays className="size-4 text-muted-foreground" />
+          <span className="text-sm font-medium">Oct 24, 2026</span>
+        </Button>
+
+        <div className="w-px h-6 bg-border" />
+
+        {/* Shift Select */}
+        <Select defaultValue="all-shifts">
+          <SelectTrigger className="h-9 w-36">
+            <span className="text-xs text-muted-foreground mr-1">Shift:</span>
+            <SelectValue placeholder="All" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all-shifts">All</SelectItem>
+            <SelectItem value="morning">Morning</SelectItem>
+            <SelectItem value="afternoon">Afternoon</SelectItem>
+            <SelectItem value="night">Night</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Status Select */}
+        <Select defaultValue="all-status">
+          <SelectTrigger className="h-9 w-40">
+            <span className="text-xs text-muted-foreground mr-1">Status:</span>
+            <SelectValue placeholder="All" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all-status">All</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="done">Completed</SelectItem>
+            <SelectItem value="missed">Missed</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* CNA Select */}
+        <Select defaultValue="all-cnas">
+          <SelectTrigger className="h-9 w-40">
+            <span className="text-xs text-muted-foreground mr-1">CNA:</span>
+            <SelectValue placeholder="All CNAs" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all-cnas">All CNAs</SelectItem>
+            <SelectItem value="sarah">Sarah G.</SelectItem>
+            <SelectItem value="mark">Mark J.</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Task Type Select */}
+        <Select defaultValue="all-types">
+          <SelectTrigger className="h-9 w-40">
+            <span className="text-xs text-muted-foreground mr-1">Type:</span>
+            <SelectValue placeholder="All Types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all-types">All Types</SelectItem>
+            <SelectItem value="bathing">Bathing</SelectItem>
+            <SelectItem value="medication">Medication</SelectItem>
+            <SelectItem value="meals">Meals</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Spacer */}
+        <div className="flex-1 min-w-[80px]" />
+
+        {/* Resident Search */}
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+          <Input
+            className="pl-9 h-9 w-52"
+            placeholder="Search resident..."
+            type="text"
+          />
+        </div>
       </div>
     </div>
   );
