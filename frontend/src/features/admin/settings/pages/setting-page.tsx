@@ -3,7 +3,7 @@ import { RoleTab } from "../tabs/role-tab";
 import { PermissionTab } from "../tabs/permission-tab";
 import { UserTab } from "../tabs/user-tab";
 import { PERMISSIONS } from "@/common/permissions";
-import { CarePlanLevelTab } from "../tabs/care-plan-level-tab";
+import { CareLevelTab } from "../tabs/care-level-tab";
 import { AssessmentMetricTab } from "../tabs/assessment_metric-tab";
 import { usePermissions } from "@/features/auth/hooks/use-current-user";
 
@@ -30,7 +30,7 @@ const tabs = [
     value: "care-levels",
     label: "Care Levels",
     permission: PERMISSIONS.CARE_LEVEL_VIEW,
-    content: <CarePlanLevelTab />,
+    content: <CareLevelTab />,
   },
   {
     value: "assessment-metrics",
