@@ -25,6 +25,40 @@ export interface CnaGroup {
   tasks: CareTask[];
 }
 
+// ── By-Resident types ────────────────────────────────────────────────────────
+
+export interface ResidentTask {
+  id: string;
+  time: string;
+  taskType: string;
+  taskTypeIcon: string;
+  goalTitle: string;
+  goalDetail: string;
+  hasFlag?: boolean;
+  flagNote?: string;
+  assignedCnaName: string;
+  assignedCnaImageUrl?: string;
+  status: "Done" | "Pending" | "Missed";
+}
+
+export type ResidentCareLevel =
+  | "Standard Care"
+  | "High Fall Risk"
+  | "Memory Care"
+  | "Palliative";
+
+export interface ResidentGroup {
+  id: string;
+  name: string;
+  age: number;
+  room: string;
+  imageUrl: string;
+  careLevel: ResidentCareLevel;
+  /** Green dot = active, Yellow = fall-risk, Red = alert */
+  statusDot: "active" | "fall-risk" | "alert";
+  tasks: ResidentTask[];
+}
+
 // Mock Data
 let mockCnaGroups: CnaGroup[] = [
   {
@@ -89,7 +123,7 @@ let mockCnaGroups: CnaGroup[] = [
 ];
 
 export const careTasksApi = {
-  getTasksByDate: async (date?: string): Promise<CnaGroup[]> => {
+  getTasksByDate: async (_date?: string): Promise<CnaGroup[]> => {
     // TODO: Switch to real API when backend is ready
     // const { data } = await apiClient.get("/admin/care-tasks", { params: { date } });
     // return data.data || data;
@@ -98,6 +132,14 @@ export const careTasksApi = {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([...mockCnaGroups]);
+      }, 500);
+    });
+  },
+
+  getTasksByResident: async (_date?: string): Promise<ResidentGroup[]> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve([...mockResidentGroups]);
       }, 500);
     });
   },
@@ -159,8 +201,97 @@ export const careTasksApi = {
           }
           return group;
         });
+        
+        // Also update mockResidentGroups
+        mockResidentGroups = mockResidentGroups.map(group => {
+          let updated = false;
+          const newTasks = group.tasks.map(task => {
+            if (task.id === taskId) {
+              updated = true;
+              return { ...task, status: "Pending" as const };
+            }
+            return task;
+          });
+          if (updated) return { ...group, tasks: newTasks };
+          return group;
+        });
+        
         resolve();
       }, 300);
     });
   },
 };
+
+// ── Mock By Resident Data ──────────────────────────────────────────────────
+
+let mockResidentGroups: ResidentGroup[] = [
+  {
+    id: "res-1",
+    name: "John Doe",
+    age: 82,
+    room: "101-B",
+    careLevel: "Standard Care",
+    statusDot: "active",
+    imageUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAb5jmImGeqW0Vs7jYdO11SIOGbqrRRpdmZALbrZ0_IlM0n5e-5_deYwHcXZ7bi1bAa5jML-EE6GhA7FtLimXAkCEkZXdloI8wlJEd6P61TKdVuHzrP24HOBe2epSz72xt8UWFwZNiW9xdI8uNsVPZRJ7LeD7ex1yt3RS7GRWlpDuY973bmIB4QA9NNuajw4JYggT8jpfWhWkJFYxqX-w3dIBb8lQQrQ2vZ82w6KqpAsqM1rGFuHYZY",
+    tasks: [
+      {
+        id: "task-101",
+        time: "08:00 AM",
+        taskType: "Bathing",
+        taskTypeIcon: "shower",
+        goalTitle: "Maintain hygiene",
+        goalDetail: "Assist with shower and dressing.",
+        assignedCnaName: "Sarah G.",
+        assignedCnaImageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDoU-3Ij1Q2v-yNQCBmT7UKAHywbaSnYh2Pqj8Gvt1jyiIkZM0Jmi9bP6PzmHCugv2I3LPgY3hlnnejYmYAq2MMXocuF0IUZVEUAX9NQ90aKdf1B_2ExhQVhhCRy4-1Hi0WURxLeoWPtgrLcXThcfKicDoJ4ukmAVSfuBNdsHFmGVxcRfA3DFW2i4CTiK-n7occpI--oxoVo0Fah76bmdYsUZIix3NlXNhidJ3kwm6zvRatobcb2xvV",
+        status: "Pending",
+      },
+      {
+        id: "task-102",
+        time: "09:00 AM",
+        taskType: "Medication",
+        taskTypeIcon: "medication",
+        goalTitle: "Morning meds",
+        goalDetail: "Lisinopril 10mg, Aspirin 81mg.",
+        assignedCnaName: "Nurse Carter",
+        assignedCnaImageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuDNlJmqo-W1XkYeuQVCbCrDIPAuqKy_zdFIP8209jByxB2UWNaF0jnW5NuFQZwsycYw9S5gPbUH9Qmxa6UpGFSIQQ7CinjpJYZ2Gecbsue-P7cNc6wMzSBX_wmKOVWfNlDYqCeiyZEg-q4DvYdGVNQo8v4F26WN9GUdghqIDdoHZhSgAEgYFmoNwB8WeDdbqDITrVxzV2o3njSTyTCgLoR1_jG_PjClTRxZ1f81e5I9ku8NbZDIZHzX",
+        status: "Done",
+      },
+      {
+        id: "task-103",
+        time: "12:30 PM",
+        taskType: "Nutrition",
+        taskTypeIcon: "restaurant",
+        goalTitle: "Lunch Assistance",
+        goalDetail: "Low sodium diet. Monitor fluid intake.",
+        hasFlag: true,
+        flagNote: "Dietary restriction noted",
+        assignedCnaName: "Unassigned",
+        status: "Pending",
+      }
+    ]
+  },
+  {
+    id: "res-2",
+    name: "Elena Ramos",
+    age: 78,
+    room: "106-A",
+    careLevel: "High Fall Risk",
+    statusDot: "fall-risk",
+    imageUrl:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBWvqSsqIslHngDBTWsfvvqACrY6NkXeuPmnJfO1yxis6QbLcli8KqIcE4MjeaXzcoA3cpfqdOmpcU67OI3HBkL21WjO-6jeUVw9_LIgEUIPwLCUtKr5N_-hQmniLm7Pzs4dBGyavyCMdr8LTuw2lCQCFE68CTHYglt4adQ0gXnQ9qw0MxagD2cvfOT9i-Jr_8zpvlie2cv0n3eiCXaM5i2hEqtYmJ4GA0eO4I5wp9UMruOtWQ0p7Rc",
+    tasks: [
+      {
+        id: "task-104",
+        time: "10:00 AM",
+        taskType: "Mobility",
+        taskTypeIcon: "directions_walk",
+        goalTitle: "Morning walk",
+        goalDetail: "Assist walk down corridor C. Use gait belt.",
+        assignedCnaName: "Pham Van Duc",
+        assignedCnaImageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuBlgi2ncCELNXmTPsO6uIviUQqbl9_HXalMWDSpw-tugDrL-2SRJufAV41rjJceI3GbfRR2x7bXf6jmIp9s-LA9FiF8vCUrZCxOrHjuw1a8_2c6SQ-BkjgWMLZUV-O7t8vFERKLYKi-Md4DyxN-v2gJh-1qcv60VjmjE4UH8lJKDASjl-zp5z2uCfdouljaJt40AUQyXrZjBqjXROjbdX71vUv1SwMn6fd2rX2pFfi_2CyeUrkvNmm_",
+        status: "Pending",
+      }
+    ]
+  }
+];
