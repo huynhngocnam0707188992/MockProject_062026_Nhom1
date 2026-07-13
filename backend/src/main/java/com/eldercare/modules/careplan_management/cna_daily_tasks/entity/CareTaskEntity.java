@@ -1,51 +1,63 @@
 package com.eldercare.modules.careplan_management.cna_daily_tasks.entity;
 
-@lombok.Getter
-@lombok.Setter@jakarta.persistence.Entity
-@jakarta.persistence.Table(name = "care_tasks")
-public class CareTask {
-@jakarta.persistence.Id
-@jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-@jakarta.persistence.Column(name = "id", nullable = false)
-private java.lang.Long id;
+import com.eldercare.modules.admin.user_management.UserEntity;
+import com.eldercare.modules.careplan_management.careplan_design.repository.database_schema.CareInterventionSchema;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Nationalized;
 
-@jakarta.validation.constraints.Size(max = 50)
-@jakarta.validation.constraints.NotNull
-@jakarta.persistence.Column(name = "task_type", nullable = false, length = 50)
-private java.lang.String taskType;
+import java.time.OffsetDateTime;
 
-@jakarta.validation.constraints.Size(max = 20)
-@jakarta.validation.constraints.NotNull
-@org.hibernate.annotations.ColumnDefault("'PENDING'")
-@jakarta.persistence.Column(name = "status", nullable = false, length = 20)
-private java.lang.String status;
+@Getter
+@Setter
+@Entity
+@Table(name = "care_tasks")
+public class CareTaskEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-@jakarta.validation.constraints.NotNull
-@org.hibernate.annotations.ColumnDefault("0")
-@jakarta.persistence.Column(name = "is_abnormal_flagged", nullable = false)
-private java.lang.Boolean isAbnormalFlagged;
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "task_type", nullable = false, length = 50)
+    private String taskType;
 
-@jakarta.validation.constraints.NotNull
-@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)
-@jakarta.persistence.JoinColumn(name = "care_intervention_id", nullable = false)
-private com.eldercare.modules.careplan_management.careplan_design.repository.database_schema.CareInterventionSchema careIntervention;
+    @Size(max = 20)
+    @NotNull
+    @ColumnDefault("'PENDING'")
+    @Column(name = "status", nullable = false, length = 20)
+    private String status;
 
-@jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
-@jakarta.persistence.JoinColumn(name = "assigned_cna_id")
-private com.eldercare.modules.admin.user_management.UserEntity assignedCna;
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "is_abnormal_flagged", nullable = false)
+    private Boolean isAbnormalFlagged;
 
-@jakarta.validation.constraints.NotNull
-@jakarta.persistence.Column(name = "scheduled_time", nullable = false)
-private java.time.OffsetDateTime scheduledTime;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "care_intervention_id", nullable = false)
+    private CareInterventionSchema careIntervention;
 
-@jakarta.persistence.Column(name = "completed_at")
-private java.time.OffsetDateTime completedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_cna_id")
+    private UserEntity assignedCna;
 
-@org.hibernate.annotations.Nationalized
-@jakarta.persistence.Lob
-@jakarta.persistence.Column(name = "goal")
-private java.lang.String goal;
+    @NotNull
+    @Column(name = "scheduled_time", nullable = false)
+    private OffsetDateTime scheduledTime;
 
+    @Column(name = "completed_at")
+    private OffsetDateTime completedAt;
+
+    @Nationalized
+    @Lob
+    @Column(name = "goal")
+    private String goal;
 
 
 }
