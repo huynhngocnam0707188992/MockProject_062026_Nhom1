@@ -1,4 +1,4 @@
-package com.eldercare.modules.admin.facility_setup.inventory.category;
+package com.eldercare.modules.admin.facility_setup.inventory.category.entity;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -26,9 +26,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "inventory_categories")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @SQLDelete(sql = "UPDATE inventory_categories SET is_deleted = 1 WHERE id = ?")
 @SQLRestriction("is_deleted = 0")
-@Builder
 @Data
 public class InventoryCategoryEntity {
   @Id

@@ -6,7 +6,7 @@ import java.time.OffsetDateTime;
 import org.hibernate.annotations.ManyToAny;
 
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
-import com.eldercare.modules.admin.facility_setup.inventory.category.InventoryCategoryEntity;
+import com.eldercare.modules.admin.facility_setup.inventory.category.entity.InventoryCategoryEntity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
