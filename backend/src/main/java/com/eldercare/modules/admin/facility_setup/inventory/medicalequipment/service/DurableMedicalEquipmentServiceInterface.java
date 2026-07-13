@@ -25,6 +25,5 @@ public interface DurableMedicalEquipmentServiceInterface {
     DurableMedicalEquipmentResponse assignEquipmentForUser(Long id,
             DurableMedicalEquipmentRequest durableMedicalEquipmentRequest);
 
-    DurableMedicalEquipmentResponse unassignEquipmentForUser(Long id,
-            DurableMedicalEquipmentRequest durableMedicalEquipmentRequest);
+    DurableMedicalEquipmentResponse unassignEquipmentForUser(Long id);
 }

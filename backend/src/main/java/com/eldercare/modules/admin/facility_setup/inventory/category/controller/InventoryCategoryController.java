@@ -18,7 +18,7 @@ import com.eldercare.common.constants.RouteConstants;
 import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.modules.admin.facility_setup.inventory.category.dto.request.InventoryCategoryRequest;
 import com.eldercare.modules.admin.facility_setup.inventory.category.dto.response.InventoryCategoryResponse;
-import com.eldercare.modules.admin.facility_setup.inventory.category.service.impl.InventoryCategoryServiceImpl;
+import com.eldercare.modules.admin.facility_setup.inventory.category.service.InventoryCategoryServiceInterface;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class InventoryCategoryController {
 
-    private final InventoryCategoryServiceImpl inventoryCategoryService;
+    private final InventoryCategoryServiceInterface inventoryCategoryService;
 
     @GetMapping
     public ResponseEntity<PagedResponse<List<InventoryCategoryResponse>>> getAllInventoryCategories( @RequestParam(defaultValue = "0") int page,

@@ -17,4 +17,6 @@ public final class RouteConstants {
     public static final String API_ADMIN_INVENTORY = ADMIN_API_PREFIX + "/inventory";
 
     public static final String API_ADMIN_INVENTORY_CATEGORIES = API_ADMIN_INVENTORY + "/categories";
+
+    public static final String API_ADMIN_INVENTORY_MEDICAL_EQUIPMENT = API_ADMIN_INVENTORY + "/equipment";
 }

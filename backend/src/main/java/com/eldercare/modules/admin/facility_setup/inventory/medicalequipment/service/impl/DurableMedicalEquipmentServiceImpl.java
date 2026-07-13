@@ -20,6 +20,7 @@ import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.enu
 import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.repository.DurableMedicalEquipmentRepository;
 import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.service.DurableMedicalEquipmentServiceInterface;
 import com.eldercare.modules.admin.user_management.UserEntity;
+import com.eldercare.modules.admin.user_management.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +35,8 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
     private final InventoryCategoryRepository inventoryCategoryRepository;
 
     private final FacilityRepository facilityRepository;
+
+    private final UserRepository userRepository;
 
     @Override
     public PagedResponse<List<DurableMedicalEquipmentResponse>> getAllDurableMedicalEquipment(int page, int size) {
@@ -121,21 +124,35 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
     @Override
     public DurableMedicalEquipmentResponse assignEquipmentForUser(Long id,
             DurableMedicalEquipmentRequest durableMedicalEquipmentRequest) {
-         if (durableMedicalEquipmentRepository
+        if (durableMedicalEquipmentRepository
                 .findByIdAndStatusAndIsDeletedFalse(id, DurableMedicalEquipmentEnum.AVAILABLE.toString()).isPresent()) {
             DurableMedicalEquipmentEntity entity = durableMedicalEquipmentRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Durable medical equipment not found with id: " + id)); 
+                    .orElseThrow(() -> new RuntimeException("Durable medical equipment not found with id: " + id));
             long newAssignedToUserId = durableMedicalEquipmentRequest.getAssignedToUserId();
             UserEntity newAssignedToUser = userRepository.getReferenceById(newAssignedToUserId);
-            entity.setAssignedToUserId(durableMedicalEquipmentRequest.getAssignedToUserId());
+            entity.setAssignedToUser(newAssignedToUser);
+            entity.setStatus(DurableMedicalEquipmentEnum.IN_SERVICE);
+            DurableMedicalEquipmentEntity updatedEntity = durableMedicalEquipmentRepository.save(entity);
+            return durableMedicalEquipmentMapper.toResponse(updatedEntity);
         }
+        throw new RuntimeException(
+                "Durable medical equipment cannot be assigned unless it is available");
     }
 
     @Override
-    public DurableMedicalEquipmentResponse unassignEquipmentForUser(Long id,
-            DurableMedicalEquipmentRequest durableMedicalEquipmentRequest) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'unassignEquipmentForUser'");
+    public DurableMedicalEquipmentResponse unassignEquipmentForUser(Long id) {
+        if (durableMedicalEquipmentRepository
+                .findByIdAndStatusAndIsDeletedFalse(id, DurableMedicalEquipmentEnum.IN_SERVICE.toString())
+                .isPresent()) {
+            DurableMedicalEquipmentEntity entity = durableMedicalEquipmentRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Durable medical equipment not found with id: " + id));
+            entity.setAssignedToUser(null);
+            entity.setStatus(DurableMedicalEquipmentEnum.AVAILABLE);
+            DurableMedicalEquipmentEntity updatedEntity = durableMedicalEquipmentRepository.save(entity);
+            return durableMedicalEquipmentMapper.toResponse(updatedEntity);
+        }
+        throw new RuntimeException(
+                "Durable medical equipment cannot be unassigned unless it is in service");
     }
 
 }
