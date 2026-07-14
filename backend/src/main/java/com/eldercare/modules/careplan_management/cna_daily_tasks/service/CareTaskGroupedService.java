@@ -1,6 +1,7 @@
 package com.eldercare.modules.careplan_management.cna_daily_tasks.service;
 
 import com.eldercare.common.dto.PagedResponse;
+import com.eldercare.modules.careplan_management.cna_daily_tasks.dto.request.CreateTaskRequestDto;
 import com.eldercare.modules.careplan_management.cna_daily_tasks.dto.request.GroupedTaskQuery;
 import com.eldercare.modules.careplan_management.cna_daily_tasks.dto.request.TaskSearchFilter;
 import com.eldercare.modules.careplan_management.cna_daily_tasks.dto.request.UpdateTaskRequestDto;
@@ -17,6 +18,7 @@ public interface CareTaskGroupedService {
     PagedResponse<List<GroupedByResidentCard>> getTasksByResident(GroupedTaskQuery query);
     PagedResponse<List<EnrichedTaskRow>> searchTasks(TaskSearchFilter filter, Pageable pageable);
     
+    TaskDetailDto createTask(Long interventionId, CreateTaskRequestDto request);
     TaskDetailDto updateTask(Long taskId, UpdateTaskRequestDto request);
     void deleteTask(Long taskId);
     PagedResponse<List<TaskDetailDto>> listTasksByIntervention(Long interventionId, Pageable pageable);

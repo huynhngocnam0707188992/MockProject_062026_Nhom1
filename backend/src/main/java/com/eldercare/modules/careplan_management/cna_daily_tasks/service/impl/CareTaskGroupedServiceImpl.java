@@ -4,6 +4,9 @@ import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.exception.NotFoundException;
 import com.eldercare.modules.admin.user_management.UserEntity;
 import com.eldercare.modules.admin.user_management.UserRepository;
+import com.eldercare.modules.careplan_management.careplan_design.repository.database_schema.CareInterventionSchema;
+import com.eldercare.modules.careplan_management.careplan_design.repository.jpa.JpaCareInterventionRepository;
+import com.eldercare.modules.careplan_management.cna_daily_tasks.dto.request.CreateTaskRequestDto;
 import com.eldercare.modules.careplan_management.cna_daily_tasks.dto.request.GroupedTaskQuery;
 import com.eldercare.modules.careplan_management.cna_daily_tasks.dto.request.TaskSearchFilter;
 import com.eldercare.modules.careplan_management.cna_daily_tasks.dto.request.UpdateTaskRequestDto;
@@ -36,6 +39,7 @@ public class CareTaskGroupedServiceImpl implements CareTaskGroupedService {
     private final CareTaskRepository careTaskRepository;
     private final CareTaskGroupedMapper careTaskGroupedMapper;
     private final UserRepository userRepository;
+    private final JpaCareInterventionRepository careInterventionRepository;
 
     @Override
     public PagedResponse<List<GroupedByCnaCard>> getTasksByCna(GroupedTaskQuery query) {
@@ -131,6 +135,31 @@ public class CareTaskGroupedServiceImpl implements CareTaskGroupedService {
                 .completedAt(task.getCompletedAt())
                 .goal(task.getGoal())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public TaskDetailDto createTask(Long interventionId, CreateTaskRequestDto request) {
+        CareInterventionSchema intervention = careInterventionRepository.findById(interventionId)
+                .orElseThrow(() -> new NotFoundException("CareIntervention not found with id: " + interventionId));
+
+        UserEntity cna = null;
+        if (request.getAssignedCnaId() != null) {
+            cna = userRepository.findById(request.getAssignedCnaId())
+                    .orElseThrow(() -> new NotFoundException("CNA not found with id: " + request.getAssignedCnaId()));
+        }
+
+        CareTaskEntity task = new CareTaskEntity();
+        task.setTaskType(request.getTaskType());
+        task.setStatus(TaskStatus.PENDING);
+        task.setIsAbnormalFlagged(false);
+        task.setCareIntervention(intervention);
+        task.setAssignedCna(cna);
+        task.setGoal(request.getGoal());
+        task.setScheduledTime(request.getScheduledTime());
+        
+        CareTaskEntity savedTask = careTaskRepository.save(task);
+        return mapToDetailDto(savedTask);
     }
 
     @Override

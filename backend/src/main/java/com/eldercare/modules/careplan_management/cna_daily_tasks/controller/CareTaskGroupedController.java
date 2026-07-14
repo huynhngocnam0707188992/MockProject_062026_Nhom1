@@ -27,31 +27,40 @@ public class CareTaskGroupedController {
 
     @PreAuthorize("hasRole('NHA_ADMIN')")
     @GetMapping(RouteConstants.API_TASKS_BY_CNA)
-    public ResponseEntity<ApiResponse<PagedResponse<List<GroupedByCnaCard>>>> getTasksByCna(@Valid @ModelAttribute GroupedTaskQuery query) {
-        return ResponseEntity.ok(ApiResponse.success("Tasks fetched successfully", careTaskGroupedService.getTasksByCna(query)));
+    public ResponseEntity<PagedResponse<List<GroupedByCnaCard>>> getTasksByCna(@Valid @ModelAttribute GroupedTaskQuery query) {
+        return ResponseEntity.ok(careTaskGroupedService.getTasksByCna(query));
     }
 
     @PreAuthorize("hasRole('NHA_ADMIN')")
     @GetMapping(RouteConstants.API_TASKS_BY_RESIDENT)
-    public ResponseEntity<ApiResponse<PagedResponse<List<GroupedByResidentCard>>>> getTasksByResident(@Valid @ModelAttribute GroupedTaskQuery query) {
-        return ResponseEntity.ok(ApiResponse.success("Tasks fetched successfully", careTaskGroupedService.getTasksByResident(query)));
+    public ResponseEntity<PagedResponse<List<GroupedByResidentCard>>> getTasksByResident(@Valid @ModelAttribute GroupedTaskQuery query) {
+        return ResponseEntity.ok(careTaskGroupedService.getTasksByResident(query));
     }
 
     @PreAuthorize("hasRole('NHA_ADMIN')")
     @GetMapping(RouteConstants.API_TASKS_SEARCH)
-    public ResponseEntity<ApiResponse<PagedResponse<List<EnrichedTaskRow>>>> searchTasks(@ModelAttribute TaskSearchFilter filter) {
+    public ResponseEntity<PagedResponse<List<EnrichedTaskRow>>> searchTasks(@ModelAttribute TaskSearchFilter filter) {
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
-        return ResponseEntity.ok(ApiResponse.success("Tasks searched successfully", careTaskGroupedService.searchTasks(filter, pageable)));
+        return ResponseEntity.ok(careTaskGroupedService.searchTasks(filter, pageable));
     }
 
     @PreAuthorize("hasRole('NHA_ADMIN') or hasRole('CNA')")
     @GetMapping(RouteConstants.API_INTERVENTION_TASKS)
-    public ResponseEntity<ApiResponse<PagedResponse<List<TaskDetailDto>>>> listTasksByIntervention(
+    public ResponseEntity<PagedResponse<List<TaskDetailDto>>> listTasksByIntervention(
             @PathVariable Long interventionId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(ApiResponse.success("Tasks by intervention fetched successfully", careTaskGroupedService.listTasksByIntervention(interventionId, pageable)));
+        return ResponseEntity.ok(careTaskGroupedService.listTasksByIntervention(interventionId, pageable));
+    }
+
+    @PreAuthorize("hasRole('NHA_ADMIN')")
+    @PostMapping(RouteConstants.API_INTERVENTION_TASKS)
+    public ResponseEntity<ApiResponse<TaskDetailDto>> createTask(
+            @PathVariable Long interventionId,
+            @Valid @RequestBody CreateTaskRequestDto request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.created("Task created successfully", careTaskGroupedService.createTask(interventionId, request)));
     }
 
     @PreAuthorize("hasRole('NHA_ADMIN') or hasRole('CNA')")

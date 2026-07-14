@@ -38,53 +38,82 @@ export interface GroupedByResidentCard {
   tasks: EnrichedTaskRow[];
 }
 
-export interface CareTaskSearchParams {
+export interface TaskDetailDto {
+  id: number;
+  taskType: string;
+  status: string;
+  isAbnormalFlagged: boolean;
+  careInterventionId: number | null;
+  assignedCnaId: number | null;
+  scheduledTime: string;
+  completedAt: string | null;
+  goal: string | null;
+}
+
+/** Query params for GET /tasks/by-cna and GET /tasks/by-resident */
+export interface GroupedTaskQueryParams {
   date?: string;
   status?: string;
   taskType?: string;
   residentId?: number;
   assignedCnaId?: number;
   isAbnormalFlagged?: boolean;
+  page?: number;
+  size?: number;
+}
+
+/** Query params for GET /tasks/search */
+export interface TaskSearchParams {
   fromDate?: string;
   toDate?: string;
+  status?: string;
+  taskType?: string;
+  residentId?: number;
+  assignedCnaId?: number;
+  isAbnormalFlagged?: boolean;
   page?: number;
   size?: number;
 }
 
 export const careTasksApi = {
-  getTasksByCna: async (params?: CareTaskSearchParams): Promise<PagedResponse<GroupedByCnaCard[]>> => {
-    const { data } = await apiClient.get<ApiResponse<PagedResponse<GroupedByCnaCard[]>>>("/tasks/by-cna", { params });
+  getTasksByCna: async (params?: GroupedTaskQueryParams): Promise<PagedResponse<GroupedByCnaCard[]>> => {
+    const { data } = await apiClient.get<PagedResponse<GroupedByCnaCard[]>>("/tasks/by-cna", { params });
+    return data;
+  },
+
+  getTasksByResident: async (params?: GroupedTaskQueryParams): Promise<PagedResponse<GroupedByResidentCard[]>> => {
+    const { data } = await apiClient.get<PagedResponse<GroupedByResidentCard[]>>("/tasks/by-resident", { params });
+    return data;
+  },
+
+  searchTasks: async (params?: TaskSearchParams): Promise<PagedResponse<EnrichedTaskRow[]>> => {
+    const { data } = await apiClient.get<PagedResponse<EnrichedTaskRow[]>>("/tasks/search", { params });
+    return data;
+  },
+
+  completeTask: async (taskId: string | number, completedAt?: string): Promise<TaskDetailDto> => {
+    const { data } = await apiClient.patch<ApiResponse<TaskDetailDto>>(`/tasks/${taskId}/completed`, { completedAt });
     return data.data;
   },
 
-  getTasksByResident: async (params?: CareTaskSearchParams): Promise<PagedResponse<GroupedByResidentCard[]>> => {
-    const { data } = await apiClient.get<ApiResponse<PagedResponse<GroupedByResidentCard[]>>>("/tasks/by-resident", { params });
+  rescheduleTask: async (taskId: string | number, scheduledTime: string): Promise<TaskDetailDto> => {
+    const { data } = await apiClient.patch<ApiResponse<TaskDetailDto>>(`/tasks/${taskId}/reschedule`, { scheduledTime });
     return data.data;
   },
 
-  searchTasks: async (params?: CareTaskSearchParams): Promise<PagedResponse<EnrichedTaskRow[]>> => {
-    const { data } = await apiClient.get<ApiResponse<PagedResponse<EnrichedTaskRow[]>>>("/tasks/search", { params });
+  markMissed: async (taskId: string | number): Promise<TaskDetailDto> => {
+    const { data } = await apiClient.patch<ApiResponse<TaskDetailDto>>(`/tasks/${taskId}/missed`);
     return data.data;
   },
 
-  completeTask: async (taskId: string | number, completedAt?: string): Promise<void> => {
-    await apiClient.patch(`/tasks/${taskId}/completed`, { completedAt });
+  flagAbnormal: async (taskId: string | number, isAbnormalFlagged: boolean): Promise<TaskDetailDto> => {
+    const { data } = await apiClient.patch<ApiResponse<TaskDetailDto>>(`/tasks/${taskId}/flag-abnormal`, { isAbnormalFlagged });
+    return data.data;
   },
 
-  rescheduleTask: async (taskId: string | number, scheduledTime: string): Promise<void> => {
-    await apiClient.patch(`/tasks/${taskId}/reschedule`, { scheduledTime });
-  },
-
-  markMissed: async (taskId: string | number): Promise<void> => {
-    await apiClient.patch(`/tasks/${taskId}/missed`);
-  },
-
-  flagAbnormal: async (taskId: string | number, isAbnormalFlagged: boolean): Promise<void> => {
-    await apiClient.patch(`/tasks/${taskId}/flag-abnormal`, { isAbnormalFlagged });
-  },
-
-  assignCna: async (taskId: string | number, assignedCnaId: number | null): Promise<void> => {
-    await apiClient.patch(`/tasks/${taskId}/assign-cna`, { assignedCnaId });
+  assignCna: async (taskId: string | number, assignedCnaId: number | null): Promise<TaskDetailDto> => {
+    const { data } = await apiClient.patch<ApiResponse<TaskDetailDto>>(`/tasks/${taskId}/assign-cna`, { assignedCnaId });
+    return data.data;
   },
 
   deleteTask: async (taskId: string | number): Promise<void> => {
@@ -93,9 +122,17 @@ export const careTasksApi = {
 
   updateTask: async (
     taskId: string | number,
-    payload: { taskType?: string; assignedCnaId?: number | null; scheduledTime?: string }
-  ): Promise<void> => {
-    await apiClient.put(`/tasks/${taskId}`, payload);
+    payload: { taskType?: string; assignedCnaId?: number | null; scheduledTime?: string; goal?: string }
+  ): Promise<TaskDetailDto> => {
+    const { data } = await apiClient.put<ApiResponse<TaskDetailDto>>(`/tasks/${taskId}`, payload);
+    return data.data;
+  },
+
+  createTask: async (
+    interventionId: string | number,
+    payload: { taskType: string; assignedCnaId?: number | null; scheduledTime: string; goal?: string }
+  ): Promise<TaskDetailDto> => {
+    const { data } = await apiClient.post<ApiResponse<TaskDetailDto>>(`/interventions/${interventionId}/tasks`, payload);
+    return data.data;
   },
 };
-

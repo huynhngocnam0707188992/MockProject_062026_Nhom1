@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { careTasksApi } from "@/services/care-tasks-api";
 import { userService } from "@/services/user-service";
-import type { CareTaskSearchParams } from "@/services/care-tasks-api";
+import type { GroupedTaskQueryParams } from "@/services/care-tasks-api";
 
-export function useCareTasks(params?: CareTaskSearchParams) {
+export function useCareTasks(params?: GroupedTaskQueryParams) {
   const queryClient = useQueryClient();
 
   const { data: cnaGroupsData, isLoading: isLoadingCnaGroups, error: errorCnaGroups } = useQuery({
@@ -56,7 +56,7 @@ export function useCareTasks(params?: CareTaskSearchParams) {
   });
 
   const updateTaskMutation = useMutation({
-    mutationFn: ({ taskId, payload }: { taskId: string | number; payload: { taskType?: string; assignedCnaId?: number | null; scheduledTime?: string } }) => 
+    mutationFn: ({ taskId, payload }: { taskId: string | number; payload: { taskType?: string; assignedCnaId?: number | null; scheduledTime?: string; goal?: string } }) => 
       careTasksApi.updateTask(taskId, payload),
     onSuccess: invalidateQueries,
   });
