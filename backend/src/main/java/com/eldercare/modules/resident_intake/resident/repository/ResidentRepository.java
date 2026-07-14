@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface ResidentRepository extends JpaRepository<ResidentEntity, Long>, JpaSpecificationExecutor<ResidentEntity> {
     List<ResidentEntity> findByIsDeletedFalse();
+    List<ResidentEntity> findByStatus(String status);
 }

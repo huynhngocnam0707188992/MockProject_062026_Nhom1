@@ -1,3 +1,9 @@
+export interface ApiResponse<T> {
+  statusCode: number;
+  message: string;
+  data: T;
+}
+
 export interface PaginationMetadata {
   currentPage: number;
   totalPage: number;
@@ -7,9 +13,6 @@ export interface PaginationMetadata {
   totalElements: number;
 }
 
-export interface PagedApiResponse<T> {
-  statusCode: number;
-  message: string;
-  data: T;
+export interface PagedApiResponse<T> extends ApiResponse<T> {
   metadata: PaginationMetadata;
 }

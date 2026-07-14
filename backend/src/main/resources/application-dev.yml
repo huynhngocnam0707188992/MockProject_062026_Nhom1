@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:sqlserver://${DB_HOST:localhost}:${DB_PORT:1433};databaseName=${DB_NAME:NURSING_HOME_DB};encrypt=true;trustServerCertificate=true
-    username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:MatKhauCuaBan123!}
+    url: jdbc:sqlserver://${DB_HOST}:${DB_PORT};databaseName=${DB_NAME};encrypt=true;trustServerCertificate=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     hikari:
       pool-name: ${DB_POOL_NAME:EldCareHikariCP}
@@ -26,4 +26,4 @@ spring:
 
 app:
   cors:
-    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173}
+    allowed-origins: ${ALLOWED_ORIGINS}

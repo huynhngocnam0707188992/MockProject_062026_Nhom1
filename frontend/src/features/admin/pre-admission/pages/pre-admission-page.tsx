@@ -1,5 +1,7 @@
+import { ScreeningTable } from "../components/screening-table";
+
 const PreAdmissionPage = () => {
-  return <div>PreAdmissionPage</div>;
+  return <ScreeningTable />;
 };
 
 export default PreAdmissionPage;

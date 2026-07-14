@@ -1,5 +1,7 @@
+import { AdmissionTable } from "../components/admission-table";
+
 const AdmissionPage = () => {
-  return <div>AdmissionPage</div>;
+  return <AdmissionTable />;
 };
 
 export default AdmissionPage;
