@@ -13,3 +13,9 @@ export interface PagedApiResponse<T> {
   data: T;
   metadata: PaginationMetadata;
 }
+
+export interface ApiResponse<T> {
+  statusCode: number;
+  message: string;
+  data: T;
+}

@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import type { PagedApiResponse as PagedResponse } from "@/types/api";
+import type { ApiResponse, PagedApiResponse as PagedResponse } from "@/types/api";
 
 export interface EnrichedTaskRow {
   id: number;
@@ -52,19 +52,19 @@ export interface CareTaskSearchParams {
 }
 
 export const careTasksApi = {
-  getTasksByCna: async (params?: CareTaskSearchParams): Promise<PagedResponse<GroupedByCnaCard>> => {
-    const { data } = await apiClient.get<PagedResponse<GroupedByCnaCard>>("/tasks/by-cna", { params });
-    return data;
+  getTasksByCna: async (params?: CareTaskSearchParams): Promise<PagedResponse<GroupedByCnaCard[]>> => {
+    const { data } = await apiClient.get<ApiResponse<PagedResponse<GroupedByCnaCard[]>>>("/tasks/by-cna", { params });
+    return data.data;
   },
 
-  getTasksByResident: async (params?: CareTaskSearchParams): Promise<PagedResponse<GroupedByResidentCard>> => {
-    const { data } = await apiClient.get<PagedResponse<GroupedByResidentCard>>("/tasks/by-resident", { params });
-    return data;
+  getTasksByResident: async (params?: CareTaskSearchParams): Promise<PagedResponse<GroupedByResidentCard[]>> => {
+    const { data } = await apiClient.get<ApiResponse<PagedResponse<GroupedByResidentCard[]>>>("/tasks/by-resident", { params });
+    return data.data;
   },
 
-  searchTasks: async (params?: CareTaskSearchParams): Promise<PagedResponse<EnrichedTaskRow>> => {
-    const { data } = await apiClient.get<PagedResponse<EnrichedTaskRow>>("/tasks/search", { params });
-    return data;
+  searchTasks: async (params?: CareTaskSearchParams): Promise<PagedResponse<EnrichedTaskRow[]>> => {
+    const { data } = await apiClient.get<ApiResponse<PagedResponse<EnrichedTaskRow[]>>>("/tasks/search", { params });
+    return data.data;
   },
 
   completeTask: async (taskId: string | number, completedAt?: string): Promise<void> => {
