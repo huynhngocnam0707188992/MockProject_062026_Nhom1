@@ -13,7 +13,9 @@ import com.eldercare.modules.admin.facility_setup.facility.facility_profile.repo
 import com.eldercare.modules.admin.facility_setup.inventory.category.entity.InventoryCategoryEntity;
 import com.eldercare.modules.admin.facility_setup.inventory.category.repository.InventoryCategoryRepository;
 import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.dto.mapper.DurableMedicalEquipmentMapper;
-import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.dto.request.DurableMedicalEquipmentRequest;
+import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.dto.request.DurableMedicalEquipmentChangeStatusRequest;
+import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.dto.request.DurableMedicalEquipmentCreateRequest;
+import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.dto.request.DurableMedicalEquipmentUpdateRequest;
 import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.dto.response.DurableMedicalEquipmentResponse;
 import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.entity.DurableMedicalEquipmentEntity;
 import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.enums.DurableMedicalEquipmentEnum;
@@ -54,7 +56,7 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
 
     @Override
     public DurableMedicalEquipmentResponse createEquipment(
-            DurableMedicalEquipmentRequest durableMedicalEquipmentRequest) {
+            DurableMedicalEquipmentCreateRequest durableMedicalEquipmentRequest) {
         if (durableMedicalEquipmentRepository
                 .findByAssetTagAndIsDeletedFalse(durableMedicalEquipmentRequest.getAssetTag()).isPresent()) {
             throw new RuntimeException("Asset tag already exists");
@@ -73,7 +75,7 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
 
     @Override
     public DurableMedicalEquipmentResponse updateEquipment(Long id,
-            DurableMedicalEquipmentRequest durableMedicalEquipmentRequest) {
+            DurableMedicalEquipmentUpdateRequest durableMedicalEquipmentRequest) {
         DurableMedicalEquipmentEntity entity = durableMedicalEquipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Durable medical equipment not found with id: " + id));
         long newCategoryId = durableMedicalEquipmentRequest.getCategoryId();
@@ -105,7 +107,7 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
 
     @Override
     public DurableMedicalEquipmentResponse patchEquipmentStatus(long id,
-            DurableMedicalEquipmentRequest durableMedicalEquipmentRequest) {
+            DurableMedicalEquipmentChangeStatusRequest durableMedicalEquipmentRequest) {
 
         if (durableMedicalEquipmentRepository
                 .findByIdAndStatusAndIsDeletedFalse(id, DurableMedicalEquipmentEnum.RETIRED.toString()).isPresent()) {
@@ -121,38 +123,38 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
         return durableMedicalEquipmentMapper.toResponse(updatedEntity);
     }
 
-    @Override
-    public DurableMedicalEquipmentResponse assignEquipmentForUser(Long id,
-            DurableMedicalEquipmentRequest durableMedicalEquipmentRequest) {
-        if (durableMedicalEquipmentRepository
-                .findByIdAndStatusAndIsDeletedFalse(id, DurableMedicalEquipmentEnum.AVAILABLE.toString()).isPresent()) {
-            DurableMedicalEquipmentEntity entity = durableMedicalEquipmentRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Durable medical equipment not found with id: " + id));
-            long newAssignedToUserId = durableMedicalEquipmentRequest.getAssignedToUserId();
-            UserEntity newAssignedToUser = userRepository.getReferenceById(newAssignedToUserId);
-            entity.setAssignedToUser(newAssignedToUser);
-            entity.setStatus(DurableMedicalEquipmentEnum.IN_SERVICE);
-            DurableMedicalEquipmentEntity updatedEntity = durableMedicalEquipmentRepository.save(entity);
-            return durableMedicalEquipmentMapper.toResponse(updatedEntity);
-        }
-        throw new RuntimeException(
-                "Durable medical equipment cannot be assigned unless it is available");
-    }
+//     @Override
+//     public DurableMedicalEquipmentResponse assignEquipmentForUser(Long id,
+//             DurableMedicalEquipmentCreateRequest durableMedicalEquipmentRequest) {
+//         if (durableMedicalEquipmentRepository
+//                 .findByIdAndStatusAndIsDeletedFalse(id, DurableMedicalEquipmentEnum.AVAILABLE.toString()).isPresent()) {
+//             DurableMedicalEquipmentEntity entity = durableMedicalEquipmentRepository.findById(id)
+//                     .orElseThrow(() -> new RuntimeException("Durable medical equipment not found with id: " + id));
+//             long newAssignedToUserId = durableMedicalEquipmentRequest.getAssignedToUserId();
+//             UserEntity newAssignedToUser = userRepository.getReferenceById(newAssignedToUserId);
+//             entity.setAssignedToUser(newAssignedToUser);
+//             entity.setStatus(DurableMedicalEquipmentEnum.IN_SERVICE);
+//             DurableMedicalEquipmentEntity updatedEntity = durableMedicalEquipmentRepository.save(entity);
+//             return durableMedicalEquipmentMapper.toResponse(updatedEntity);
+//         }
+//         throw new RuntimeException(
+//                 "Durable medical equipment cannot be assigned unless it is available");
+//     }
 
-    @Override
-    public DurableMedicalEquipmentResponse unassignEquipmentForUser(Long id) {
-        if (durableMedicalEquipmentRepository
-                .findByIdAndStatusAndIsDeletedFalse(id, DurableMedicalEquipmentEnum.IN_SERVICE.toString())
-                .isPresent()) {
-            DurableMedicalEquipmentEntity entity = durableMedicalEquipmentRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Durable medical equipment not found with id: " + id));
-            entity.setAssignedToUser(null);
-            entity.setStatus(DurableMedicalEquipmentEnum.AVAILABLE);
-            DurableMedicalEquipmentEntity updatedEntity = durableMedicalEquipmentRepository.save(entity);
-            return durableMedicalEquipmentMapper.toResponse(updatedEntity);
-        }
-        throw new RuntimeException(
-                "Durable medical equipment cannot be unassigned unless it is in service");
-    }
+//     @Override
+//     public DurableMedicalEquipmentResponse unassignEquipmentForUser(Long id) {
+//         if (durableMedicalEquipmentRepository
+//                 .findByIdAndStatusAndIsDeletedFalse(id, DurableMedicalEquipmentEnum.IN_SERVICE.toString())
+//                 .isPresent()) {
+//             DurableMedicalEquipmentEntity entity = durableMedicalEquipmentRepository.findById(id)
+//                     .orElseThrow(() -> new RuntimeException("Durable medical equipment not found with id: " + id));
+//             entity.setAssignedToUser(null);
+//             entity.setStatus(DurableMedicalEquipmentEnum.AVAILABLE);
+//             DurableMedicalEquipmentEntity updatedEntity = durableMedicalEquipmentRepository.save(entity);
+//             return durableMedicalEquipmentMapper.toResponse(updatedEntity);
+//         }
+//         throw new RuntimeException(
+//                 "Durable medical equipment cannot be unassigned unless it is in service");
+//     }
 
 }

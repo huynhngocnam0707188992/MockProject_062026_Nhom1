@@ -3,7 +3,7 @@ package com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.dt
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.dto.request.DurableMedicalEquipmentRequest;
+import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.dto.request.DurableMedicalEquipmentCreateRequest;
 import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.dto.response.DurableMedicalEquipmentResponse;
 import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.entity.DurableMedicalEquipmentEntity;
 
@@ -11,7 +11,7 @@ import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.ent
 public interface DurableMedicalEquipmentMapper {
 
     @Mapping(target = "id", ignore = true)
-    DurableMedicalEquipmentEntity toEntity(DurableMedicalEquipmentRequest request);
+    DurableMedicalEquipmentEntity toEntity(DurableMedicalEquipmentCreateRequest request);
 
     DurableMedicalEquipmentResponse toResponse(DurableMedicalEquipmentEntity entity);
 

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import com.eldercare.modules.admin.facility_setup.inventory.consumablesupplies.d
 import com.eldercare.modules.admin.facility_setup.inventory.consumablesupplies.service.ConsumableSupplyService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -32,7 +34,8 @@ public class ConsumableSupplyController {
 
     @GetMapping
     public ResponseEntity<PagedResponse<List<ConsumableSupplyResponse>>> getAllConsumableSupplies(
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+            @Positive(message = "Page must be a positive number") @RequestParam(defaultValue = "0") int page,
+            @Positive(message = "Size must be a positive number") @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(consumableSupplyService.getAllConsumableSupplies(page, size));
     }
 
@@ -45,25 +48,26 @@ public class ConsumableSupplyController {
 
     @GetMapping("/low-stock")
     public ResponseEntity<PagedResponse<List<ConsumableSupplyResponse>>> getReorderSupplies(
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+            @Positive(message = "Page must be a positive number") @RequestParam(defaultValue = "0") int page,
+            @Positive(message = "Size must be a positive number") @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(consumableSupplyService.getLowStockSupplies(page, size));
     }
 
     @GetMapping("/{supplyId}")
     public ResponseEntity<ConsumableSupplyResponse> getConsumableSupplyDetails(
-            @RequestParam Long supplyId) {
+            @PathVariable Long supplyId) {
         return ResponseEntity.ok(consumableSupplyService.getConsumableSupplyById(supplyId));
     }
 
     @PutMapping("/{supplyId}")
     public ResponseEntity<ConsumableSupplyResponse> updateConsumableSupply(
-            @RequestParam Long supplyId,
+            @PathVariable Long supplyId,
             @Valid @RequestBody ConsumableSupplyUpdateRequest consumableSupplyRequest) {
         return ResponseEntity.ok(consumableSupplyService.updateConsumableSupply(supplyId, consumableSupplyRequest));
     }
 
     @DeleteMapping("/{supplyId}")
-    public ResponseEntity<Void> deleteConsumableSupply(@RequestParam Long supplyId) {
+    public ResponseEntity<Void> deleteConsumableSupply(@PathVariable Long supplyId) {
         consumableSupplyService.deleteConsumableSupply(supplyId);
         return ResponseEntity.noContent().build();
     }

@@ -20,6 +20,8 @@ import com.eldercare.modules.admin.facility_setup.inventory.category.dto.request
 import com.eldercare.modules.admin.facility_setup.inventory.category.dto.response.InventoryCategoryResponse;
 import com.eldercare.modules.admin.facility_setup.inventory.category.service.InventoryCategoryServiceInterface;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,26 +32,29 @@ public class InventoryCategoryController {
     private final InventoryCategoryServiceInterface inventoryCategoryService;
 
     @GetMapping
-    public ResponseEntity<PagedResponse<List<InventoryCategoryResponse>>> getAllInventoryCategories( @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<PagedResponse<List<InventoryCategoryResponse>>> getAllInventoryCategories(
+            @Positive(message = "Page must be a positive number") @RequestParam(defaultValue = "0") int page,
+            @Positive(message = "Size must be a positive number") @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(inventoryCategoryService.getInventoryCategoryList(size, page));
     }
 
     @PostMapping
     public ResponseEntity<InventoryCategoryResponse> createInventoryCategory(
-            @RequestBody InventoryCategoryRequest request) {
+            @Valid @RequestBody InventoryCategoryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(inventoryCategoryService.createInventoryCategory(request));
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<InventoryCategoryResponse> getInventoryCategoryById(@PathVariable Long categoryId) {
+    public ResponseEntity<InventoryCategoryResponse> getInventoryCategoryById(
+            @Positive(message = "Category ID must be a positive number") @PathVariable Long categoryId) {
         return ResponseEntity.ok(inventoryCategoryService.getInventoryCategoryById(categoryId));
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<InventoryCategoryResponse> updateInventoryCategory(@PathVariable Long categoryId,
-            @RequestBody InventoryCategoryRequest request) {
+    public ResponseEntity<InventoryCategoryResponse> updateInventoryCategory(
+            @Positive(message = "Category ID must be a positive number") @PathVariable Long categoryId,
+            @Valid @RequestBody InventoryCategoryRequest request) {
         return ResponseEntity.ok(inventoryCategoryService.updateInventoryCategory(categoryId, request));
     }
 
