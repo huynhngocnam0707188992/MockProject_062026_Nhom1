@@ -107,14 +107,10 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
 
       {/* ── Goal ─────────────────────────────────────────── auto width */}
       <TableCell className="px-4 py-3">
-        <div className="flex flex-col max-w-[250px] gap-0.5">
-          <span className="text-xs font-semibold text-foreground truncate">
-            {task.goalTitle}
-          </span>
-          <p className="text-xs text-muted-foreground line-clamp-1">
-            {task.goalDetail}
-          </p>
-        </div>
+        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed max-w-xs">
+          <span className="font-semibold text-foreground mr-1">{task.goalTitle}</span>
+          {task.goalDetail}
+        </p>
       </TableCell>
 
       {/* ── Scheduled Time ───────────────────────────────── w-[110px] */}
