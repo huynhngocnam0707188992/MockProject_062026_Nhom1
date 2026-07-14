@@ -166,42 +166,40 @@ export const CareTaskRow = ({ task }: CareTaskRowProps) => {
               Completed
             </span>
           ) : (
-            <>
-              <Button
-                variant={isMissed ? "outline" : "default"}
-                size="sm"
-                className={`h-7 text-xs px-3 font-medium ${
-                  isMissed
-                    ? "border-border text-foreground hover:bg-muted"
-                    : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
-                }`}
-              >
-                {isMissed ? "Reschedule" : "Complete"}
-              </Button>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  className="inline-flex size-7 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-                  aria-label="More options"
-                >
-                  <MoreVertical className="size-3.5" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-[150px]">
-                  <DropdownMenuItem>View Details</DropdownMenuItem>
-                  <DropdownMenuItem>Edit Task</DropdownMenuItem>
-                  <DropdownMenuItem>Re-assign CNA</DropdownMenuItem>
-                  <DropdownMenuItem>Reschedule</DropdownMenuItem>
-                  <DropdownMenuItem>Flag as Abnormal</DropdownMenuItem>
-                  <DropdownMenuItem variant="destructive">
-                    Mark as Missed
-                  </DropdownMenuItem>
-                  <DropdownMenuItem variant="destructive">
-                    Delete Task
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
+            <Button
+              variant={isMissed ? "outline" : "default"}
+              size="sm"
+              className={`h-7 text-xs px-3 font-medium ${
+                isMissed
+                  ? "border-border text-foreground hover:bg-muted"
+                  : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+              }`}
+            >
+              {isMissed ? "Reschedule" : "Complete"}
+            </Button>
           )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className="inline-flex size-7 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              aria-label="More options"
+            >
+              <MoreVertical className="size-3.5" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[150px]">
+              <DropdownMenuItem>View Details</DropdownMenuItem>
+              <DropdownMenuItem>Edit Task</DropdownMenuItem>
+              <DropdownMenuItem>Re-assign CNA</DropdownMenuItem>
+              <DropdownMenuItem>Reschedule</DropdownMenuItem>
+              <DropdownMenuItem>Flag as Abnormal</DropdownMenuItem>
+              <DropdownMenuItem variant="destructive">
+                Mark as Missed
+              </DropdownMenuItem>
+              <DropdownMenuItem variant="destructive">
+                Delete Task
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </TableCell>
     </TableRow>
