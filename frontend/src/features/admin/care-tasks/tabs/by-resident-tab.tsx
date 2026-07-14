@@ -4,8 +4,7 @@ import { ResidentTaskTableHeader } from "../components/by-resident-tab/resident-
 import { ResidentTaskRow } from "../components/by-resident-tab/resident-task-row";
 import { ResidentTaskFilterBar } from "../components/by-resident-tab/resident-task-filter-bar";
 import { Table, TableBody } from "@/components/ui/table";
-import { ClipboardList, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ClipboardList } from "lucide-react";
 
 export const ByResidentTab = () => {
   const { residentGroups, isLoadingResidents } = useCareTasks();
@@ -54,14 +53,6 @@ export const ByResidentTab = () => {
                 ))}
               </TableBody>
             </Table>
-          </div>
-          
-          {/* Add Task footer action */}
-          <div className="p-2 border-t border-border flex justify-center bg-muted/10">
-            <Button variant="ghost" size="sm" className="h-8 text-xs font-medium text-primary hover:text-primary hover:bg-primary/10 gap-1">
-              <Plus className="size-3.5" />
-              Add Task
-            </Button>
           </div>
         </div>
       ))}

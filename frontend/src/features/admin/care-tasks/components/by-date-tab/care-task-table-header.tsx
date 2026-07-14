@@ -16,9 +16,9 @@ export const CareTaskTableHeader = () => {
         <TableHead className="h-10 px-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[130px]">
           Task Type
         </TableHead>
-        {/* Goal — auto, fills remaining space */}
+        {/* Goal / Intervention — auto, fills remaining space */}
         <TableHead className="h-10 px-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          Goal
+          Goal / Intervention
         </TableHead>
         {/* Time — 110px, centred */}
         <TableHead className="h-10 px-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground text-center w-[110px]">
