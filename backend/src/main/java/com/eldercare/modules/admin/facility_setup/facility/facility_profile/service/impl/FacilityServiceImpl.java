@@ -6,6 +6,7 @@ import com.eldercare.exception.custom.ResourceNotFoundException;
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityCreateRequest;
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityUpdateRequest;
 import com.eldercare.modules.admin.facility_setup.facility.dto.response.FacilityResponse;
+import com.eldercare.modules.admin.facility_setup.facility.dto.response.FacilitySelectResponse;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.mapper.FacilityMapper;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.repository.FacilityRepository;
@@ -32,14 +33,15 @@ public class FacilityServiceImpl implements FacilityService {
     public PagedResponse<List<FacilityResponse>> getFacilities(int page, int size, String search) {
         Pageable pageable = PageRequest.of(page, size);
         Page<FacilityEntity> facilityPage;
-        
+
         if (search != null && !search.trim().isEmpty()) {
-            facilityPage = facilityRepository.findByFacilityCodeContainingIgnoreCaseOrNameContainingIgnoreCaseOrLicenseNumberContainingIgnoreCase(
-                    search, search, search, pageable);
+            facilityPage = facilityRepository
+                    .findByFacilityCodeContainingIgnoreCaseOrNameContainingIgnoreCaseOrLicenseNumberContainingIgnoreCase(
+                            search, search, search, pageable);
         } else {
             facilityPage = facilityRepository.findAll(pageable);
         }
-        
+
         List<FacilityResponse> content = facilityPage.getContent()
                 .stream()
                 .map(facilityMapper::toResponse)
@@ -69,14 +71,23 @@ public class FacilityServiceImpl implements FacilityService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<FacilitySelectResponse> getFacilitiesForSelect() {
+        return facilityRepository.findByIsDeletedFalse()
+                .stream()
+                .map(f -> new FacilitySelectResponse(f.getId(), f.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public FacilityResponse updateFacilityInfo(Long facilityId, FacilityUpdateRequest request) {
         FacilityEntity facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Facility not found"));
-        
+
         facilityMapper.updateEntity(facility, request);
         facility = facilityRepository.save(facility);
-        
+
         return facilityMapper.toResponse(facility);
     }
 }

@@ -12,6 +12,7 @@ import com.eldercare.modules.finance_billing.insurance_coverage.InsuranceProvide
 import com.eldercare.modules.resident_intake.family_contacts.ResidentContactEntity;
 import com.eldercare.modules.clinical.clinical_record.ClinicalRecordEntity;
 import com.eldercare.modules.resident_intake.admission_ledger.AdmissionEntity;
+import com.eldercare.modules.resident_intake.admission_ledger.repository.AdmissionRepository;
 import com.eldercare.modules.resident_intake.care_level.CareLevelEntity;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.AddressEntity;
@@ -23,7 +24,6 @@ import com.eldercare.common.enums.RoomType;
 import com.eldercare.common.enums.BedStatus;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.repository.FacilityRepository;
-
 
 import com.eldercare.modules.resident_intake.resident.dto.request.*;
 import com.eldercare.modules.resident_intake.resident.dto.response.*;
@@ -104,7 +104,8 @@ public class ResidentServiceImpl implements ResidentService {
 
         List<ResidentListResponseDto> dtos = residents.stream()
                 .map(r -> {
-                    List<ResidentInsurancePolicyEntity> policies = residentInsurancePolicyRepository.findByResidentIdAndIsDeletedFalse(r.getId());
+                    List<ResidentInsurancePolicyEntity> policies = residentInsurancePolicyRepository
+                            .findByResidentIdAndIsDeletedFalse(r.getId());
                     return residentMapper.toListDto(r, policies);
                 })
                 .collect(Collectors.toList());
@@ -129,6 +130,73 @@ public class ResidentServiceImpl implements ResidentService {
         return dtos;
     }
 
+    private ResidentListResponseDto mapToListDto(ResidentEntity resident) {
+        ResidentListResponseDto dto = new ResidentListResponseDto();
+        dto.setId(resident.getId());
+        dto.setName(resident.getFirstName() + " " + resident.getLastName());
+
+        // RoomEntity mapping
+        if (resident.getBed() != null) {
+            String roomNum = resident.getBed().getRoom().getRoomNumber();
+            String bedNum = resident.getBed().getBedNumber();
+            dto.setRoom(roomNum + "-" + bedNum);
+        } else {
+            dto.setRoom("—");
+        }
+
+        // Status casing format
+        String statusStr = resident.getStatus();
+        if (statusStr != null && !statusStr.isEmpty()) {
+            dto.setStatus(Character.toUpperCase(statusStr.charAt(0)) + statusStr.substring(1).toLowerCase());
+        } else {
+            dto.setStatus("Pending");
+        }
+
+        dto.setDob(resident.getDateOfBirth());
+
+        // Age calculation
+        if (resident.getDateOfBirth() != null) {
+            dto.setAge(Period.between(resident.getDateOfBirth(), LocalDate.now()).getYears());
+        } else {
+            dto.setAge(75);
+        }
+
+        // Payer source mapping
+        List<ResidentInsurancePolicyEntity> policies = residentInsurancePolicyRepository
+                .findByResidentIdAndIsDeletedFalse(resident.getId());
+        Optional<ResidentInsurancePolicyEntity> primaryPolicy = policies.stream()
+                .filter(ResidentInsurancePolicyEntity::isPrimary).findFirst();
+        if (primaryPolicy.isPresent()) {
+            dto.setPayerSource(primaryPolicy.get().getInsuranceProvider().getProviderName());
+        } else {
+            dto.setPayerSource("Private Pay");
+        }
+
+        // Referral source (Mock mapping because database has no referral table)
+        dto.setReferralSource(getMockReferralSource(resident.getId()));
+
+        return dto;
+    }
+
+    private String getMockReferralSource(Long id) {
+        if (id == null)
+            return "Private";
+        int index = (int) (id % 5);
+        switch (index) {
+            case 1:
+                return "Sunrise Regional Hosp.";
+            case 2:
+                return "Private";
+            case 3:
+                return "Family";
+            case 4:
+                return "Self";
+            case 0:
+                return "Valley General Hosp.";
+            default:
+                return "Private";
+        }
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -136,15 +204,21 @@ public class ResidentServiceImpl implements ResidentService {
         ResidentEntity resident = residentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("ResidentEntity not found with id: " + id));
 
-        List<ResidentCareLevelHistoryEntity> careHistory = residentCareLevelHistoryRepository.findByResidentId(resident.getId());
-        List<ResidentInsurancePolicyEntity> policies = residentInsurancePolicyRepository.findByResidentIdAndIsDeletedFalse(resident.getId());
-        Optional<ResidentSensitiveInfoEntity> sensitive = residentSensitiveInfoRepository.findByResidentId(resident.getId());
+        List<ResidentCareLevelHistoryEntity> careHistory = residentCareLevelHistoryRepository
+                .findByResidentId(resident.getId());
+        List<ResidentInsurancePolicyEntity> policies = residentInsurancePolicyRepository
+                .findByResidentIdAndIsDeletedFalse(resident.getId());
+        Optional<ResidentSensitiveInfoEntity> sensitive = residentSensitiveInfoRepository
+                .findByResidentId(resident.getId());
         List<AdmissionEntity> admissions = admissionRepository.findByResidentId(resident.getId());
         List<ResidentContactEntity> residentContacts = residentContactRepository.findByResidentId(resident.getId());
-        List<ClinicalRecordEntity> diagnoses = clinicalRecordRepository.findByResidentIdAndRecordTypeAndIsDeletedFalse(resident.getId(), "DIAGNOSIS");
-        List<ClinicalRecordEntity> allergies = clinicalRecordRepository.findByResidentIdAndRecordTypeAndIsDeletedFalse(resident.getId(), "ALLERGY");
+        List<ClinicalRecordEntity> diagnoses = clinicalRecordRepository
+                .findByResidentIdAndRecordTypeAndIsDeletedFalse(resident.getId(), "DIAGNOSIS");
+        List<ClinicalRecordEntity> allergies = clinicalRecordRepository
+                .findByResidentIdAndRecordTypeAndIsDeletedFalse(resident.getId(), "ALLERGY");
 
-        return residentMapper.toDetailResponseDto(resident, careHistory, policies, sensitive, admissions, residentContacts, diagnoses, allergies);
+        return residentMapper.toDetailResponseDto(resident, careHistory, policies, sensitive, admissions,
+                residentContacts, diagnoses, allergies);
     }
 
     @Override
@@ -173,7 +247,6 @@ public class ResidentServiceImpl implements ResidentService {
         AdmissionEntity admission = new AdmissionEntity();
         admission.setResident(resident);
         admission.setAdmissionDate(LocalDate.now());
-        admission.setFacilityId(1L);
         admissionRepository.save(admission);
 
         // Save Care Level history
@@ -184,7 +257,7 @@ public class ResidentServiceImpl implements ResidentService {
                     cl.setLevelName("Level 3");
                     return careLevelRepository.save(cl);
                 });
-        
+
         ResidentCareLevelHistoryEntity history = new ResidentCareLevelHistoryEntity();
         history.setResident(resident);
         history.setCareLevel(careLevel);
@@ -221,7 +294,7 @@ public class ResidentServiceImpl implements ResidentService {
         if (roomBed == null || roomBed.isEmpty()) {
             roomBed = "101-A";
         }
-        
+
         String[] parts = roomBed.split("-");
         String roomNumber = parts[0];
         String bedLetter = parts.length > 1 ? parts[1] : "A";
@@ -231,7 +304,8 @@ public class ResidentServiceImpl implements ResidentService {
                     RoomEntity r = new RoomEntity();
                     r.setRoomNumber(roomNumber);
                     r.setRoomType(RoomType.SEMI_PRIVATE);
-                    FacilityEntity facility = facilityRepository.findById(1L).orElseThrow(() -> new RuntimeException("Default Facility not found"));
+                    FacilityEntity facility = facilityRepository.findById(1L)
+                            .orElseThrow(() -> new RuntimeException("Default Facility not found"));
                     r.setFacility(facility);
                     return roomRepository.save(r);
                 });
@@ -258,10 +332,12 @@ public class ResidentServiceImpl implements ResidentService {
                         return insuranceProviderRepository.save(p);
                     });
 
-            List<ResidentInsurancePolicyEntity> policies = resident.getId() != null ? 
-                residentInsurancePolicyRepository.findByResidentIdAndIsDeletedFalse(resident.getId()) : Collections.emptyList();
-            
-            ResidentInsurancePolicyEntity policy = policies.stream().filter(ResidentInsurancePolicyEntity::isPrimary).findFirst().orElse(null);
+            List<ResidentInsurancePolicyEntity> policies = resident.getId() != null
+                    ? residentInsurancePolicyRepository.findByResidentIdAndIsDeletedFalse(resident.getId())
+                    : Collections.emptyList();
+
+            ResidentInsurancePolicyEntity policy = policies.stream().filter(ResidentInsurancePolicyEntity::isPrimary)
+                    .findFirst().orElse(null);
             if (policy == null) {
                 policy = new ResidentInsurancePolicyEntity();
                 policy.setResident(resident);
@@ -289,7 +365,8 @@ public class ResidentServiceImpl implements ResidentService {
             ResidentContactEntity rc = new ResidentContactEntity();
             rc.setResident(resident);
             rc.setContact(contact);
-            rc.setRelationshipType(dto.getPoaRelationship() != null ? dto.getPoaRelationship().toUpperCase() : "DAUGHTER");
+            rc.setRelationshipType(
+                    dto.getPoaRelationship() != null ? dto.getPoaRelationship().toUpperCase() : "DAUGHTER");
             rc.setEmergencyContact(true);
             rc.setPrimary(true);
             residentContactRepository.save(rc);
@@ -308,7 +385,8 @@ public class ResidentServiceImpl implements ResidentService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResidentListResponseContainerDto getResidentsV1(String status, Long bedId, String search, Integer page, Integer pageSize) {
+    public ResidentListResponseContainerDto getResidentsV1(String status, Long bedId, String search, Integer page,
+            Integer pageSize) {
         List<ResidentEntity> residents = residentRepository.findByIsDeletedFalse();
 
         // 1. Filter by status
@@ -373,10 +451,12 @@ public class ResidentServiceImpl implements ResidentService {
     }
 
     private String getActiveCareLevelCode(Long residentId) {
-        List<ResidentCareLevelHistoryEntity> histories = residentCareLevelHistoryRepository.findByResidentId(residentId);
+        List<ResidentCareLevelHistoryEntity> histories = residentCareLevelHistoryRepository
+                .findByResidentId(residentId);
         LocalDate today = LocalDate.now();
         Optional<ResidentCareLevelHistoryEntity> activeHistory = histories.stream()
-                .filter(h -> !h.getStartDate().isAfter(today) && (h.getEndDate() == null || !h.getEndDate().isBefore(today)))
+                .filter(h -> !h.getStartDate().isAfter(today)
+                        && (h.getEndDate() == null || !h.getEndDate().isBefore(today)))
                 .findFirst();
         if (activeHistory.isPresent()) {
             return activeHistory.get().getCareLevel().getLevelCode();
@@ -429,16 +509,24 @@ public class ResidentServiceImpl implements ResidentService {
                 .orElseThrow(() -> new IllegalArgumentException("ResidentEntity not found with id: " + id));
 
         if (resident.isChartLocked()) {
-            throw new IllegalStateException("All clinical modifications are blocked because this resident's chart is locked.");
+            throw new IllegalStateException(
+                    "All clinical modifications are blocked because this resident's chart is locked.");
         }
 
-        if (dto.getFirstName() != null) resident.setFirstName(dto.getFirstName());
-        if (dto.getMiddleName() != null) resident.setMiddleName(dto.getMiddleName());
-        if (dto.getLastName() != null) resident.setLastName(dto.getLastName());
-        if (dto.getDateOfBirth() != null) resident.setDateOfBirth(dto.getDateOfBirth());
-        if (dto.getGender() != null) resident.setGender(dto.getGender());
-        if (dto.getMaritalStatus() != null) resident.setMaritalStatus(dto.getMaritalStatus());
-        if (dto.getReligionPreference() != null) resident.setReligionPreference(dto.getReligionPreference());
+        if (dto.getFirstName() != null)
+            resident.setFirstName(dto.getFirstName());
+        if (dto.getMiddleName() != null)
+            resident.setMiddleName(dto.getMiddleName());
+        if (dto.getLastName() != null)
+            resident.setLastName(dto.getLastName());
+        if (dto.getDateOfBirth() != null)
+            resident.setDateOfBirth(dto.getDateOfBirth());
+        if (dto.getGender() != null)
+            resident.setGender(dto.getGender());
+        if (dto.getMaritalStatus() != null)
+            resident.setMaritalStatus(dto.getMaritalStatus());
+        if (dto.getReligionPreference() != null)
+            resident.setReligionPreference(dto.getReligionPreference());
         if (dto.getAddressId() != null) {
             addressRepository.findById(dto.getAddressId()).ifPresent(resident::setAddress);
         }
@@ -456,7 +544,7 @@ public class ResidentServiceImpl implements ResidentService {
 
         String newStatus = dto.getStatus().toUpperCase();
         resident.setStatus(newStatus);
-        
+
         if (newStatus.equals("DISCHARGED") || newStatus.equals("DECEASED")) {
             resident.setBed(null);
         }
@@ -481,7 +569,8 @@ public class ResidentServiceImpl implements ResidentService {
                 .orElseThrow(() -> new IllegalArgumentException("ResidentEntity not found with id: " + id));
 
         if (resident.isChartLocked()) {
-            throw new IllegalStateException("All clinical modifications are blocked because this resident's chart is locked.");
+            throw new IllegalStateException(
+                    "All clinical modifications are blocked because this resident's chart is locked.");
         }
 
         if (dto.getBedId() == null) {
@@ -489,14 +578,15 @@ public class ResidentServiceImpl implements ResidentService {
         } else {
             BedEntity bed = bedRepository.findById(dto.getBedId())
                     .orElseThrow(() -> new IllegalArgumentException("BedEntity not found with id: " + dto.getBedId()));
-            
+
             // Check if bed is already occupied by another active/non-discharged resident
             List<ResidentEntity> occupants = residentRepository.findByIsDeletedFalse();
             boolean occupied = occupants.stream()
                     .filter(r -> !r.getId().equals(id))
                     .filter(r -> r.getBed() != null && r.getBed().getId().equals(dto.getBedId()))
-                    .anyMatch(r -> !r.getStatus().equalsIgnoreCase("DISCHARGED") && !r.getStatus().equalsIgnoreCase("DECEASED"));
-            
+                    .anyMatch(r -> !r.getStatus().equalsIgnoreCase("DISCHARGED")
+                            && !r.getStatus().equalsIgnoreCase("DECEASED"));
+
             if (occupied) {
                 throw new IllegalStateException("BedEntity is already occupied by another active resident.");
             }
@@ -541,6 +631,21 @@ public class ResidentServiceImpl implements ResidentService {
         resident.setUpdatedAt(OffsetDateTime.now());
 
         resident = residentRepository.save(resident);
+        return mapToResponseDto(resident);
+    }
+
+    @Override
+    public List<ResidentPendingDTO> getPendingResidents() {
+        return residentRepository.findByStatus("PENDING").stream().map(r -> {
+            ResidentPendingDTO dto = new ResidentPendingDTO();
+            dto.setId(r.getId());
+            dto.setFullName(r.getFirstName() + " " + r.getLastName());
+            dto.setStatus(r.getStatus());
+            return dto;
+        }).toList();
+    }
+
+    private ResidentResponseDto mapToResponseDto(ResidentEntity resident) {
         return residentMapper.toResponseDto(resident);
     }
 }
