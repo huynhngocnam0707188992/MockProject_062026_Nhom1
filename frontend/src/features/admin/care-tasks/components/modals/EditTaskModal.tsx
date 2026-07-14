@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useActiveCnas } from "../../hooks/useCareTasks";
 import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import type { EnrichedTaskRow } from "@/services/care-tasks-api";
 
 interface EditTaskModalProps {
@@ -105,7 +105,7 @@ export const EditTaskModal = ({ open, onOpenChange, task, onConfirm }: EditTaskM
                 </SelectItem>
                 {cnas?.map((cna: any) => (
                   <SelectItem key={cna.id} value={cna.id.toString()}>
-                    {cna.firstName} {cna.lastName}
+                    {cna.fullName || `${cna.firstName} ${cna.lastName}`}
                   </SelectItem>
                 ))}
               </SelectContent>

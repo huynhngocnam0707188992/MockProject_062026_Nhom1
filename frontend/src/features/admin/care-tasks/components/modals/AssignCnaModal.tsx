@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useActiveCnas } from "../../hooks/useCareTasks";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface AssignCnaModalProps {
   open: boolean;
@@ -55,7 +55,7 @@ export const AssignCnaModal = ({ open, onOpenChange, onConfirm, currentCnaId }: 
               </SelectItem>
               {cnas?.map((cna: any) => (
                 <SelectItem key={cna.id} value={cna.id.toString()}>
-                  {cna.firstName} {cna.lastName}
+                  {cna.fullName || `${cna.firstName} ${cna.lastName}`}
                 </SelectItem>
               ))}
             </SelectContent>

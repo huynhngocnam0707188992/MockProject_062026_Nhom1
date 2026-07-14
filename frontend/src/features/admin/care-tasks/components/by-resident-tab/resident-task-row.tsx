@@ -18,6 +18,7 @@ import { RescheduleTaskModal } from "../modals/RescheduleTaskModal";
 import { TaskDetailModal } from "../modals/TaskDetailModal";
 import { EditTaskModal } from "../modals/EditTaskModal";
 import { useCareTasks } from "../../hooks/useCareTasks";
+import { toast } from "sonner";
 
 interface ResidentTaskRowProps {
   task: EnrichedTaskRow;
@@ -258,7 +259,12 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
         onOpenChange={setShowEditModal}
         task={task}
         onConfirm={async (payload) => {
-          await updateTask({ taskId: task.id, payload });
+          try {
+            await updateTask({ taskId: task.id, payload });
+            toast.success("Task updated successfully");
+          } catch (err: any) {
+            toast.error(err.message || "Failed to update task");
+          }
         }}
       />
 
@@ -268,8 +274,14 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
         title="Complete Task"
         description="Are you sure you want to mark this task as completed?"
         onConfirm={async () => {
-          await completeTask({ taskId: task.id });
-          setShowConfirmComplete(false);
+          try {
+            await completeTask({ taskId: task.id });
+            toast.success("Task completed successfully");
+          } catch (err: any) {
+            toast.error(err.message || "Failed to complete task");
+          } finally {
+            setShowConfirmComplete(false);
+          }
         }}
       />
 
@@ -280,8 +292,14 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
         description="Are you sure you want to mark this task as missed? This indicates the care event did not occur."
         isDestructive
         onConfirm={async () => {
-          await markMissed(task.id);
-          setShowConfirmMissed(false);
+          try {
+            await markMissed(task.id);
+            toast.success("Task marked as missed");
+          } catch (err: any) {
+            toast.error(err.message || "Failed to mark task missed");
+          } finally {
+            setShowConfirmMissed(false);
+          }
         }}
       />
 
@@ -292,8 +310,14 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
         description="Are you sure you want to permanently delete this task? This action cannot be undone."
         isDestructive
         onConfirm={async () => {
-          await deleteTask(task.id);
-          setShowConfirmDelete(false);
+          try {
+            await deleteTask(task.id);
+            toast.success("Task deleted successfully");
+          } catch (err: any) {
+            toast.error(err.message || "Failed to delete task");
+          } finally {
+            setShowConfirmDelete(false);
+          }
         }}
       />
 
@@ -303,7 +327,12 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
           onOpenChange={setShowAssignModal}
           currentCnaId={task.assignedCnaId}
           onConfirm={async (cnaId) => {
-            await assignCna({ taskId: task.id, assignedCnaId: cnaId });
+            try {
+              await assignCna({ taskId: task.id, assignedCnaId: cnaId });
+              toast.success("Assignment updated successfully");
+            } catch (err: any) {
+              toast.error(err.message || "Failed to update assignment");
+            }
           }}
         />
       )}
@@ -314,7 +343,12 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
           onOpenChange={setShowRescheduleModal}
           currentDate={task.scheduledTime}
           onConfirm={async (dateString) => {
-            await rescheduleTask({ taskId: task.id, scheduledTime: dateString });
+            try {
+              await rescheduleTask({ taskId: task.id, scheduledTime: dateString });
+              toast.success("Task rescheduled successfully");
+            } catch (err: any) {
+              toast.error(err.message || "Failed to reschedule task");
+            }
           }}
         />
       )}
