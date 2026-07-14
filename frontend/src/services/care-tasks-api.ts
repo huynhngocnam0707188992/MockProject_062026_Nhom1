@@ -67,12 +67,35 @@ export const careTasksApi = {
     return data;
   },
 
-  completeTask: async (taskId: string | number): Promise<void> => {
-    await apiClient.patch(`/tasks/${taskId}/complete`);
+  completeTask: async (taskId: string | number, completedAt?: string): Promise<void> => {
+    await apiClient.patch(`/tasks/${taskId}/completed`, { completedAt });
   },
 
-  rescheduleTask: async (taskId: string | number): Promise<void> => {
-    await apiClient.patch(`/tasks/${taskId}/reschedule`);
+  rescheduleTask: async (taskId: string | number, scheduledTime: string): Promise<void> => {
+    await apiClient.patch(`/tasks/${taskId}/reschedule`, { scheduledTime });
+  },
+
+  markMissed: async (taskId: string | number): Promise<void> => {
+    await apiClient.patch(`/tasks/${taskId}/missed`);
+  },
+
+  flagAbnormal: async (taskId: string | number, isAbnormalFlagged: boolean): Promise<void> => {
+    await apiClient.patch(`/tasks/${taskId}/flag-abnormal`, { isAbnormalFlagged });
+  },
+
+  assignCna: async (taskId: string | number, assignedCnaId: number | null): Promise<void> => {
+    await apiClient.patch(`/tasks/${taskId}/assign-cna`, { assignedCnaId });
+  },
+
+  deleteTask: async (taskId: string | number): Promise<void> => {
+    await apiClient.delete(`/tasks/${taskId}`);
+  },
+
+  updateTask: async (
+    taskId: string | number,
+    payload: { taskType?: string; assignedCnaId?: number | null; scheduledTime?: string }
+  ): Promise<void> => {
+    await apiClient.put(`/tasks/${taskId}`, payload);
   },
 };
 

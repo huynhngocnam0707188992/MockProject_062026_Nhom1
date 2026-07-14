@@ -18,4 +18,20 @@ public final class RouteConstants {
     public static final String API_TASKS_SEARCH = API_TASKS + "/search";
     public static final String API_TASKS_BY_CNA = API_TASKS + "/by-cna";
     public static final String API_TASKS_BY_RESIDENT = API_TASKS + "/by-resident";
+    
+    // Single Task Operations
+    public static final String API_TASK_BY_ID = API_TASKS + "/{taskId}";
+    public static final String API_TASK_ASSIGN_CNA = API_TASK_BY_ID + "/assign-cna";
+    public static final String API_TASK_COMPLETED = API_TASK_BY_ID + "/completed";
+    public static final String API_TASK_MISSED = API_TASK_BY_ID + "/missed";
+    public static final String API_TASK_FLAG_ABNORMAL = API_TASK_BY_ID + "/flag-abnormal";
+    public static final String API_TASK_RESCHEDULE = API_TASK_BY_ID + "/reschedule";
+    
+    // Intervention Routes
+    public static final String API_INTERVENTIONS = API_PREFIX + "/interventions";
+    public static final String API_INTERVENTION_TASKS = API_INTERVENTIONS + "/{interventionId}/tasks";
+    
+    // User Routes
+    public static final String API_USERS = API_PREFIX + "/users";
+    public static final String API_USERS_CNAS = API_USERS + "/cnas";
 }

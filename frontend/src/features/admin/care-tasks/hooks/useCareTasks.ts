@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { careTasksApi } from "@/services/care-tasks-api";
+import { userService } from "@/services/user-service";
 import type { CareTaskSearchParams } from "@/services/care-tasks-api";
 
 export function useCareTasks(params?: CareTaskSearchParams) {
@@ -15,20 +16,49 @@ export function useCareTasks(params?: CareTaskSearchParams) {
     queryFn: () => careTasksApi.getTasksByResident(params),
   });
 
+  const invalidateQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ["care-tasks-by-cna"] });
+    queryClient.invalidateQueries({ queryKey: ["care-tasks-by-resident"] });
+  };
+
   const completeTaskMutation = useMutation({
-    mutationFn: (taskId: string | number) => careTasksApi.completeTask(taskId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["care-tasks-by-cna"] });
-      queryClient.invalidateQueries({ queryKey: ["care-tasks-by-resident"] });
-    },
+    mutationFn: ({ taskId, completedAt }: { taskId: string | number; completedAt?: string }) => 
+      careTasksApi.completeTask(taskId, completedAt),
+    onSuccess: invalidateQueries,
   });
 
   const rescheduleTaskMutation = useMutation({
-    mutationFn: (taskId: string | number) => careTasksApi.rescheduleTask(taskId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["care-tasks-by-cna"] });
-      queryClient.invalidateQueries({ queryKey: ["care-tasks-by-resident"] });
-    },
+    mutationFn: ({ taskId, scheduledTime }: { taskId: string | number; scheduledTime: string }) => 
+      careTasksApi.rescheduleTask(taskId, scheduledTime),
+    onSuccess: invalidateQueries,
+  });
+
+  const markMissedMutation = useMutation({
+    mutationFn: (taskId: string | number) => careTasksApi.markMissed(taskId),
+    onSuccess: invalidateQueries,
+  });
+
+  const flagAbnormalMutation = useMutation({
+    mutationFn: ({ taskId, isAbnormalFlagged }: { taskId: string | number; isAbnormalFlagged: boolean }) => 
+      careTasksApi.flagAbnormal(taskId, isAbnormalFlagged),
+    onSuccess: invalidateQueries,
+  });
+
+  const assignCnaMutation = useMutation({
+    mutationFn: ({ taskId, assignedCnaId }: { taskId: string | number; assignedCnaId: number | null }) => 
+      careTasksApi.assignCna(taskId, assignedCnaId),
+    onSuccess: invalidateQueries,
+  });
+
+  const deleteTaskMutation = useMutation({
+    mutationFn: (taskId: string | number) => careTasksApi.deleteTask(taskId),
+    onSuccess: invalidateQueries,
+  });
+
+  const updateTaskMutation = useMutation({
+    mutationFn: ({ taskId, payload }: { taskId: string | number; payload: { taskType?: string; assignedCnaId?: number | null; scheduledTime?: string } }) => 
+      careTasksApi.updateTask(taskId, payload),
+    onSuccess: invalidateQueries,
   });
 
   return {
@@ -37,7 +67,33 @@ export function useCareTasks(params?: CareTaskSearchParams) {
     residentGroupsData,
     isLoadingResidents: isLoadingResidentGroups,
     error: errorCnaGroups?.message || errorResidentGroups?.message || null,
+    
     completeTask: completeTaskMutation.mutateAsync,
+    isCompleting: completeTaskMutation.isPending,
+
     rescheduleTask: rescheduleTaskMutation.mutateAsync,
+    isRescheduling: rescheduleTaskMutation.isPending,
+
+    markMissed: markMissedMutation.mutateAsync,
+    isMarkingMissed: markMissedMutation.isPending,
+
+    flagAbnormal: flagAbnormalMutation.mutateAsync,
+    isFlaggingAbnormal: flagAbnormalMutation.isPending,
+
+    assignCna: assignCnaMutation.mutateAsync,
+    isAssigningCna: assignCnaMutation.isPending,
+
+    deleteTask: deleteTaskMutation.mutateAsync,
+    isDeleting: deleteTaskMutation.isPending,
+
+    updateTask: updateTaskMutation.mutateAsync,
+    isUpdating: updateTaskMutation.isPending,
   };
+}
+
+export function useActiveCnas() {
+  return useQuery({
+    queryKey: ["active-cnas"],
+    queryFn: () => userService.getActiveCnas(),
+  });
 }

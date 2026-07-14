@@ -18,7 +18,7 @@ public interface CareTaskRepository extends JpaRepository<CareTaskEntity, Long> 
         SELECT new com.eldercare.modules.careplan_management.cna_daily_tasks.dto.response.EnrichedTaskRow(
             ct.id, ci.id, cp.id, r.id, CONCAT(r.firstName, ' ', r.lastName), rm.roomNumber, 
             u.id, CONCAT(u.firstName, ' ', u.lastName), 
-            ct.scheduledTime, ct.completedAt, ct.taskType, ct.status, ct.isAbnormalFlagged, ct.goal)
+            ct.scheduledTime, ct.completedAt, ct.taskType, CAST(ct.status AS string), ct.isAbnormalFlagged, ct.goal)
         FROM CareTaskEntity ct
         JOIN ct.careIntervention ci
         JOIN ci.carePlan cp
@@ -28,7 +28,7 @@ public interface CareTaskRepository extends JpaRepository<CareTaskEntity, Long> 
         LEFT JOIN ct.assignedCna u
         WHERE (CAST(:startOfDay AS java.time.OffsetDateTime) IS NULL OR ct.scheduledTime >= :startOfDay)
           AND (CAST(:endOfDay AS java.time.OffsetDateTime) IS NULL OR ct.scheduledTime < :endOfDay)
-          AND (:status IS NULL OR ct.status = :status)
+          AND (:status IS NULL OR CAST(ct.status AS string) = :status)
           AND (:taskType IS NULL OR ct.taskType = :taskType)
           AND (:residentId IS NULL OR r.id = :residentId)
           AND (:assignedCnaId IS NULL OR u.id = :assignedCnaId)
@@ -48,7 +48,7 @@ public interface CareTaskRepository extends JpaRepository<CareTaskEntity, Long> 
         SELECT new com.eldercare.modules.careplan_management.cna_daily_tasks.dto.response.EnrichedTaskRow(
             ct.id, ci.id, cp.id, r.id, CONCAT(r.firstName, ' ', r.lastName), rm.roomNumber, 
             u.id, CONCAT(u.firstName, ' ', u.lastName), 
-            ct.scheduledTime, ct.completedAt, ct.taskType, ct.status, ct.isAbnormalFlagged, ct.goal)
+            ct.scheduledTime, ct.completedAt, ct.taskType, CAST(ct.status AS string), ct.isAbnormalFlagged, ct.goal)
         FROM CareTaskEntity ct
         JOIN ct.careIntervention ci
         JOIN ci.carePlan cp
@@ -58,7 +58,7 @@ public interface CareTaskRepository extends JpaRepository<CareTaskEntity, Long> 
         LEFT JOIN ct.assignedCna u
         WHERE (CAST(:startOfDay AS java.time.OffsetDateTime) IS NULL OR ct.scheduledTime >= :startOfDay)
           AND (CAST(:endOfDay AS java.time.OffsetDateTime) IS NULL OR ct.scheduledTime < :endOfDay)
-          AND (:status IS NULL OR ct.status = :status)
+          AND (:status IS NULL OR CAST(ct.status AS string) = :status)
           AND (:taskType IS NULL OR ct.taskType = :taskType)
           AND (:residentId IS NULL OR r.id = :residentId)
           AND (:assignedCnaId IS NULL OR u.id = :assignedCnaId)
@@ -73,7 +73,7 @@ public interface CareTaskRepository extends JpaRepository<CareTaskEntity, Long> 
         LEFT JOIN ct.assignedCna u
         WHERE (CAST(:startOfDay AS java.time.OffsetDateTime) IS NULL OR ct.scheduledTime >= :startOfDay)
           AND (CAST(:endOfDay AS java.time.OffsetDateTime) IS NULL OR ct.scheduledTime < :endOfDay)
-          AND (:status IS NULL OR ct.status = :status)
+          AND (:status IS NULL OR CAST(ct.status AS string) = :status)
           AND (:taskType IS NULL OR ct.taskType = :taskType)
           AND (:residentId IS NULL OR r.id = :residentId)
           AND (:assignedCnaId IS NULL OR u.id = :assignedCnaId)
@@ -89,4 +89,6 @@ public interface CareTaskRepository extends JpaRepository<CareTaskEntity, Long> 
             @Param("isAbnormalFlagged") Boolean isAbnormalFlagged,
             Pageable pageable
     );
+    
+    Page<CareTaskEntity> findByCareIntervention_Id(Long interventionId, Pageable pageable);
 }

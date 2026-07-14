@@ -2,6 +2,7 @@ package com.eldercare.modules.careplan_management.cna_daily_tasks.entity;
 
 import com.eldercare.modules.admin.user_management.UserEntity;
 import com.eldercare.modules.careplan_management.careplan_design.repository.database_schema.CareInterventionSchema;
+import com.eldercare.modules.careplan_management.cna_daily_tasks.enums.TaskStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,11 +28,11 @@ public class CareTaskEntity {
     @Column(name = "task_type", nullable = false, length = 50)
     private String taskType;
 
-    @Size(max = 20)
     @NotNull
     @ColumnDefault("'PENDING'")
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
-    private String status;
+    private TaskStatus status;
 
     @NotNull
     @ColumnDefault("0")

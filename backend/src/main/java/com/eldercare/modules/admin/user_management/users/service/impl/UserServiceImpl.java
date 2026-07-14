@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -121,6 +122,18 @@ public class UserServiceImpl implements UserService {
                 null,
                 null
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponse> getActiveCnas() {
+        // Find role by name "CNA"
+        RoleEntity cnaRole = roleRepository.findByRoleName("CNA")
+                .orElseThrow(() -> new NotFoundException("CNA role not found"));
+
+        return userRepository.findByRoleIdAndStatusAndIsDeletedFalse(cnaRole.getId(), "ACTIVE").stream()
+                .map(userMapper::toResponse)
+                .toList();
     }
 
     // ==============================
