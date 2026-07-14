@@ -64,72 +64,9 @@ export const ResidentCardHeader = ({ resident }: ResidentCardHeaderProps) => {
             </span>
             <span className="size-1 rounded-full bg-border" />
             <span>{resident.careLevel}</span>
+            <span className="size-1 rounded-full bg-border" />
+            <span>Care Plan #{Math.floor(Math.random() * 50) + 10}</span>
           </div>
-        </div>
-      </div>
-
-      {/* Right — progress ring + task counts + actions */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-3.5 py-2 shadow-sm">
-          {/* Crisp SVG progress ring */}
-          <div className="relative size-10 flex-shrink-0">
-            <svg className="size-full -rotate-90" viewBox="0 0 36 36" fill="none">
-              {/* Track */}
-              <circle
-                cx="18"
-                cy="18"
-                r="14"
-                stroke="currentColor"
-                strokeWidth="3"
-                className="text-border"
-              />
-              {/* Progress */}
-              <circle
-                cx="18"
-                cy="18"
-                r="14"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeDasharray={CIRCUMFERENCE}
-                strokeDashoffset={strokeDashoffset}
-                className={hasMissed ? "text-destructive" : progressRatio === 1 ? "text-emerald-500" : "text-primary"}
-                style={{ transition: "stroke-dashoffset 0.4s ease" }}
-              />
-            </svg>
-            {/* Counter label centred inside ring */}
-            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-foreground tabular-nums">
-              {resident.completedTasks}/{resident.totalTasks}
-            </span>
-          </div>
-
-          {/* Text summary */}
-          <div className="flex flex-col gap-0.5 min-w-[90px]">
-            <span className="text-sm font-semibold text-foreground leading-tight">
-              {resident.totalTasks} Tasks Today
-            </span>
-            {hasMissed ? (
-              <span className="text-[11px] font-medium text-destructive leading-tight">
-                {resident.missedTasks} missed · {remaining} remaining
-              </span>
-            ) : (
-              <span className="text-[11px] text-muted-foreground leading-tight">
-                {remaining === 0
-                  ? "All tasks complete"
-                  : `${remaining} remaining`}
-              </span>
-            )}
-          </div>
-        </div>
-        
-        {/* Actions */}
-        <div className="flex flex-col gap-1 sm:flex-row sm:gap-1.5 ml-2 border-l border-border pl-4">
-          <Button variant="ghost" size="icon" className="size-8 text-muted-foreground hover:text-foreground">
-            <User className="size-4" />
-          </Button>
-          <Button variant="ghost" size="icon" className="size-8 text-muted-foreground hover:text-foreground">
-            <History className="size-4" />
-          </Button>
         </div>
       </div>
     </div>

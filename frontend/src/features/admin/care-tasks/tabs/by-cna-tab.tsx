@@ -1,12 +1,12 @@
 import { useCareTasks } from "../hooks/useCareTasks";
-import { CnaCardHeader } from "../components/by-date-tab/cna-card-header";
-import { CareTaskTableHeader } from "../components/by-date-tab/care-task-table-header";
-import { CareTaskRow } from "../components/by-date-tab/care-task-row";
-import { CareTaskFilterBar } from "../components/by-date-tab/care-task-filter-bar";
+import { CnaCardHeader } from "../components/by-cna-tab/cna-card-header";
+import { CareTaskTableHeader } from "../components/by-cna-tab/care-task-table-header";
+import { CareTaskRow } from "../components/by-cna-tab/care-task-row";
+import { CareTaskFilterBar } from "../components/by-cna-tab/care-task-filter-bar";
 import { Table, TableBody } from "@/components/ui/table";
 import { ClipboardList } from "lucide-react";
 
-export const ByDateTab = () => {
+export const ByCnaTab = () => {
   const { cnaGroups, isLoading } = useCareTasks();
 
   if (isLoading) {

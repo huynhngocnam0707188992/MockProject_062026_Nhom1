@@ -62,6 +62,24 @@ export const CareTaskFilterBar = () => {
           </Select>
         </div>
 
+        {/* Resident */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+            Resident
+          </span>
+          <Select defaultValue="all-residents">
+            <SelectTrigger className="h-8 w-32 text-xs border-border bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all-residents">All Residents</SelectItem>
+              <SelectItem value="john">John Doe</SelectItem>
+              <SelectItem value="elena">Elena Ramos</SelectItem>
+              <SelectItem value="susan">Susan Wright</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Flag */}
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">

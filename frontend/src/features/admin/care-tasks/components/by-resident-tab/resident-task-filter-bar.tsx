@@ -43,6 +43,42 @@ export const ResidentTaskFilterBar = () => {
           </Select>
         </div>
 
+        {/* Task Type */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+            Type
+          </span>
+          <Select defaultValue="all-types">
+            <SelectTrigger className="h-8 w-32 text-xs border-border bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all-types">All Types</SelectItem>
+              <SelectItem value="bathing">Bathing</SelectItem>
+              <SelectItem value="medication">Medication</SelectItem>
+              <SelectItem value="meals">Meals</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Assigned CNA */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+            CNA
+          </span>
+          <Select defaultValue="all-cnas">
+            <SelectTrigger className="h-8 w-32 text-xs border-border bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all-cnas">All Staff</SelectItem>
+              <SelectItem value="sarah">Sarah G.</SelectItem>
+              <SelectItem value="carter">Nurse Carter</SelectItem>
+              <SelectItem value="duc">Pham Van Duc</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Flag */}
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
@@ -68,7 +104,7 @@ export const ResidentTaskFilterBar = () => {
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
           <Input
             className="pl-8 h-8 text-sm border-border bg-background"
-            placeholder="Search task or resident..."
+            placeholder="Search resident..."
             type="text"
           />
         </div>

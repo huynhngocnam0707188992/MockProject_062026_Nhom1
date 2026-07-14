@@ -77,11 +77,13 @@ export const CareTaskRow = ({ task }: CareTaskRowProps) => {
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-medium text-foreground truncate leading-tight">
-              {task.residentName}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-medium text-foreground truncate leading-tight">
+                {task.residentName}
+              </span>
+            </div>
             <span className="text-[11px] text-muted-foreground leading-tight mt-0.5">
-              Room {task.room}
+              Room {task.room} <span className="mx-0.5 opacity-50">•</span> Care Plan #{Math.floor(Math.random() * 50) + 10}
             </span>
           </div>
         </div>
@@ -183,9 +185,15 @@ export const CareTaskRow = ({ task }: CareTaskRowProps) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[150px]">
                   <DropdownMenuItem>View Details</DropdownMenuItem>
+                  <DropdownMenuItem>Edit Task</DropdownMenuItem>
+                  <DropdownMenuItem>Re-assign CNA</DropdownMenuItem>
+                  <DropdownMenuItem>Reschedule</DropdownMenuItem>
                   <DropdownMenuItem>Flag as Abnormal</DropdownMenuItem>
                   <DropdownMenuItem variant="destructive">
                     Mark as Missed
+                  </DropdownMenuItem>
+                  <DropdownMenuItem variant="destructive">
+                    Delete Task
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

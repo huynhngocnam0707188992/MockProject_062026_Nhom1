@@ -191,9 +191,15 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[150px]">
                   <DropdownMenuItem>View Details</DropdownMenuItem>
+                  <DropdownMenuItem>Edit Task</DropdownMenuItem>
+                  <DropdownMenuItem>Re-assign CNA</DropdownMenuItem>
+                  <DropdownMenuItem>Reschedule</DropdownMenuItem>
                   <DropdownMenuItem>Flag as Abnormal</DropdownMenuItem>
                   <DropdownMenuItem variant="destructive">
                     Mark as Missed
+                  </DropdownMenuItem>
+                  <DropdownMenuItem variant="destructive">
+                    Delete Task
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
