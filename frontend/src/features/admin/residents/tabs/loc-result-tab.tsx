@@ -1,166 +1,69 @@
 import {
-useEffect,
-useState
+    useEffect,
+    useState
 } from "react";
 
-
-import {residentLocService}
-from "../services/resident-loc.service";
-
+import { residentLocService } from "../services/resident-loc.service";
 
 import type {
-CareLevelHistory
+    CareLevelHistory,
+    LocClassificationResult
+} from "../types/loc.type";
+
+import LocSummaryCard from "../components/loc/loc-summary-card";
+import AdlBreakdownTable from "../components/loc/adl-breakdown-table";
+import LocLevelReference from "../components/loc/loc-level-reference";
+import LocRateCard from "../components/loc/loc-rate-card";
+
+interface Props {
+    residentId: number;
 }
-from "../types/loc.type";
-
-
-import LocSummaryCard 
-from "../components/loc/loc-summary-card";
-
-
-import AdlBreakdownTable
-from "../components/loc/adl-breakdown-table";
-
-
-import LocLevelReference
-from "../components/loc/loc-level-reference";
-
-
-import LocRateCard
-from "../components/loc/loc-rate-card";
-
-
-
-interface Props{
-
-residentId:number;
-
-}
-
-
 
 export default function LocResultTab({
-residentId
-}:Props){
+    residentId
+}: Props) {
 
+    const [history, setHistory] = useState<CareLevelHistory[]>([]);
+    const [result, setResult] = useState<LocClassificationResult | null>(null);
+    const [loading, setLoading] = useState(true);
 
-const [history,setHistory]
-=
-useState<CareLevelHistory[]>([]);
+    useEffect(() => {
+        loadData();
+    }, [residentId]);
 
+    const loadData = async () => {
+        try {
+            const [historyRes, resultRes] = await Promise.all([
+                residentLocService.getHistory(residentId),
+                residentLocService.getClassificationResult(residentId)
+            ]);
 
+            setHistory(historyRes);
+            setResult(resultRes);
 
-const [loading,setLoading]
-=
-useState(true);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    if (loading) return <div>Loading...</div>;
 
+    const current = history.find(x => x.endDate === null);
 
-useEffect(()=>{
+    return (
+        <div className="p-8">
 
+            <LocSummaryCard result={result} />
 
-loadData();
+            <AdlBreakdownTable
+                data={result?.details ?? []}
+            />
 
+            <LocLevelReference />
 
-},[residentId]);
-
-
-
-const loadData=async()=>{
-
-
-try{
-
-
-const result =
-await residentLocService
-.getHistory(residentId);
-
-
-
-setHistory(result);
-
-
-
-}
-finally{
-
-setLoading(false);
-
-}
-
-
-};
-
-
-
-if(loading)
-return <div>
-Loading...
-</div>
-
-
-
-const current =
-history.find(
-x=>x.endDate===null
-);
-
-
-
-return (
-
-<div className="p-8">
-
-
-<h1 className="
-text-2xl
-font-bold
-">
-
-LOC Classification Result
-
-</h1>
-
-
-<p className="
-text-gray-500
-mb-8
-">
-
-Resident Care Level History
-
-</p>
-
-
-
-<LocSummaryCard
-
-levelCode={
-current?.levelCode ?? "N/A"
-}
-
-/>
-
-
-
-<AdlBreakdownTable
-
-data={history}
-
-/>
-
-
-
-<LocLevelReference/>
-
-
-<LocRateCard/>
-
-
-</div>
-
-)
-
-
+            <LocRateCard
+                levelName={result?.confirmedCareLevelName}
+            />
+        </div>
+    );
 }

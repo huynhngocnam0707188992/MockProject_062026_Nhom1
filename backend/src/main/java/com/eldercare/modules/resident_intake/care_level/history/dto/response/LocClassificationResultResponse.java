@@ -1,43 +1,35 @@
 package com.eldercare.modules.resident_intake.care_level.history.dto.response;
-import lombok.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class LocClassificationResultResponse {
-
-    private Long residentId;
-
-    private String residentName;
 
     private Long assessmentId;
 
-    private LocalDate assessmentDate;
+    private Long residentId;
+    private String residentName;
 
-    private Integer adlScore;
+    private OffsetDateTime assessmentDate;
 
-    private CareLevelInfo suggestedLevel;
+    private Integer adlTotalScore;
 
-    private List<AdlItemResponse> adlItems;
+    private Long suggestedCareLevelId;
+    private String suggestedCareLevelCode;
+    private String suggestedCareLevelName;
 
-    private BigDecimal dailyRate;
+    private Long confirmedCareLevelId;
+    private String confirmedCareLevelCode;
+    private String confirmedCareLevelName;
 
+    private Boolean overridden;
 
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CareLevelInfo {
+    private String assessedBy;
 
-        private Long id;
-
-        private String levelCode;
-
-        private String levelName;
-    }
+    private List<AssessmentItemResponse> details;
 }

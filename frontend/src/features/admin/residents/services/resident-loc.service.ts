@@ -1,5 +1,8 @@
 import { axiosInstance } from "@/lib/axios";
-import type { CareLevelHistory } from "../types/loc.type";
+import type {
+    CareLevelHistory,
+    LocClassificationResult,
+} from "../types/loc.type";
 
 export const residentLocService = {
 
@@ -12,6 +15,16 @@ export const residentLocService = {
         );
 
         return response.data;
-    }
+    },
 
+    getClassificationResult: async (
+        residentId: number
+    ): Promise<LocClassificationResult> => {
+
+        const response = await axiosInstance.get(
+            `/api/v1/assessments/resident/${residentId}/classification-result`
+        );
+
+        return response.data.data;
+    }
 };
