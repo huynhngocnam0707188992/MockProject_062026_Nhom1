@@ -13,7 +13,6 @@ import java.util.List;
 @Repository
 public interface ResidentRepository extends JpaRepository<ResidentEntity, Long>, JpaSpecificationExecutor<ResidentEntity> {
     List<ResidentEntity> findByIsDeletedFalse();
-
     @Query("SELECT r FROM ResidentEntity r WHERE r.isDeleted = false " +
            "AND (:status IS NULL OR UPPER(r.status) = UPPER(:status)) " +
            "AND (:bedId IS NULL OR (r.bed IS NOT NULL AND r.bed.id = :bedId)) " +
@@ -25,5 +24,7 @@ public interface ResidentRepository extends JpaRepository<ResidentEntity, Long>,
             @Param("bedId") Long bedId,
             @Param("search") String search,
             Pageable pageable);
+
+    List<ResidentEntity> findByStatus(String status);
 }
 
