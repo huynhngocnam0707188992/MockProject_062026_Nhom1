@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.modules.admin.facility_setup.inventory.category.entity.InventoryCategoryEntity;
@@ -47,6 +48,7 @@ public class ConsumableSupplyServiceImpl implements ConsumableSupplyService {
     }
 
     @Override
+    @Transactional
     public ConsumableSupplyResponse createConsumableSupply(ConsumableSupplyCreateRequest consumableSupplyRequest) {
         ConsumableSupplyEntity consumableSupplyEntity = consumableSupplyMapper.toEntity(consumableSupplyRequest);
         consumableSupplyEntity.setStatus(getSupplyStatus(consumableSupplyRequest));
@@ -78,6 +80,7 @@ public class ConsumableSupplyServiceImpl implements ConsumableSupplyService {
     }
 
     @Override
+    @Transactional
     public ConsumableSupplyResponse updateConsumableSupply(Long id, ConsumableSupplyUpdateRequest consumableSupplyRequest) {
         ConsumableSupplyEntity consumableSupplyEntity = consumableSupplyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Consumable supply not found with id: " + id));
@@ -94,6 +97,7 @@ public class ConsumableSupplyServiceImpl implements ConsumableSupplyService {
     }
 
     @Override
+    @Transactional
     public void deleteConsumableSupply(Long id) {
         ConsumableSupplyEntity consumableSupplyEntity = consumableSupplyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Consumable supply not found with id: " + id));

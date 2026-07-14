@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -55,6 +56,7 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
     }
 
     @Override
+    @Transactional
     public DurableMedicalEquipmentResponse createEquipment(
             DurableMedicalEquipmentCreateRequest durableMedicalEquipmentRequest) {
         if (durableMedicalEquipmentRepository
@@ -74,6 +76,7 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
     }
 
     @Override
+    @Transactional
     public DurableMedicalEquipmentResponse updateEquipment(Long id,
             DurableMedicalEquipmentUpdateRequest durableMedicalEquipmentRequest) {
         DurableMedicalEquipmentEntity entity = durableMedicalEquipmentRepository.findById(id)
@@ -92,6 +95,7 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
     }
 
     @Override
+    @Transactional
     public void deleteEquipment(Long id) {
         if (durableMedicalEquipmentRepository
                 .findByIdAndStatusAndIsDeletedFalse(id, DurableMedicalEquipmentEnum.RETIRED.toString())
@@ -106,6 +110,7 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
     }
 
     @Override
+    @Transactional
     public DurableMedicalEquipmentResponse patchEquipmentStatus(long id,
             DurableMedicalEquipmentChangeStatusRequest durableMedicalEquipmentRequest) {
 
