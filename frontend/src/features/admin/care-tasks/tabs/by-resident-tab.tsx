@@ -9,12 +9,35 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import type { GroupedByResidentCard, EnrichedTaskRow } from "@/services/care-tasks-api";
+import { format } from "date-fns";
 
 export const ByResidentTab = () => {
   const [page, setPage] = useState(0);
-  const { residentGroupsData, isLoadingResidents } = useCareTasks({ page, size: 10 });
-  const residentGroups = Array.isArray(residentGroupsData?.data) ? residentGroupsData.data : [];
+  const [date, setDate] = useState<Date | undefined>(new Date("2026-10-24"));
+  const [status, setStatus] = useState<string>("all");
+  const [taskType, setTaskType] = useState<string>("all");
+  const [flag, setFlag] = useState<string>("all");
+  const [searchResident, setSearchResident] = useState<string>("");
+
+  const params = {
+    page,
+    size: 10,
+    date: date ? format(date, "yyyy-MM-dd") : undefined,
+    ...(status !== "all" && { status }),
+    ...(taskType !== "all" && { taskType }),
+    ...(flag === "flagged" && { isAbnormalFlagged: true }),
+    ...(flag === "unflagged" && { isAbnormalFlagged: false }),
+  };
+
+  const { residentGroupsData, isLoadingResidents } = useCareTasks(params);
+  let residentGroups: GroupedByResidentCard[] = Array.isArray(residentGroupsData?.data) ? residentGroupsData.data : [];
   const meta = residentGroupsData?.metadata;
+
+  if (searchResident.trim() !== "") {
+    residentGroups = residentGroups.filter((g: GroupedByResidentCard) => 
+      (g.residentDisplayName || '').toLowerCase().includes(searchResident.toLowerCase())
+    );
+  }
 
   if (isLoadingResidents) {
     return (
@@ -25,86 +48,97 @@ export const ByResidentTab = () => {
     );
   }
 
-  if (residentGroups.length === 0) {
-    return (
-      <div className="mt-5 flex flex-col items-center justify-center gap-3 py-20 rounded-xl border bg-card text-center">
-        <ClipboardList className="size-10 text-muted-foreground/40" />
-        <p className="text-sm text-muted-foreground">
-          No residents with care tasks found.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col w-full gap-5 mt-5">
       {/* Filter bar */}
-      <ResidentTaskFilterBar />
+      <ResidentTaskFilterBar
+        date={date}
+        setDate={setDate}
+        status={status}
+        setStatus={setStatus}
+        taskType={taskType}
+        setTaskType={setTaskType}
+        flag={flag}
+        setFlag={setFlag}
+        searchResident={searchResident}
+        setSearchResident={setSearchResident}
+      />
 
-      {/* One card per Resident */}
-      {residentGroups.map((resident: GroupedByResidentCard) => {
-        // Map DTO to match what ResidentCardHeader expects
-        const residentMapped = {
-          id: String(resident.residentId),
-          name: resident.residentDisplayName,
-          age: 0,
-          room: resident.roomNumber || "N/A",
-          imageUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(resident.residentDisplayName)}&background=random`,
-          careLevel: "Standard Care" as const,
-          statusDot: "active" as const,
-          totalTasks: resident.totalTasks,
-          completedTasks: resident.completedTasks,
-          missedTasks: resident.missedTasks,
-        };
-
-        return (
-          <div
-            key={resident.residentId}
-            className="rounded-xl border border-border bg-card shadow-sm overflow-hidden"
-          >
-            {/* Card header — Resident identity + status */}
-            <ResidentCardHeader resident={residentMapped} />
-
-            {/* Table */}
-            <div className="overflow-x-auto">
-              <Table className="table-fixed min-w-[720px]">
-                <ResidentTaskTableHeader />
-                <TableBody>
-                  {resident.tasks.map((task: EnrichedTaskRow) => (
-                    <ResidentTaskRow key={task.id} task={task} />
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        );
-      })}
-
-      {/* Pagination Controls */}
-      {meta && meta.totalPage > 1 && (
-        <div className="flex items-center justify-between pt-4">
-          <div className="text-sm text-muted-foreground">
-            Showing page {meta.currentPage} of {meta.totalPage}
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!meta.hasPrevious}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!meta.hasNext}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Next
-            </Button>
-          </div>
+      {residentGroups.length === 0 ? (
+        <div className="mt-5 flex flex-col items-center justify-center gap-3 py-20 rounded-xl border bg-card text-center">
+          <ClipboardList className="size-10 text-muted-foreground/40" />
+          <p className="text-sm text-muted-foreground">
+            No residents with care tasks found for the selected filters.
+          </p>
         </div>
+      ) : (
+        <>
+          {/* One card per Resident */}
+          {residentGroups.map((resident: GroupedByResidentCard) => {
+            // Map DTO to match what ResidentCardHeader expects
+            const residentMapped = {
+              id: String(resident.residentId),
+              name: resident.residentDisplayName,
+              age: 0,
+              room: resident.roomNumber || "N/A",
+              imageUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(resident.residentDisplayName)}&background=random`,
+              careLevel: "Standard Care" as const,
+              statusDot: "active" as const,
+              totalTasks: resident.totalTasks,
+              completedTasks: resident.completedTasks,
+              missedTasks: resident.missedTasks,
+            };
+
+            return (
+              <div
+                key={resident.residentId}
+                className="rounded-xl border border-border bg-card shadow-sm overflow-hidden"
+              >
+                {/* Card header — Resident identity + status */}
+                <ResidentCardHeader resident={residentMapped} />
+
+                {/* Table */}
+                <div className="overflow-x-auto">
+                  <Table className="table-fixed min-w-[720px]">
+                    <ResidentTaskTableHeader />
+                    <TableBody>
+                      {resident.tasks.map((task: EnrichedTaskRow) => (
+                        <ResidentTaskRow key={task.id} task={task} />
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Pagination Controls */}
+          {meta && meta.totalPage > 1 && (
+            <div className="flex items-center justify-between pt-4">
+              <div className="text-sm text-muted-foreground">
+                Showing page {meta.currentPage} of {meta.totalPage}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!meta.hasPrevious}
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!meta.hasNext}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

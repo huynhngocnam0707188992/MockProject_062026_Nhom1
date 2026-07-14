@@ -11,11 +11,33 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
 import { format } from "date-fns";
 
-export const ResidentTaskFilterBar = () => {
-  const [date, setDate] = useState<Date | undefined>(new Date("2026-10-24"));
+export interface ResidentTaskFilterBarProps {
+  date: Date | undefined;
+  setDate: (date: Date | undefined) => void;
+  status: string;
+  setStatus: (status: string) => void;
+  taskType: string;
+  setTaskType: (type: string) => void;
+  flag: string;
+  setFlag: (flag: string) => void;
+  searchResident: string;
+  setSearchResident: (val: string) => void;
+}
+
+export const ResidentTaskFilterBar = ({
+  date,
+  setDate,
+  status,
+  setStatus,
+  taskType,
+  setTaskType,
+  flag,
+  setFlag,
+  searchResident,
+  setSearchResident,
+}: ResidentTaskFilterBarProps) => {
 
   return (
     <div className="rounded-xl border border-border bg-card shadow-sm">
@@ -47,13 +69,13 @@ export const ResidentTaskFilterBar = () => {
           <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Status
           </span>
-          <Select defaultValue="all-status">
+          <Select value={status} onValueChange={(val: string) => setStatus(val)}>
             <SelectTrigger className="h-9 w-32 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
-              <SelectValue />
+              <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-status">All Statuses</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="PENDING">Pending</SelectItem>
               <SelectItem value="COMPLETED">Completed</SelectItem>
               <SelectItem value="MISSED">Missed</SelectItem>
             </SelectContent>
@@ -65,33 +87,17 @@ export const ResidentTaskFilterBar = () => {
           <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Type
           </span>
-          <Select defaultValue="all-types">
+          <Select value={taskType} onValueChange={(val: string) => setTaskType(val)}>
             <SelectTrigger className="h-9 w-36 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
-              <SelectValue />
+              <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-types">All Types</SelectItem>
-              <SelectItem value="bathing">Bathing</SelectItem>
-              <SelectItem value="medication">Medication</SelectItem>
-              <SelectItem value="meals">Meals</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Resident */}
-        <div className="flex items-center gap-2">
-          <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
-            Resident
-          </span>
-          <Select defaultValue="all-residents">
-            <SelectTrigger className="h-9 w-36 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all-residents">All Residents</SelectItem>
-              <SelectItem value="john">John Doe</SelectItem>
-              <SelectItem value="elena">Elena Ramos</SelectItem>
-              <SelectItem value="susan">Susan Wright</SelectItem>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="Bathing">Bathing</SelectItem>
+              <SelectItem value="Medication">Medication</SelectItem>
+              <SelectItem value="Meals">Meals</SelectItem>
+              <SelectItem value="Mobility">Mobility</SelectItem>
+              <SelectItem value="Nutrition">Nutrition</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -101,12 +107,12 @@ export const ResidentTaskFilterBar = () => {
           <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Flag
           </span>
-          <Select defaultValue="all-flags">
+          <Select value={flag} onValueChange={(val: string) => setFlag(val)}>
             <SelectTrigger className="h-9 w-32 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
-              <SelectValue />
+              <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-flags">All</SelectItem>
+              <SelectItem value="all">All</SelectItem>
               <SelectItem value="flagged">Flagged</SelectItem>
               <SelectItem value="unflagged">Unflagged</SelectItem>
             </SelectContent>
@@ -123,6 +129,8 @@ export const ResidentTaskFilterBar = () => {
             className="pl-9 h-9 text-sm border-border bg-background shadow-sm focus-visible:ring-primary/20"
             placeholder="Search resident..."
             type="text"
+            value={searchResident}
+            onChange={(e) => setSearchResident(e.target.value)}
           />
         </div>
       </div>

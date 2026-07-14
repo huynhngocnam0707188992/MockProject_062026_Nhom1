@@ -70,7 +70,7 @@ export const CareTaskFilterBar = ({
           <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Status
           </span>
-          <Select value={status} onValueChange={setStatus}>
+          <Select value={status} onValueChange={(val: string) => setStatus(val)}>
             <SelectTrigger className="h-9 w-32 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
               <SelectValue placeholder="All" />
             </SelectTrigger>
@@ -88,7 +88,7 @@ export const CareTaskFilterBar = ({
           <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Type
           </span>
-          <Select value={taskType} onValueChange={setTaskType}>
+          <Select value={taskType} onValueChange={(val: string) => setTaskType(val)}>
             <SelectTrigger className="h-9 w-36 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
@@ -108,7 +108,7 @@ export const CareTaskFilterBar = ({
           <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Flag
           </span>
-          <Select value={flag} onValueChange={setFlag}>
+          <Select value={flag} onValueChange={(val: string) => setFlag(val)}>
             <SelectTrigger className="h-9 w-32 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
               <SelectValue placeholder="All" />
             </SelectTrigger>
