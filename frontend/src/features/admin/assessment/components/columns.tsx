@@ -64,9 +64,11 @@ export const getAssessmentColumns = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              {/* Always available regardless of status */}
               <DropdownMenuItem onClick={() => onViewDetail(a)}>
                 View Detail
               </DropdownMenuItem>
+              {/* Update/Decide/Delete only make sense while still a draft */}
               {a.status === "DRAFT" && (
                 <>
                   <DropdownMenuItem onClick={() => onUpdate(a)}>

@@ -15,6 +15,7 @@ export interface ScreeningListParams {
   sort: string;
 }
 
+// GET /api/v1/pre-admissions
 export const getScreenings = async (params: ScreeningListParams) => {
   const { data } = await axiosInstance.get<PagedApiResponse<PreResponse[]>>(
     BASE_URL,
@@ -26,6 +27,7 @@ export const getScreenings = async (params: ScreeningListParams) => {
   return data;
 };
 
+// GET /api/v1/pre-admissions/select-completed
 export const getCompletedScreenings = async () => {
   const { data } = await axiosInstance.get<ApiResponse<PreSelectDTO[]>>(
     `${BASE_URL}/select-completed`,
@@ -34,6 +36,7 @@ export const getCompletedScreenings = async () => {
   return data;
 };
 
+// POST /api/v1/pre-admissions
 export const createScreening = async (payload: PreCreateRequest) => {
   const { data } = await axiosInstance.post<ApiResponse<PreResponse>>(
     BASE_URL,
@@ -43,6 +46,7 @@ export const createScreening = async (payload: PreCreateRequest) => {
   return data;
 };
 
+// PUT /api/v1/pre-admissions/{id}/decision
 export const decideScreening = async (
   id: number,
   payload: PreDecisionRequest,
@@ -55,6 +59,7 @@ export const decideScreening = async (
   return data;
 };
 
+// DELETE /api/v1/pre-admissions/{id}
 export const deleteScreening = async (id: number) => {
   const { data } = await axiosInstance.delete<ApiResponse<null>>(
     `${BASE_URL}/${id}`,

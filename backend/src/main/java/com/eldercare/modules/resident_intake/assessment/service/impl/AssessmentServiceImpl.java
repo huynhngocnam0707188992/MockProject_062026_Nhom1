@@ -9,6 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.eldercare.exception.ConflictException;
+import com.eldercare.exception.custom.BadRequestException;
+import com.eldercare.exception.custom.ResourceNotFoundException;
 import com.eldercare.modules.admin.user_management.UserEntity;
 import com.eldercare.modules.resident_intake.assessment.AssessmentEntity;
 import com.eldercare.modules.resident_intake.assessment.dto.request.AssessmentCreateRequest;
@@ -16,11 +19,11 @@ import com.eldercare.modules.resident_intake.assessment.dto.request.AssessmentDe
 import com.eldercare.modules.resident_intake.assessment.dto.request.AssessmentUpdateRequest;
 import com.eldercare.modules.resident_intake.assessment.dto.response.AssessmentResponse;
 import com.eldercare.modules.resident_intake.assessment.dto.response.AssessmentSelectDTO;
+import com.eldercare.modules.resident_intake.assessment.mapper.AssessmentMapper;
 import com.eldercare.modules.resident_intake.assessment.repository.AssessmentRepository;
 import com.eldercare.modules.resident_intake.assessment.service.AssessmentService;
 import com.eldercare.modules.resident_intake.assessment_detail.AssessmentDetailEntity;
 import com.eldercare.modules.resident_intake.assessment_detail.dto.request.AssessmentDetailRequest;
-import com.eldercare.modules.resident_intake.assessment_detail.dto.response.AssessmentDetailResponse;
 import com.eldercare.modules.resident_intake.assessment_metric.AssessmentMetricEntity;
 import com.eldercare.modules.resident_intake.assessment_metric.dto.AssessmentMetricDTO;
 import com.eldercare.modules.resident_intake.assessment_metric.repository.AssessmentMetricRepository;
@@ -38,6 +41,7 @@ public class AssessmentServiceImpl implements AssessmentService {
   private final AssessmentRepository assessRepo;
   private final AssessmentMetricRepository metricRepo;
   private final PreAdmissionScreeningRepository preRepo;
+  private final AssessmentMapper mapper;
 
   @Override
   public List<AssessmentMetricDTO> getMetrics() {
@@ -54,17 +58,20 @@ public class AssessmentServiceImpl implements AssessmentService {
   @Transactional
   public AssessmentResponse create(AssessmentCreateRequest req) {
     PreAdmissionScreeningEntity pre = preRepo.findById(req.getPreAdmissionScreeningId())
-        .orElseThrow(() -> new RuntimeException("PAS not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("PAS not found"));
 
+    // Assessment can only be created from a completed, current pre-admission
+    // screening
     if (!"COMPLETED".equals(pre.getStatus()) || !Boolean.TRUE.equals(pre.getIsCurrent()))
-      throw new RuntimeException("Pre-admission screening is not valid");
+      throw new BadRequestException("Pre-admission screening is not valid");
 
     ResidentEntity resident = pre.getResident();
 
+    // Deactivate previous non-draft assessment, block if a draft is still open
     assessRepo.findByResidentIdAndIsCurrentTrue(resident.getId())
         .ifPresent(old -> {
           if ("DRAFT".equals(old.getStatus())) {
-            throw new RuntimeException("Resident already has a draft assessment in progress");
+            throw new ConflictException("Resident already has a draft assessment in progress");
           }
           old.setIsCurrent(false);
           assessRepo.save(old);
@@ -78,11 +85,12 @@ public class AssessmentServiceImpl implements AssessmentService {
     a.setIsOverridden(false);
 
     UserEntity u = new UserEntity();
-    // u.setId(SecurityUtils.getCurrentUserId());
+    // TODO: replace hardcoded id with SecurityUtils.getCurrentUserId()
     u.setId(1L);
     a.setAssessedBy(u);
     a.setCreatedAt(OffsetDateTime.now());
 
+    // Build details and accumulate ADL total score
     int total = 0;
     List<AssessmentDetailEntity> details = new ArrayList<>();
 
@@ -103,19 +111,20 @@ public class AssessmentServiceImpl implements AssessmentService {
 
     a.setDetails(details);
     a.setAdlTotalScore(total);
-    a.setSuggestedCareLevel(calculateSuggestedCareLevel(total));
+    a.setSuggestedCareLevel(mapper.calculateSuggestedCareLevel(total));
 
-    return toResponse(assessRepo.save(a));
+    return mapper.toResponse(assessRepo.save(a));
   }
 
   @Override
   @Transactional
   public AssessmentResponse update(Long id, AssessmentUpdateRequest req) {
     AssessmentEntity a = assessRepo.findById(id)
-        .orElseThrow(() -> new RuntimeException("Not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
+    // Only editable while still in DRAFT
     if (!"DRAFT".equals(a.getStatus()))
-      throw new RuntimeException("Only DRAFT assessment can be updated");
+      throw new BadRequestException("Only DRAFT assessment can be updated");
 
     int total = 0;
     List<AssessmentDetailEntity> details = new ArrayList<>();
@@ -131,25 +140,25 @@ public class AssessmentServiceImpl implements AssessmentService {
       total += d.getScore();
     }
 
+    // Replace old details in place to keep the managed collection reference
     a.getDetails().clear();
     a.getDetails().addAll(details);
     a.setAdlTotalScore(total);
-    a.setSuggestedCareLevel(calculateSuggestedCareLevel(total));
+    a.setSuggestedCareLevel(mapper.calculateSuggestedCareLevel(total));
 
-    return toResponse(assessRepo.save(a));
+    return mapper.toResponse(assessRepo.save(a));
   }
 
   @Override
   public Page<AssessmentResponse> listPaged(Pageable pageable) {
-    return assessRepo.findAll(pageable)
-        .map(this::toResponse);
+    return assessRepo.findAll(pageable).map(mapper::toResponse);
   }
 
   @Override
   @Transactional
   public AssessmentResponse decide(Long id, AssessmentDecisionRequest req) {
     AssessmentEntity a = assessRepo.findById(id)
-        .orElseThrow(() -> new RuntimeException("Not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
     a.setStatus(req.getStatus());
 
@@ -162,26 +171,19 @@ public class AssessmentServiceImpl implements AssessmentService {
           ? a.getSuggestedCareLevel().getId()
           : null;
 
+      // Flag override when the confirmed level differs from the system-suggested one
       a.setIsOverridden(
           suggestedId != null
               && !suggestedId.equals(req.getConfirmedCareLevelId()));
     }
 
-    return toResponse(assessRepo.save(a));
+    return mapper.toResponse(assessRepo.save(a));
   }
 
   @Override
   public List<AssessmentSelectDTO> listCompletedForSelect() {
-    return assessRepo.findByStatusAndIsCurrentTrue("COMPLETED")
-        .stream()
-        .map(a -> {
-          AssessmentSelectDTO dto = new AssessmentSelectDTO();
-          dto.setId(a.getId());
-          dto.setResidentName(
-              a.getResident().getFirstName() + " " + a.getResident().getLastName());
-          dto.setAdlTotalScore(a.getAdlTotalScore());
-          return dto;
-        })
+    return assessRepo.findByStatusAndIsCurrentTrue("COMPLETED").stream()
+        .map(mapper::toSelectDTO)
         .toList();
   }
 
@@ -189,36 +191,10 @@ public class AssessmentServiceImpl implements AssessmentService {
   @Transactional
   public void deleteDraft(Long id) {
     AssessmentEntity a = assessRepo.findById(id)
-        .orElseThrow(() -> new RuntimeException("Not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+    // Guard: only DRAFT records can be removed
     if (!"DRAFT".equals(a.getStatus()))
-      throw new RuntimeException("Only DRAFT can be deleted");
+      throw new BadRequestException("Only DRAFT can be deleted");
     assessRepo.delete(a);
-  }
-
-  private AssessmentResponse toResponse(AssessmentEntity a) {
-    AssessmentResponse dto = new AssessmentResponse();
-    dto.setId(a.getId());
-    dto.setStatus(a.getStatus());
-    dto.setAdlTotalScore(a.getAdlTotalScore());
-    dto.setResidentId(a.getResident().getId());
-    dto.setSuggestedCareLevelId(a.getSuggestedCareLevel().getId());
-    dto.setResidentName(a.getResident().getFirstName() + " " + a.getResident().getLastName());
-    dto.setIsOverridden(a.getIsOverridden());
-    dto.setDetails(a.getDetails().stream().map(d -> {
-      AssessmentDetailResponse r = new AssessmentDetailResponse();
-      r.setMetricId(d.getMetric().getId());
-      r.setMetricName(d.getMetric().getMetricName());
-      r.setCategory(d.getMetric().getCategory());
-      r.setScore(d.getScore());
-      r.setNotes(d.getNotes());
-      return r;
-    }).toList());
-    return dto;
-  }
-
-  private CareLevelEntity calculateSuggestedCareLevel(int totalScore) {
-    CareLevelEntity cl = new CareLevelEntity();
-    cl.setId(totalScore >= 80 ? 1L : totalScore >= 50 ? 2L : 3L);
-    return cl;
   }
 }

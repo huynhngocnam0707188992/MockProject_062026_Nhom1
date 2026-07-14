@@ -43,6 +43,7 @@ export const DataTable = <TData, TValue>({
     columns,
     rowCount,
     state: { pagination, sorting },
+    // pagination/sorting state is driven by the server (URL params), not the table itself
     manualPagination: true,
     manualSorting: true,
     onPaginationChange: (updater) =>

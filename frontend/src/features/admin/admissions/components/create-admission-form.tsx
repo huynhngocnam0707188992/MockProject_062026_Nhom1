@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
@@ -49,8 +47,7 @@ export const CreateAdmissionForm = () => {
     createMutation.mutate(
       {
         assessmentId: Number(values.assessmentId),
-        // facilityId: Number(values.facilityId),
-        facilityId: 1,
+        facilityId: Number(values.facilityId),
         admissionDate: values.admissionDate,
       },
       { onSuccess: close },

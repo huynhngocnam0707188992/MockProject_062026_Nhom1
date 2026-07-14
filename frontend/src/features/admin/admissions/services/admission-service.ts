@@ -14,6 +14,7 @@ export interface AdmissionListParams {
   sort: string;
 }
 
+// GET /api/v1/admissions
 export const getAdmissions = async (params: AdmissionListParams) => {
   const { data } = await axiosInstance.get<
     PagedApiResponse<AdmissionResponse[]>
@@ -24,6 +25,7 @@ export const getAdmissions = async (params: AdmissionListParams) => {
   return data;
 };
 
+// POST /api/v1/admissions
 export const createAdmission = async (payload: AdmissionCreateRequest) => {
   const { data } = await axiosInstance.post<ApiResponse<AdmissionResponse>>(
     BASE_URL,
@@ -33,6 +35,7 @@ export const createAdmission = async (payload: AdmissionCreateRequest) => {
   return data;
 };
 
+// PUT /api/v1/admissions/{id}/discharge
 export const dischargeAdmission = async (
   id: number,
   payload: AdmissionDischargeRequest,

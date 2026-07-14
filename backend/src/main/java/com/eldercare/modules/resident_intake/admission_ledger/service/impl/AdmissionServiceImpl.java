@@ -6,11 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.eldercare.exception.custom.BadRequestException;
+import com.eldercare.exception.custom.ResourceNotFoundException;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
 import com.eldercare.modules.resident_intake.admission_ledger.AdmissionEntity;
 import com.eldercare.modules.resident_intake.admission_ledger.dto.request.AdmissionCreateRequest;
 import com.eldercare.modules.resident_intake.admission_ledger.dto.request.AdmissionDischargeRequest;
 import com.eldercare.modules.resident_intake.admission_ledger.dto.response.AdmissionResponse;
+import com.eldercare.modules.resident_intake.admission_ledger.mapper.AdmissionMapper;
 import com.eldercare.modules.resident_intake.admission_ledger.repository.AdmissionRepository;
 import com.eldercare.modules.resident_intake.admission_ledger.service.AdmissionService;
 import com.eldercare.modules.resident_intake.assessment.AssessmentEntity;
@@ -28,20 +31,23 @@ public class AdmissionServiceImpl implements AdmissionService {
   private final AdmissionRepository admRepo;
   private final AssessmentRepository assessRepo;
   private final ResidentRepository residentRepo;
+  private final AdmissionMapper mapper;
 
   @Override
   @Transactional
   public AdmissionResponse create(AdmissionCreateRequest req) {
     AssessmentEntity assess = assessRepo.findById(req.getAssessmentId())
-        .orElseThrow(() -> new RuntimeException("Assessment not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Assessment not found"));
 
+    // Admission can only be created from a completed, current assessment
     if (!"COMPLETED".equals(assess.getStatus())
         || !Boolean.TRUE.equals(assess.getIsCurrent())) {
-      throw new RuntimeException("The assessment is not eligible for admission creation.");
+      throw new BadRequestException("The assessment is not eligible for admission creation.");
     }
 
     Long residentId = assess.getResident().getId();
 
+    // Close out any previous admission record for this resident
     admRepo.findByResidentIdAndIsCurrentTrue(residentId)
         .ifPresent(old -> {
           old.setIsCurrent(false);
@@ -62,24 +68,24 @@ public class AdmissionServiceImpl implements AdmissionService {
 
     admRepo.save(adm);
 
+    // Sync resident status to reflect active admission
     ResidentEntity r = assess.getResident();
     r.setStatus("ACTIVE");
     residentRepo.save(r);
 
-    return toResponse(adm);
+    return mapper.toResponse(adm);
   }
 
   @Override
   public Page<AdmissionResponse> listPaged(Pageable pageable) {
-    return admRepo.findAll(pageable)
-        .map(this::toResponse);
+    return admRepo.findAll(pageable).map(mapper::toResponse);
   }
 
   @Override
   @Transactional
   public AdmissionResponse discharge(Long id, AdmissionDischargeRequest req) {
     AdmissionEntity adm = admRepo.findById(id)
-        .orElseThrow(() -> new RuntimeException("Not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
     adm.setDischargeDate(req.getDischargeDate());
     adm.setDischargeReason(req.getDischargeReason());
@@ -87,25 +93,11 @@ public class AdmissionServiceImpl implements AdmissionService {
 
     admRepo.save(adm);
 
+    // Sync resident status to reflect discharge
     ResidentEntity r = adm.getResident();
     r.setStatus("DISCHARGED");
     residentRepo.save(r);
 
-    return toResponse(adm);
-  }
-
-  private AdmissionResponse toResponse(AdmissionEntity a) {
-    AdmissionResponse dto = new AdmissionResponse();
-    dto.setId(a.getId());
-    dto.setAdmissionDate(a.getAdmissionDate());
-    dto.setResidentId(a.getResident().getId());
-    dto.setResidentName(
-        a.getResident().getFirstName() + " " + a.getResident().getLastName());
-    dto.setFacilityId(a.getFacility().getId());
-    dto.setAssessmentId(a.getAssessment().getId());
-    dto.setDischargeDate(a.getDischargeDate());
-    dto.setDischargeReason(a.getDischargeReason());
-    dto.setStatus(a.getDischargeDate() == null ? "ACTIVE" : "DISCHARGED");
-    return dto;
+    return mapper.toResponse(adm);
   }
 }

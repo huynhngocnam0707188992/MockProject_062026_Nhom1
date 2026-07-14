@@ -28,12 +28,16 @@ public class AssessmentController {
 
         private final AssessmentService service;
 
+        // 38
+        // GET /api/v1/assessments/metrics
         @GetMapping("/metrics")
         public ResponseEntity<ApiResponse<List<AssessmentMetricDTO>>> metrics() {
                 return ResponseEntity.ok(
                                 ApiResponse.success(service.getMetrics()));
         }
 
+        // 39
+        // POST /api/v1/assessments
         @PostMapping
         public ResponseEntity<ApiResponse<AssessmentResponse>> create(
                         @RequestBody AssessmentCreateRequest req) {
@@ -46,6 +50,8 @@ public class AssessmentController {
                                                 response));
         }
 
+        // 40
+        // PUT /api/v1/assessments/{id}
         @PutMapping("/{id}")
         public ResponseEntity<ApiResponse<AssessmentResponse>> update(
                         @PathVariable Long id,
@@ -55,6 +61,8 @@ public class AssessmentController {
                                 ApiResponse.success("Assessment updated successfully", service.update(id, req)));
         }
 
+        // 41
+        // GET /api/v1/assessments
         @GetMapping
         public ResponseEntity<PagedResponse<List<AssessmentResponse>>> list(
                         @PageableDefault(size = 10) Pageable pageable) {
@@ -72,12 +80,16 @@ public class AssessmentController {
                                                 page.getTotalElements()));
         }
 
+        // 42
+        // GET /api/v1/assessments/select-completed
         @GetMapping("/select-completed")
         public ResponseEntity<ApiResponse<List<AssessmentSelectDTO>>> selectCompleted() {
                 return ResponseEntity.ok(
                                 ApiResponse.success(service.listCompletedForSelect()));
         }
 
+        // 43
+        // PUT /api/v1/assessments/{id}/decision
         @PutMapping("/{id}/decision")
         public ResponseEntity<ApiResponse<AssessmentResponse>> decide(
                         @PathVariable Long id,
@@ -89,6 +101,8 @@ public class AssessmentController {
                                                 service.decide(id, req)));
         }
 
+        // 44
+        // DELETE /api/v1/assessments/{id}
         @DeleteMapping("/{id}")
         public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
                 service.deleteDraft(id);

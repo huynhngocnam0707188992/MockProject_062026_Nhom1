@@ -21,6 +21,7 @@ export const AssessmentTable = () => {
   const openConfirm = useConfirmStore((s) => s.open);
 
   const pagination: PaginationState = { pageIndex: page, pageSize: size };
+  // sort format from URL/query is "field,direction" (e.g. "id,desc")
   const sorting: SortingState = sort
     ? [{ id: sort.split(",")[0], desc: sort.split(",")[1] === "desc" }]
     : [];
@@ -76,6 +77,7 @@ export const AssessmentTable = () => {
         sorting={sorting}
         onSortingChange={(s) =>
           setParams({
+            // fall back to default sort when the user clears sorting
             sort: s[0] ? `${s[0].id},${s[0].desc ? "desc" : "asc"}` : "id,desc",
           })
         }

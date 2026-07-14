@@ -55,6 +55,7 @@ export const getScreeningColumns = ({
       header: "Actions",
       cell: ({ row }) => {
         const s = row.original;
+        // Actions only make sense while the screening is still a draft
         if (s.status !== "DRAFT") return null;
         return (
           <DropdownMenu>

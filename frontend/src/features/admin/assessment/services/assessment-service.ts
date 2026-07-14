@@ -17,6 +17,7 @@ export interface AssessmentListParams {
   sort: string;
 }
 
+// GET /api/v1/assessments/metrics
 export const getMetrics = async () => {
   const { data } = await axiosInstance.get<ApiResponse<AssessmentMetricDTO[]>>(
     `${BASE_URL}/metrics`,
@@ -25,6 +26,7 @@ export const getMetrics = async () => {
   return data;
 };
 
+// GET /api/v1/assessments
 export const getAssessments = async (params: AssessmentListParams) => {
   const { data } = await axiosInstance.get<
     PagedApiResponse<AssessmentResponse[]>
@@ -35,6 +37,7 @@ export const getAssessments = async (params: AssessmentListParams) => {
   return data;
 };
 
+// GET /api/v1/assessments/select-completed
 export const getCompletedForSelect = async () => {
   const { data } = await axiosInstance.get<ApiResponse<AssessmentSelectDTO[]>>(
     `${BASE_URL}/select-completed`,
@@ -42,6 +45,7 @@ export const getCompletedForSelect = async () => {
   return data;
 };
 
+// POST /api/v1/assessments
 export const createAssessment = async (payload: AssessmentCreateRequest) => {
   const { data } = await axiosInstance.post<ApiResponse<AssessmentResponse>>(
     BASE_URL,
@@ -51,6 +55,7 @@ export const createAssessment = async (payload: AssessmentCreateRequest) => {
   return data;
 };
 
+// PUT /api/v1/assessments/{id}
 export const updateAssessment = async (
   id: number,
   payload: AssessmentUpdateRequest,
@@ -62,6 +67,7 @@ export const updateAssessment = async (
   return data;
 };
 
+// PUT /api/v1/assessments/{id}/decision
 export const decideAssessment = async (
   id: number,
   payload: AssessmentDecisionRequest,
@@ -74,6 +80,7 @@ export const decideAssessment = async (
   return data;
 };
 
+// DELETE /api/v1/assessments/{id}
 export const deleteAssessment = async (id: number) => {
   const { data } = await axiosInstance.delete<ApiResponse<null>>(
     `${BASE_URL}/${id}`,

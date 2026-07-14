@@ -26,65 +26,77 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PreAdmissionScreeningController {
 
-    private final PreAdmissionScreeningService service;
-    private final ResidentService residentService;
+        private final PreAdmissionScreeningService service;
+        private final ResidentService residentService;
 
-    @GetMapping("/pending-residents")
-    public ResponseEntity<ApiResponse<List<ResidentPendingDTO>>> pendingResidents() {
-        return ResponseEntity.ok(
-                ApiResponse.success(residentService.getPendingResidents()));
-    }
+        // 33
+        // GET /api/v1/pre-admissions/pending-residents
+        @GetMapping("/pending-residents")
+        public ResponseEntity<ApiResponse<List<ResidentPendingDTO>>> pendingResidents() {
+                return ResponseEntity.ok(
+                                ApiResponse.success(residentService.getPendingResidents()));
+        }
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<PreResponse>> create(
-            @RequestBody PreCreateRequest req) {
+        // 34
+        // POST /api/v1/pre-admissions
+        @PostMapping
+        public ResponseEntity<ApiResponse<PreResponse>> create(
+                        @RequestBody PreCreateRequest req) {
 
-        PreResponse response = service.create(req);
+                PreResponse response = service.create(req);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.created(
-                        "Pre-admission screening created successfully",
-                        response));
-    }
+                return ResponseEntity.status(HttpStatus.CREATED)
+                                .body(ApiResponse.created(
+                                                "Pre-admission screening created successfully",
+                                                response));
+        }
 
-    @GetMapping
-    public ResponseEntity<PagedResponse<List<PreResponse>>> list(
-            @PageableDefault(size = 10) Pageable pageable) {
+        // 35
+        // GET /api/v1/pre-admissions
+        @GetMapping
+        public ResponseEntity<PagedResponse<List<PreResponse>>> list(
+                        @PageableDefault(size = 10) Pageable pageable) {
 
-        Page<PreResponse> page = service.listPaged(pageable);
+                Page<PreResponse> page = service.listPaged(pageable);
 
-        return ResponseEntity.ok(
-                PagedResponse.of(
-                        page.getContent(),
-                        200,
-                        "Success",
-                        page.getNumber(),
-                        page.getTotalPages(),
-                        page.getSize(),
-                        page.getTotalElements()));
-    }
+                return ResponseEntity.ok(
+                                PagedResponse.of(
+                                                page.getContent(),
+                                                200,
+                                                "Success",
+                                                page.getNumber(),
+                                                page.getTotalPages(),
+                                                page.getSize(),
+                                                page.getTotalElements()));
+        }
 
-    @GetMapping("/select-completed")
-    public ResponseEntity<ApiResponse<List<PreSelectDTO>>> selectCompleted() {
+        // 36
+        // GET /api/v1/pre-admissions/select-completed
+        @GetMapping("/select-completed")
+        public ResponseEntity<ApiResponse<List<PreSelectDTO>>> selectCompleted() {
 
-        return ResponseEntity.ok(
-                ApiResponse.success(service.listCompletedForSelect()));
-    }
+                return ResponseEntity.ok(
+                                ApiResponse.success(service.listCompletedForSelect()));
+        }
 
-    @PutMapping("/{id}/decision")
-    public ResponseEntity<ApiResponse<PreResponse>> decide(
-            @PathVariable Long id,
-            @RequestBody PreDecisionRequest req) {
+        // 37
+        // PUT /api/v1/pre-admissions/{id}/decision
+        @PutMapping("/{id}/decision")
+        public ResponseEntity<ApiResponse<PreResponse>> decide(
+                        @PathVariable Long id,
+                        @RequestBody PreDecisionRequest req) {
 
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        "Pre-admission screening updated successfully",
-                        service.decide(id, req)));
-    }
+                return ResponseEntity.ok(
+                                ApiResponse.success(
+                                                "Pre-admission screening updated successfully",
+                                                service.decide(id, req)));
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
-        service.deleteDraft(id);
-        return ResponseEntity.ok(ApiResponse.success("Deleted successfully", null));
-    }
+        // 38
+        // DELETE /api/v1/pre-admissions/{id}
+        @DeleteMapping("/{id}")
+        public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+                service.deleteDraft(id);
+                return ResponseEntity.ok(ApiResponse.success("Deleted successfully", null));
+        }
 }

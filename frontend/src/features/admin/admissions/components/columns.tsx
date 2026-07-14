@@ -40,6 +40,7 @@ export const getAdmissionColumns = (
       header: "Actions",
       cell: ({ row }) => {
         const a = row.original;
+        // Discharge only applies to currently active admissions
         if (a.status !== "ACTIVE") return null;
         return (
           <DropdownMenu>

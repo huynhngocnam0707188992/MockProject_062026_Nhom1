@@ -40,6 +40,7 @@ export const DataTablePagination = <TData,>({
         </Select>
       </div>
       <div className="flex items-center space-x-2">
+        {/* pageIndex is 0-based internally, display as 1-based */}
         <div className="text-sm font-medium">
           Page {table.getState().pagination.pageIndex + 1} /{" "}
           {Math.max(table.getPageCount(), 1)}
