@@ -9,88 +9,111 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
-export const CareTaskFilterBar = () => {
+export interface CareTaskFilterBarProps {
+  date: Date | undefined;
+  setDate: (date: Date | undefined) => void;
+  status: string;
+  setStatus: (status: string) => void;
+  taskType: string;
+  setTaskType: (type: string) => void;
+  flag: string;
+  setFlag: (flag: string) => void;
+  searchCna: string;
+  setSearchCna: (cna: string) => void;
+}
+
+export const CareTaskFilterBar = ({
+  date,
+  setDate,
+  status,
+  setStatus,
+  taskType,
+  setTaskType,
+  flag,
+  setFlag,
+  searchCna,
+  setSearchCna,
+}: CareTaskFilterBarProps) => {
+
   return (
-    <div className="rounded-xl border bg-card shadow-sm">
-      <div className="flex flex-wrap items-center gap-2 px-4 py-3">
+    <div className="rounded-xl border border-border bg-card shadow-sm">
+      <div className="flex flex-wrap items-center gap-3 px-5 py-3.5">
 
         {/* Date Picker */}
-        <Button
-          variant="outline"
-          className="h-8 gap-2 px-3 text-sm font-medium border-border bg-background hover:bg-muted"
-        >
-          <CalendarDays className="size-3.5 text-muted-foreground" />
-          Oct 24, 2026
-        </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="h-9 gap-2.5 px-4 text-sm font-medium border-border bg-background hover:bg-muted shadow-sm transition-colors"
+            >
+              <CalendarDays className="size-4 text-muted-foreground" />
+              {date ? format(date, "MMM dd, yyyy") : "Pick a date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+            />
+          </PopoverContent>
+        </Popover>
 
-        <Separator orientation="vertical" className="h-5 mx-1" />
+        <Separator orientation="vertical" className="h-6 mx-1" />
 
         {/* Status */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+        <div className="flex items-center gap-2">
+          <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Status
           </span>
-          <Select defaultValue="all-status">
-            <SelectTrigger className="h-8 w-28 text-xs border-border bg-background">
-              <SelectValue />
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="h-9 w-32 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
+              <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-status">All</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="done">Completed</SelectItem>
-              <SelectItem value="missed">Missed</SelectItem>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="PENDING">Pending</SelectItem>
+              <SelectItem value="COMPLETED">Completed</SelectItem>
+              <SelectItem value="MISSED">Missed</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Task Type */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+        <div className="flex items-center gap-2">
+          <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Type
           </span>
-          <Select defaultValue="all-types">
-            <SelectTrigger className="h-8 w-32 text-xs border-border bg-background">
-              <SelectValue />
+          <Select value={taskType} onValueChange={setTaskType}>
+            <SelectTrigger className="h-9 w-36 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
+              <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-types">All Types</SelectItem>
-              <SelectItem value="bathing">Bathing</SelectItem>
-              <SelectItem value="medication">Medication</SelectItem>
-              <SelectItem value="meals">Meals</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Resident */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
-            Resident
-          </span>
-          <Select defaultValue="all-residents">
-            <SelectTrigger className="h-8 w-32 text-xs border-border bg-background">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all-residents">All Residents</SelectItem>
-              <SelectItem value="john">John Doe</SelectItem>
-              <SelectItem value="elena">Elena Ramos</SelectItem>
-              <SelectItem value="susan">Susan Wright</SelectItem>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="Bathing">Bathing</SelectItem>
+              <SelectItem value="Medication">Medication</SelectItem>
+              <SelectItem value="Meals">Meals</SelectItem>
+              <SelectItem value="Mobility">Mobility</SelectItem>
+              <SelectItem value="Nutrition">Nutrition</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Flag */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+        <div className="flex items-center gap-2">
+          <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Flag
           </span>
-          <Select defaultValue="all-flags">
-            <SelectTrigger className="h-8 w-28 text-xs border-border bg-background">
-              <SelectValue />
+          <Select value={flag} onValueChange={setFlag}>
+            <SelectTrigger className="h-9 w-32 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
+              <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-flags">All</SelectItem>
+              <SelectItem value="all">All</SelectItem>
               <SelectItem value="flagged">Flagged</SelectItem>
               <SelectItem value="unflagged">Unflagged</SelectItem>
             </SelectContent>
@@ -100,13 +123,15 @@ export const CareTaskFilterBar = () => {
         {/* Push search to the right */}
         <div className="flex-1" />
 
-        {/* Resident Search */}
-        <div className="relative min-w-[200px]">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+        {/* Search CNA */}
+        <div className="relative min-w-[240px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <Input
-            className="pl-8 h-8 text-sm border-border bg-background"
-            placeholder="Search resident…"
+            className="pl-9 h-9 text-sm border-border bg-background shadow-sm focus-visible:ring-primary/20"
+            placeholder="Search CNA..."
             type="text"
+            value={searchCna}
+            onChange={(e) => setSearchCna(e.target.value)}
           />
         </div>
 

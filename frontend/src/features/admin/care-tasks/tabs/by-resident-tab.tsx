@@ -5,9 +5,16 @@ import { ResidentTaskRow } from "../components/by-resident-tab/resident-task-row
 import { ResidentTaskFilterBar } from "../components/by-resident-tab/resident-task-filter-bar";
 import { Table, TableBody } from "@/components/ui/table";
 import { ClipboardList } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+
+import type { GroupedByResidentCard, EnrichedTaskRow } from "@/services/care-tasks-api";
 
 export const ByResidentTab = () => {
-  const { residentGroups, isLoadingResidents } = useCareTasks();
+  const [page, setPage] = useState(0);
+  const { residentGroupsData, isLoadingResidents } = useCareTasks({ page, size: 10 });
+  const residentGroups = Array.isArray(residentGroupsData?.data) ? residentGroupsData.data : [];
+  const meta = residentGroupsData?.metadata;
 
   if (isLoadingResidents) {
     return (
@@ -35,27 +42,70 @@ export const ByResidentTab = () => {
       <ResidentTaskFilterBar />
 
       {/* One card per Resident */}
-      {residentGroups.map((resident) => (
-        <div
-          key={resident.id}
-          className="rounded-xl border border-border bg-card shadow-sm overflow-hidden"
-        >
-          {/* Card header — Resident identity + status */}
-          <ResidentCardHeader resident={resident} />
+      {residentGroups.map((resident: GroupedByResidentCard) => {
+        // Map DTO to match what ResidentCardHeader expects
+        const residentMapped = {
+          id: String(resident.residentId),
+          name: resident.residentDisplayName,
+          age: 0,
+          room: resident.roomNumber || "N/A",
+          imageUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(resident.residentDisplayName)}&background=random`,
+          careLevel: "Standard Care" as const,
+          statusDot: "active" as const,
+          totalTasks: resident.totalTasks,
+          completedTasks: resident.completedTasks,
+          missedTasks: resident.missedTasks,
+        };
 
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <Table className="table-fixed min-w-[720px]">
-              <ResidentTaskTableHeader />
-              <TableBody>
-                {resident.tasks.map((task) => (
-                  <ResidentTaskRow key={task.id} task={task} />
-                ))}
-              </TableBody>
-            </Table>
+        return (
+          <div
+            key={resident.residentId}
+            className="rounded-xl border border-border bg-card shadow-sm overflow-hidden"
+          >
+            {/* Card header — Resident identity + status */}
+            <ResidentCardHeader resident={residentMapped} />
+
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <Table className="table-fixed min-w-[720px]">
+                <ResidentTaskTableHeader />
+                <TableBody>
+                  {resident.tasks.map((task: EnrichedTaskRow) => (
+                    <ResidentTaskRow key={task.id} task={task} />
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Pagination Controls */}
+      {meta && meta.totalPage > 1 && (
+        <div className="flex items-center justify-between pt-4">
+          <div className="text-sm text-muted-foreground">
+            Showing page {meta.currentPage} of {meta.totalPage}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!meta.hasPrevious}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!meta.hasNext}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Next
+            </Button>
           </div>
         </div>
-      ))}
+      )}
     </div>
   );
 };

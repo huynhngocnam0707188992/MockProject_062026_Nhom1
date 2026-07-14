@@ -1,12 +1,10 @@
 package com.eldercare.modules.careplan_management.cna_daily_tasks.dto.request;
 
 import lombok.Data;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Data
 public class GroupedTaskQuery {
-    @NotNull(message = "Date is required")
     private LocalDate date;
     private String status;
     private String taskType;

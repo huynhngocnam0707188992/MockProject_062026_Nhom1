@@ -1,5 +1,5 @@
 import { AlertTriangle, CheckCircle2, MoreVertical, Clock } from "lucide-react";
-import type { ResidentTask } from "@/services/care-tasks-api";
+import type { EnrichedTaskRow } from "@/services/care-tasks-api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,14 +10,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { format } from "date-fns";
 
 interface ResidentTaskRowProps {
-  task: ResidentTask;
+  task: EnrichedTaskRow;
 }
 
 export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
-  const isCompleted = task.status === "Done";
-  const isMissed = task.status === "Missed";
+  const isCompleted = task.status === "COMPLETED";
+  const isMissed = task.status === "MISSED";
+
+  const timeFormatted = format(new Date(task.scheduledTime), "hh:mm a");
+  const assignedCnaName = task.assignedCnaDisplayName || "Unassigned";
+  const hasAssignedCna = task.assignedCnaId !== null;
 
   // ── Status badge ─────────────────────────────────────────────────────────
   const statusBadge = () => {
@@ -63,11 +68,11 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
       {/* ── Assigned Staff ───────────────────────────────── w-[240px] */}
       <TableCell className={`px-4 py-3 w-[240px] min-w-[200px] ${accentBorder}`}>
         <div className="flex items-center gap-2.5">
-          {task.assignedCnaImageUrl ? (
+          {hasAssignedCna ? (
             <Avatar className="size-8 flex-shrink-0">
-              <AvatarImage src={task.assignedCnaImageUrl} alt={task.assignedCnaName} />
+              <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(assignedCnaName)}&background=random`} alt={assignedCnaName} />
               <AvatarFallback className="bg-primary/10 text-primary text-[11px] font-semibold">
-                {task.assignedCnaName
+                {assignedCnaName
                   .split(" ")
                   .map((n) => n[0])
                   .join("")
@@ -80,8 +85,8 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
             </div>
           )}
           <div className="flex flex-col min-w-0">
-            <span className={`text-sm truncate leading-tight ${!task.assignedCnaImageUrl ? "text-muted-foreground italic font-normal" : "text-foreground font-medium"}`}>
-              {task.assignedCnaName}
+            <span className={`text-sm truncate leading-tight ${!hasAssignedCna ? "text-muted-foreground italic font-normal" : "text-foreground font-medium"}`}>
+              {assignedCnaName}
             </span>
             <span className="text-[11px] text-muted-foreground leading-tight mt-0.5">
               Assigned CNA
@@ -108,8 +113,7 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
       {/* ── Goal ─────────────────────────────────────────── auto width */}
       <TableCell className="px-4 py-3">
         <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed max-w-xs">
-          <span className="font-semibold text-foreground mr-1">{task.goalTitle}</span>
-          {task.goalDetail}
+          {task.goal}
         </p>
       </TableCell>
 
@@ -124,7 +128,7 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
               : "bg-muted text-foreground"
           }`}
         >
-          {task.time}
+          {timeFormatted}
         </span>
       </TableCell>
 
@@ -138,10 +142,10 @@ export const ResidentTaskRow = ({ task }: ResidentTaskRowProps) => {
       {/* ── Flags ────────────────────────────────────────── w-[70px] */}
       <TableCell className="px-4 py-3 w-[70px] text-center">
         <div className="flex items-center justify-center">
-          {task.hasFlag ? (
+          {task.isAbnormalFlagged ? (
             <span
               className="inline-flex size-6 items-center justify-center rounded-full bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-400 ring-1 ring-red-200 dark:ring-red-800"
-              title={task.flagNote || "Attention required"}
+              title={"Attention required"}
             >
               <AlertTriangle className="size-3.5" />
             </span>

@@ -5,9 +5,16 @@ import { CareTaskRow } from "../components/by-cna-tab/care-task-row";
 import { CareTaskFilterBar } from "../components/by-cna-tab/care-task-filter-bar";
 import { Table, TableBody } from "@/components/ui/table";
 import { ClipboardList } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+
+import type { GroupedByCnaCard, EnrichedTaskRow } from "@/services/care-tasks-api";
 
 export const ByCnaTab = () => {
-  const { cnaGroups, isLoading } = useCareTasks();
+  const [page, setPage] = useState(0);
+  const { cnaGroupsData, isLoading } = useCareTasks({ page, size: 10 });
+  const cnaGroups = Array.isArray(cnaGroupsData?.data) ? cnaGroupsData.data : [];
+  const meta = cnaGroupsData?.metadata;
 
   if (isLoading) {
     return (
@@ -35,17 +42,17 @@ export const ByCnaTab = () => {
       <CareTaskFilterBar />
 
       {/* One card per CNA */}
-      {cnaGroups.map((cnaGroup) => (
+      {cnaGroups.map((cnaGroup: GroupedByCnaCard) => (
         <div
-          key={cnaGroup.id}
+          key={cnaGroup.cnaId || 'unassigned'}
           className="rounded-xl border border-border bg-card shadow-sm overflow-hidden"
         >
           {/* Card header — CNA identity + progress */}
           <CnaCardHeader
-            name={cnaGroup.name}
-            role={cnaGroup.role}
-            imageUrl={cnaGroup.imageUrl}
-            imageAlt={cnaGroup.imageAlt}
+            name={cnaGroup.cnaDisplayName || 'Unassigned'}
+            role={"CERTIFIED NURSING ASSISTANT"}
+            imageUrl={""}
+            imageAlt={"CNA profile"}
             totalTasks={cnaGroup.totalTasks}
             completedTasks={cnaGroup.completedTasks}
             missedTasks={cnaGroup.missedTasks}
@@ -59,7 +66,7 @@ export const ByCnaTab = () => {
             <Table className="table-fixed min-w-[720px]">
               <CareTaskTableHeader />
               <TableBody>
-                {cnaGroup.tasks.map((task) => (
+                {cnaGroup.tasks.map((task: EnrichedTaskRow) => (
                   <CareTaskRow key={task.id} task={task} />
                 ))}
               </TableBody>
@@ -67,6 +74,33 @@ export const ByCnaTab = () => {
           </div>
         </div>
       ))}
+      
+      {/* Pagination Controls */}
+      {meta && meta.totalPage > 1 && (
+        <div className="flex items-center justify-between pt-4">
+          <div className="text-sm text-muted-foreground">
+            Showing page {meta.currentPage} of {meta.totalPage}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!meta.hasPrevious}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!meta.hasNext}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

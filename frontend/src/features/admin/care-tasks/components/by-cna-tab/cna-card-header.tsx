@@ -10,23 +10,12 @@ interface CnaCardHeaderProps {
   missedTasks?: number;
 }
 
-// SVG circle: r=14 → circumference = 2π×14 ≈ 87.96
-const CIRCUMFERENCE = 2 * Math.PI * 14;
-
 export const CnaCardHeader = ({
   name,
   role,
   imageUrl,
   imageAlt,
-  totalTasks,
-  completedTasks,
-  missedTasks,
 }: CnaCardHeaderProps) => {
-  const remaining = totalTasks - completedTasks;
-  const progressRatio = totalTasks > 0 ? completedTasks / totalTasks : 0;
-  const strokeDashoffset = CIRCUMFERENCE * (1 - progressRatio);
-
-  const hasMissed = typeof missedTasks === "number" && missedTasks > 0;
 
   return (
     <div className="flex items-center justify-between px-5 py-3.5 bg-muted/30 border-b border-border">

@@ -1,5 +1,5 @@
 import { AlertTriangle, CheckCircle2, MoreVertical, Clock } from "lucide-react";
-import type { CareTask } from "@/services/care-tasks-api";
+import type { EnrichedTaskRow } from "@/services/care-tasks-api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,14 +10,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { format } from "date-fns";
 
 interface CareTaskRowProps {
-  task: CareTask;
+  task: EnrichedTaskRow;
 }
 
 export const CareTaskRow = ({ task }: CareTaskRowProps) => {
-  const isCompleted = task.status === "Done";
-  const isMissed = task.status === "Missed";
+  const isCompleted = task.status === "COMPLETED";
+  const isMissed = task.status === "MISSED";
+
+  const timeFormatted = format(new Date(task.scheduledTime), "hh:mm a");
 
   // ── Status badge ─────────────────────────────────────────────────────────
   const statusBadge = () => {
@@ -65,11 +68,11 @@ export const CareTaskRow = ({ task }: CareTaskRowProps) => {
         <div className="flex items-center gap-2.5">
           <Avatar className="size-8 flex-shrink-0">
             <AvatarImage
-              src={task.residentImageUrl}
-              alt={`Portrait of ${task.residentName}`}
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(task.residentDisplayName)}&background=random`}
+              alt={`Portrait of ${task.residentDisplayName}`}
             />
             <AvatarFallback className="bg-primary/10 text-primary text-[11px] font-semibold">
-              {task.residentName
+              {task.residentDisplayName
                 .split(" ")
                 .map((n) => n[0])
                 .join("")
@@ -79,11 +82,11 @@ export const CareTaskRow = ({ task }: CareTaskRowProps) => {
           <div className="flex flex-col min-w-0">
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-medium text-foreground truncate leading-tight">
-                {task.residentName}
+                {task.residentDisplayName}
               </span>
             </div>
             <span className="text-[11px] text-muted-foreground leading-tight mt-0.5">
-              Room {task.room} <span className="mx-0.5 opacity-50">•</span> Care Plan #{Math.floor(Math.random() * 50) + 10}
+              Room {task.roomNumber || "N/A"} <span className="mx-0.5 opacity-50">•</span> Care Plan #{task.carePlanId}
             </span>
           </div>
         </div>
@@ -122,7 +125,7 @@ export const CareTaskRow = ({ task }: CareTaskRowProps) => {
               : "bg-muted text-foreground"
           }`}
         >
-          {task.time}
+          {timeFormatted}
         </span>
       </TableCell>
 
@@ -136,7 +139,7 @@ export const CareTaskRow = ({ task }: CareTaskRowProps) => {
       {/* ── Flags ────────────────────────────────────────── w-[70px] */}
       <TableCell className="px-4 py-3 w-[70px] text-center">
         <div className="flex items-center justify-center">
-          {task.isAbnormal ? (
+          {task.isAbnormalFlagged ? (
             <span
               className="inline-flex size-6 items-center justify-center rounded-full bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-400 ring-1 ring-red-200 dark:ring-red-800"
               title="Abnormal findings flagged"

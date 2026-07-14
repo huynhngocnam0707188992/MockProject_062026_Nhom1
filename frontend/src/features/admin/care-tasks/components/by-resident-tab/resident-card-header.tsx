@@ -1,15 +1,20 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { User, History } from "lucide-react";
-import type { ResidentGroup } from "@/services/care-tasks-api";
 
 interface ResidentCardHeaderProps {
-  resident: ResidentGroup;
+  resident: {
+    id: string;
+    name: string;
+    age: number;
+    room: string;
+    imageUrl: string;
+    careLevel: string;
+    statusDot: "active" | "fall-risk" | "alert";
+    totalTasks: number;
+    completedTasks: number;
+    missedTasks?: number;
+  };
 }
-
-// SVG circle: r=14 → circumference = 2π×14 ≈ 87.96
-const CIRCUMFERENCE = 2 * Math.PI * 14;
 
 export const ResidentCardHeader = ({ resident }: ResidentCardHeaderProps) => {
   // Dot colours
@@ -19,12 +24,6 @@ export const ResidentCardHeader = ({ resident }: ResidentCardHeaderProps) => {
       : resident.statusDot === "fall-risk"
       ? "bg-yellow-400"
       : "bg-emerald-500";
-
-  // Task calculations
-  const remaining = resident.totalTasks - resident.completedTasks;
-  const progressRatio = resident.totalTasks > 0 ? resident.completedTasks / resident.totalTasks : 0;
-  const strokeDashoffset = CIRCUMFERENCE * (1 - progressRatio);
-  const hasMissed = typeof resident.missedTasks === "number" && resident.missedTasks > 0;
 
   return (
     <div className="flex items-center justify-between px-5 py-3.5 bg-muted/30 border-b border-border">
@@ -36,7 +35,7 @@ export const ResidentCardHeader = ({ resident }: ResidentCardHeaderProps) => {
             <AvatarFallback className="bg-primary/10 text-primary font-semibold">
               {resident.name
                 .split(" ")
-                .map((n) => n[0])
+                .map((n: string) => n[0])
                 .join("")
                 .slice(0, 2)}
             </AvatarFallback>
