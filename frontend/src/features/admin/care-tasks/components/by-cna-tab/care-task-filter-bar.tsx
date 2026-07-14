@@ -24,6 +24,7 @@ export interface CareTaskFilterBarProps {
   setFlag: (flag: string) => void;
   searchCna: string;
   setSearchCna: (cna: string) => void;
+  availableTaskTypes: string[];
 }
 
 export const CareTaskFilterBar = ({
@@ -37,6 +38,7 @@ export const CareTaskFilterBar = ({
   setFlag,
   searchCna,
   setSearchCna,
+  availableTaskTypes,
 }: CareTaskFilterBarProps) => {
 
   return (
@@ -70,7 +72,7 @@ export const CareTaskFilterBar = ({
           <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Status
           </span>
-          <Select value={status} onValueChange={(val: string) => setStatus(val)}>
+          <Select value={status} onValueChange={(val) => setStatus(val || "all")}>
             <SelectTrigger className="h-9 w-32 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
               <SelectValue placeholder="All" />
             </SelectTrigger>
@@ -88,17 +90,17 @@ export const CareTaskFilterBar = ({
           <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Type
           </span>
-          <Select value={taskType} onValueChange={(val: string) => setTaskType(val)}>
+          <Select value={taskType} onValueChange={(val) => setTaskType(val || "all")}>
             <SelectTrigger className="h-9 w-36 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="Bathing">Bathing</SelectItem>
-              <SelectItem value="Medication">Medication</SelectItem>
-              <SelectItem value="Meals">Meals</SelectItem>
-              <SelectItem value="Mobility">Mobility</SelectItem>
-              <SelectItem value="Nutrition">Nutrition</SelectItem>
+              {availableTaskTypes.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -108,7 +110,7 @@ export const CareTaskFilterBar = ({
           <span className="text-[13px] font-medium text-muted-foreground whitespace-nowrap">
             Flag
           </span>
-          <Select value={flag} onValueChange={(val: string) => setFlag(val)}>
+          <Select value={flag} onValueChange={(val) => setFlag(val || "all")}>
             <SelectTrigger className="h-9 w-32 text-sm border-border bg-background shadow-sm hover:bg-muted/50 transition-colors">
               <SelectValue placeholder="All" />
             </SelectTrigger>

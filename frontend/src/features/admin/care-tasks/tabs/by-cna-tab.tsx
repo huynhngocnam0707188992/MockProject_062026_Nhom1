@@ -13,7 +13,7 @@ import { format } from "date-fns";
 
 export const ByCnaTab = () => {
   const [page, setPage] = useState(0);
-  const [date, setDate] = useState<Date | undefined>(new Date("2026-10-24"));
+  const [date, setDate] = useState<Date | undefined>(new Date("2026-07-14"));
   const [status, setStatus] = useState<string>("all");
   const [taskType, setTaskType] = useState<string>("all");
   const [flag, setFlag] = useState<string>("all");
@@ -32,6 +32,13 @@ export const ByCnaTab = () => {
   const { cnaGroupsData, isLoading } = useCareTasks(params);
   let cnaGroups: GroupedByCnaCard[] = Array.isArray(cnaGroupsData?.data) ? cnaGroupsData.data : [];
   const meta = cnaGroupsData?.metadata;
+
+  // Extract available task types dynamically from current data
+  const availableTaskTypes = Array.from(
+    new Set(
+      cnaGroups.flatMap((group) => group.tasks.map((task) => task.taskType))
+    )
+  ).sort();
 
   if (searchCna.trim() !== "") {
     cnaGroups = cnaGroups.filter((g: GroupedByCnaCard) => 
@@ -62,6 +69,7 @@ export const ByCnaTab = () => {
         setFlag={setFlag}
         searchCna={searchCna}
         setSearchCna={setSearchCna}
+        availableTaskTypes={availableTaskTypes}
       />
 
       {cnaGroups.length === 0 ? (
@@ -85,6 +93,8 @@ export const ByCnaTab = () => {
                 role={"CERTIFIED NURSING ASSISTANT"}
                 imageUrl={`https://ui-avatars.com/api/?name=${encodeURIComponent(cnaGroup.cnaDisplayName || 'Unassigned')}&background=random`}
                 imageAlt={"CNA profile"}
+                totalTasks={cnaGroup.totalTasks}
+                completedTasks={cnaGroup.completedTasks}
               />
 
               {/*

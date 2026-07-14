@@ -13,7 +13,7 @@ import { format } from "date-fns";
 
 export const ByResidentTab = () => {
   const [page, setPage] = useState(0);
-  const [date, setDate] = useState<Date | undefined>(new Date("2026-10-24"));
+  const [date, setDate] = useState<Date | undefined>(new Date("2026-07-14"));
   const [status, setStatus] = useState<string>("all");
   const [taskType, setTaskType] = useState<string>("all");
   const [flag, setFlag] = useState<string>("all");
@@ -32,6 +32,13 @@ export const ByResidentTab = () => {
   const { residentGroupsData, isLoadingResidents } = useCareTasks(params);
   let residentGroups: GroupedByResidentCard[] = Array.isArray(residentGroupsData?.data) ? residentGroupsData.data : [];
   const meta = residentGroupsData?.metadata;
+
+  // Extract available task types dynamically from current data
+  const availableTaskTypes = Array.from(
+    new Set(
+      residentGroups.flatMap((group) => group.tasks.map((task) => task.taskType))
+    )
+  ).sort();
 
   if (searchResident.trim() !== "") {
     residentGroups = residentGroups.filter((g: GroupedByResidentCard) => 
@@ -62,6 +69,7 @@ export const ByResidentTab = () => {
         setFlag={setFlag}
         searchResident={searchResident}
         setSearchResident={setSearchResident}
+        availableTaskTypes={availableTaskTypes}
       />
 
       {residentGroups.length === 0 ? (
