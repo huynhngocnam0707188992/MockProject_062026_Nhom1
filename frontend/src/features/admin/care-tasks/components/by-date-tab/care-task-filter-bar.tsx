@@ -26,24 +26,6 @@ export const CareTaskFilterBar = () => {
 
         <Separator orientation="vertical" className="h-5 mx-1" />
 
-        {/* Shift */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
-            Shift
-          </span>
-          <Select defaultValue="all-shifts">
-            <SelectTrigger className="h-8 w-28 text-xs border-border bg-background">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all-shifts">All</SelectItem>
-              <SelectItem value="morning">Morning</SelectItem>
-              <SelectItem value="afternoon">Afternoon</SelectItem>
-              <SelectItem value="night">Night</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
         {/* Status */}
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
@@ -62,23 +44,6 @@ export const CareTaskFilterBar = () => {
           </Select>
         </div>
 
-        {/* CNA */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
-            CNA
-          </span>
-          <Select defaultValue="all-cnas">
-            <SelectTrigger className="h-8 w-32 text-xs border-border bg-background">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all-cnas">All CNAs</SelectItem>
-              <SelectItem value="sarah">Sarah G.</SelectItem>
-              <SelectItem value="mark">Mark J.</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
         {/* Task Type */}
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
@@ -93,6 +58,23 @@ export const CareTaskFilterBar = () => {
               <SelectItem value="bathing">Bathing</SelectItem>
               <SelectItem value="medication">Medication</SelectItem>
               <SelectItem value="meals">Meals</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Flag */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+            Flag
+          </span>
+          <Select defaultValue="all-flags">
+            <SelectTrigger className="h-8 w-28 text-xs border-border bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all-flags">All</SelectItem>
+              <SelectItem value="flagged">Flagged</SelectItem>
+              <SelectItem value="unflagged">Unflagged</SelectItem>
             </SelectContent>
           </Select>
         </div>

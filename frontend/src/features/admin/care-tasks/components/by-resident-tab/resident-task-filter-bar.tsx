@@ -25,24 +25,6 @@ export const ResidentTaskFilterBar = () => {
 
         <Separator orientation="vertical" className="h-5 mx-1" />
 
-        {/* Shift */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
-            Shift
-          </span>
-          <Select defaultValue="all-shifts">
-            <SelectTrigger className="h-8 w-28 text-xs border-border bg-background">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all-shifts">All Shifts</SelectItem>
-              <SelectItem value="morning">Morning</SelectItem>
-              <SelectItem value="evening">Evening</SelectItem>
-              <SelectItem value="night">Night</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
         {/* Status */}
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
@@ -61,20 +43,19 @@ export const ResidentTaskFilterBar = () => {
           </Select>
         </div>
 
-        {/* Assigned CNA */}
+        {/* Flag */}
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
-            Assigned CNA
+            Flag
           </span>
-          <Select defaultValue="all-staff">
-            <SelectTrigger className="h-8 w-32 text-xs border-border bg-background">
+          <Select defaultValue="all-flags">
+            <SelectTrigger className="h-8 w-28 text-xs border-border bg-background">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-staff">All Staff</SelectItem>
-              <SelectItem value="sarah">Sarah G.</SelectItem>
-              <SelectItem value="carter">Nurse Carter</SelectItem>
-              <SelectItem value="duc">Pham Van Duc</SelectItem>
+              <SelectItem value="all-flags">All</SelectItem>
+              <SelectItem value="flagged">Flagged</SelectItem>
+              <SelectItem value="unflagged">Unflagged</SelectItem>
             </SelectContent>
           </Select>
         </div>
