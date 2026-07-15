@@ -1,12 +1,23 @@
 package com.eldercare.modules.careplan_management.careplan_design.service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import com.eldercare.common.dto.PagedResponse;
+import com.eldercare.common.enums.CarePlanGoalStatusEnum;
+import com.eldercare.common.enums.CarePlanStatusEnum;
+import com.eldercare.modules.careplan_management.careplan_design.dto.createCarePlanDTO.CreateCarePlanRequestDTO;
+import com.eldercare.modules.careplan_management.careplan_design.dto.createCarePlanDTO.CreateCarePlanResponseDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.getCarePlanDetailDTO.GetCarePlanDetailRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.getCarePlanDetailDTO.GetCarePlanDetailResponseDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanResponseDTO;
+import com.eldercare.modules.careplan_management.careplan_design.entity.CareGoalEntity;
+import com.eldercare.modules.careplan_management.careplan_design.entity.CareInterventionEntity;
+import com.eldercare.modules.careplan_management.careplan_design.entity.resident_info.CarePlanResidentInfoEntity;
+import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +36,7 @@ import com.eldercare.modules.careplan_management.careplan_design.entity.CarePlan
 @Service
 public class CarePlanServiceImpl implements ICarePlanService {
 
+    private static final Logger log = LoggerFactory.getLogger(CarePlanServiceImpl.class);
     private final ICarePlanRepository carePlanRepository;
 
     public CarePlanServiceImpl(ICarePlanRepository carePlanRepository) {
@@ -75,7 +87,7 @@ public class CarePlanServiceImpl implements ICarePlanService {
                     output.id = entity.getId();
                     output.status = entity.getStatus().name();
                     output.significantFlag = entity.getSignificantFlag();
-                    output.lastReviewedBy = entity.getLastReviewBy() == null ? null: entity.getLastReviewBy();
+                    output.lastReviewedBy = entity.getLastReviewBy() == null ? null : entity.getLastReviewBy();
                     output.lastReviewedDateTime = entity.getLastReviewDateTime() == null ? null : entity.getLastReviewDateTime().toString();
                     output.nextReviewDateTime = entity.getNextReviewDateTime() == null ? null : entity.getNextReviewDateTime().toString();
                     output.cycle = 90;
@@ -131,7 +143,7 @@ public class CarePlanServiceImpl implements ICarePlanService {
         responseDTO.id = carePlanEntity.getId();
         responseDTO.status = carePlanEntity.getStatus().name();
         responseDTO.significantFlag = carePlanEntity.getSignificantFlag();
-        responseDTO.lastReviewedBy = carePlanEntity.getLastReviewBy() == null ? null: carePlanEntity.getLastReviewBy();
+        responseDTO.lastReviewedBy = carePlanEntity.getLastReviewBy() == null ? null : carePlanEntity.getLastReviewBy();
         responseDTO.lastReviewedDateTime = carePlanEntity.getLastReviewDateTime() == null ? null : carePlanEntity.getLastReviewDateTime().toString();
         responseDTO.nextReviewDateTime = carePlanEntity.getNextReviewDateTime() == null ? null : carePlanEntity.getNextReviewDateTime().toString();
         responseDTO.cycle = 90;
@@ -197,6 +209,73 @@ public class CarePlanServiceImpl implements ICarePlanService {
                 pageCarePlanEntity.getSize(),
                 pageCarePlanEntity.getTotalElements()
         );
+    }
+
+    @Override
+    public CreateCarePlanResponseDTO createCarePlan(CreateCarePlanRequestDTO requestDTO, String purpose) {
+
+        //create care plan entity
+        CarePlanEntity carePlan = new CarePlanEntity();
+        carePlan.setLastReviewBy(null);
+        carePlan.setCreatedAt(OffsetDateTime.now());
+        carePlan.setUpdatedAt(OffsetDateTime.now());
+        carePlan.setIsDeleted(false);
+        carePlan.setLastReviewDateTime(null);
+
+        switch (purpose){
+            case "NEED_REVIEW":
+                carePlan.setStatus(CarePlanStatusEnum.PENDING_REVIEW);
+            default:
+                carePlan.setStatus(CarePlanStatusEnum.DRAFT);
+        }
+
+        //TODO: find resident info
+        int residentId = requestDTO.residentId;
+        ResidentEntity resident = this.carePlanRepository.getResidentInfo((long) residentId);
+
+        //TODO: check chart lock ,...
+        if (resident.isChartLocked() == true){
+            throw new RuntimeException("Resident is locked, can not create care plan for this resident");
+        }
+
+
+        CarePlanResidentInfoEntity carePlanResidentInfoEntity = new CarePlanResidentInfoEntity();
+        carePlanResidentInfoEntity.setId(resident.getId().intValue());
+        carePlan.setResident(carePlanResidentInfoEntity);
+
+        List<CareGoalEntity> goals = requestDTO.listCareGoal.stream()
+                .map(goalDto -> {
+
+                    CareGoalEntity goal = new CareGoalEntity();
+                    goal.setName(goalDto.name);
+                    goal.setDescription(goalDto.description);
+                    goal.setStatus(CarePlanGoalStatusEnum.IN_PROGRESS);
+
+                    List<CareInterventionEntity> interventions =
+                            goalDto.listCareIntervention.stream()
+                                    .map(interventionDto -> {
+                                        CareInterventionEntity intervention =
+                                                new CareInterventionEntity();
+
+                                        intervention.setName(interventionDto.name);
+                                        intervention.setAssinedRole(interventionDto.assingedRole);
+                                        return intervention;
+                                    })
+                                    .toList();
+
+                    goal.setListCareIntervention(interventions);
+
+                    return goal;
+                })
+                .toList();
+
+        carePlan.setListCareGoal(goals);
+
+        System.out.println(carePlan);
+
+        //TODO: call repo to save
+        this.carePlanRepository.saveOne(carePlan);
+        return null;
     }
 
 }
