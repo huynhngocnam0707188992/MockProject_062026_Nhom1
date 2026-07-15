@@ -8,6 +8,8 @@ import com.eldercare.modules.admin.user_management.users.dto.response.UserRespon
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface UserService {
 
     Page<UserResponse> getUsers(
@@ -25,4 +27,5 @@ public interface UserService {
 
     UserDetailResponse changeUserStatus(Long id, ChangeStatusRequest request);
 
+    List<UserResponse> getActiveCnas();
 }

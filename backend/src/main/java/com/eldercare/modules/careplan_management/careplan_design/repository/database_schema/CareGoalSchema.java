@@ -1,20 +1,12 @@
 package com.eldercare.modules.careplan_management.careplan_design.repository.database_schema;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.eldercare.common.enums.CarePlanGoalStatusEnum;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,8 +29,20 @@ public class CareGoalSchema {
     @Enumerated(EnumType.STRING)
     private CarePlanGoalStatusEnum status;
 
+    @Column(name = "title")
+    private String title;
+
+    @Column(name = "description")
+    private String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "care_plan_id", nullable = false)
     private CarePlanSchema carePlan;
 
+    @OneToMany(
+            mappedBy = "careGoal",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<CareInterventionSchema> listCareIntervention = new ArrayList<>();
 }

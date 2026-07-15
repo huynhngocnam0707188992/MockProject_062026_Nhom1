@@ -68,4 +68,9 @@ export const userService = {
 
     return response.data;
   },
+
+  getActiveCnas: async () => {
+    const response = await apiClient.get("/users/cnas");
+    return response.data;
+  },
 };

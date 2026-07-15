@@ -1,8 +1,6 @@
 package com.eldercare.modules.careplan_management.careplan_design.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.modules.careplan_management.careplan_design.dto.getCarePlanDetailDTO.GetCarePlanDetailRequestDTO;
@@ -37,7 +35,7 @@ public class CarePlanServiceImpl implements ICarePlanService {
     public ActiveCarePlanResponseDTO activateCarePlan(ActiveCarePlanRequestDTO requestDTO) {
         int id = requestDTO.carePlanId;
         CarePlanEntity carePlanEntity = this.carePlanRepository.findById(id);
-        carePlanEntity.active();
+        carePlanEntity.approve();
         this.carePlanRepository.updateOne(carePlanEntity);
         return new ActiveCarePlanResponseDTO(carePlanEntity.getId(), carePlanEntity.getStatus().toString(),
                 carePlanEntity.getUpdatedAt().toString());
@@ -47,7 +45,7 @@ public class CarePlanServiceImpl implements ICarePlanService {
     public DiscontinueCarePlanResponseDTO discontinueCarePlan(DiscontinueCarePlanRequestDTO requestDTO) {
         int id = requestDTO.carePlanId;
         CarePlanEntity carePlanEntity = this.carePlanRepository.findById(id);
-        carePlanEntity.discontinue();
+        carePlanEntity.archive();
         this.carePlanRepository.updateOne(carePlanEntity);
         return new DiscontinueCarePlanResponseDTO(
                 carePlanEntity.getId(), carePlanEntity.getStatus().toString(),
@@ -74,13 +72,34 @@ public class CarePlanServiceImpl implements ICarePlanService {
         List<CarePlanOutput> listCarePlanOutputs = listCarePlanEntity.stream()
                 .map(entity -> {
                     CarePlanOutput output = new CarePlanOutput();
-
                     output.id = entity.getId();
                     output.status = entity.getStatus().name();
                     output.significantFlag = entity.getSignificantFlag();
-                    output.residentId = entity.getResidentId();
+                    output.lastReviewedBy = entity.getLastReviewBy() == null ? null: entity.getLastReviewBy();
+                    output.lastReviewedDateTime = entity.getLastReviewDateTime() == null ? null : entity.getLastReviewDateTime().toString();
+                    output.nextReviewDateTime = entity.getNextReviewDateTime() == null ? null : entity.getNextReviewDateTime().toString();
+                    output.cycle = 90;
+                    output.resident = new CarePlanOutput.CarePlanResidentOutput(
+                            entity.getResident().getId(),
+                            entity.getResident().getFullname(),
+                            entity.getResident().getDob().toString()
+                    );
+                    if (entity.getResident().getRoom() == null || entity.getResident().getBed() == null) {
+
+                        output.definition = new CarePlanOutput.CarePlanResidentDefinitionOutput(
+                                "", ""
+                        );
+
+                    } else {
+
+                        output.definition = new CarePlanOutput.CarePlanResidentDefinitionOutput(
+                                entity.getResident().getRoom(),
+                                entity.getResident().getBed()
+                        );
+                    }
+                    output.LOCTier = 0;
                     output.goalCount = entity.getListCareGoal().size();
-                    output.interventionCount = entity.getListCareIntervention().size();
+                    output.interventionCount = 0;
                     output.createdAt = entity.getCreatedAt() == null
                             ? null
                             : entity.getCreatedAt().toString();
@@ -109,15 +128,26 @@ public class CarePlanServiceImpl implements ICarePlanService {
         CarePlanEntity carePlanEntity = this.carePlanRepository.findById(requestDTO.id);
 
         GetCarePlanDetailResponseDTO responseDTO = new GetCarePlanDetailResponseDTO();
-
         responseDTO.id = carePlanEntity.getId();
         responseDTO.status = carePlanEntity.getStatus().name();
         responseDTO.significantFlag = carePlanEntity.getSignificantFlag();
-        responseDTO.residentId = carePlanEntity.getResidentId();
+        responseDTO.lastReviewedBy = carePlanEntity.getLastReviewBy() == null ? null: carePlanEntity.getLastReviewBy();
+        responseDTO.lastReviewedDateTime = carePlanEntity.getLastReviewDateTime() == null ? null : carePlanEntity.getLastReviewDateTime().toString();
+        responseDTO.nextReviewDateTime = carePlanEntity.getNextReviewDateTime() == null ? null : carePlanEntity.getNextReviewDateTime().toString();
+        responseDTO.cycle = 90;
+
+        responseDTO.resident = new CarePlanOutput.CarePlanResidentOutput(
+                carePlanEntity.getResident().getId(),
+                carePlanEntity.getResident().getFullname().toString(),
+                carePlanEntity.getResident().getDob().toString()
+        );
         responseDTO.createdAt = carePlanEntity.getCreatedAt().toString();
         responseDTO.updatedAt = carePlanEntity.getUpdatedAt().toString();
         responseDTO.isDeleted = carePlanEntity.getIsDeleted();
-
+        responseDTO.definition = new CarePlanOutput.CarePlanResidentDefinitionOutput(
+                carePlanEntity.getResident().getRoom(),
+                carePlanEntity.getResident().getBed()
+        );
         responseDTO.goals = carePlanEntity.getListCareGoal()
                 .stream()
                 .map(goal -> {
@@ -128,16 +158,6 @@ public class CarePlanServiceImpl implements ICarePlanService {
                 })
                 .toList();
 
-        responseDTO.interventions = carePlanEntity.getListCareIntervention()
-                .stream()
-                .map(intervention -> {
-                    GetCarePlanDetailResponseDTO.Intervention dto = new GetCarePlanDetailResponseDTO.Intervention();
-                    dto.id = intervention.getId();
-                    dto.assignedRole = intervention.getAssinedRole();
-                    dto.taskCount = 0;
-                    return dto;
-                })
-                .toList();
         return responseDTO;
     }
 
@@ -152,10 +172,9 @@ public class CarePlanServiceImpl implements ICarePlanService {
                 .stream()
                 .map(entity -> {
                     SearchCarePlanResponseDTO dto = new SearchCarePlanResponseDTO();
-
                     dto.id = entity.getId();
-                    dto.residentId = entity.getResidentId();
-                    dto.residentName = "RESIDENT_NAME"; // TODO: lấy từ Resident module
+                    dto.residentId = entity.getResident().getId();
+                    dto.residentName = entity.getResident().getFullname();
                     dto.status = entity.getStatus().name();
                     dto.significantChangeFlag = entity.getSignificantFlag();
                     dto.createdAt = entity.getCreatedAt() == null
