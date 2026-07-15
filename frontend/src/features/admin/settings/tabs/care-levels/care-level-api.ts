@@ -17,11 +17,21 @@ export const careLevelApi = {
   updateCareLevel: (careLevelId: number, data: UpdateCareLevelRequest) =>
     axios.patch<CareLevelResponse>(`${API_BASE_URL}/admin/care-levels/${careLevelId}`, data),
 
-  // Get care level rates by care level id
-  getCareLevelRates: (careLevelId: number) =>
-    axios.get<CareLevelRateResponse[]>(`${API_BASE_URL}/admin/care-level-rates`, {
+  /// Get care level rates by care level id
+getCareLevelRates: (careLevelId: number) => {
+  const token = localStorage.getItem("token");
+  console.log("TOKEN:", token);
+
+  return axios.get<CareLevelRateResponse[]>(
+    `${API_BASE_URL}/admin/care-level-rates`,
+    {
       params: { care_level_id: careLevelId },
-    }),
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+},
 
   // Create new care level rate
   createCareLevelRate: (data: CreateCareLevelRateRequest) =>
