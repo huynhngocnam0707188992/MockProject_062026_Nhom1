@@ -36,7 +36,7 @@ public class ConsumableSupplyServiceImpl implements ConsumableSupplyService {
     public PagedResponse<List<ConsumableSupplyResponse>> getAllConsumableSupplies(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ConsumableSupplyEntity> consumableSupplyPage = consumableSupplyRepository
-                .findByPageableAndIsDeletedFalse(pageable);
+                .findAll(pageable);
 
         List<ConsumableSupplyResponse> content = consumableSupplyPage.getContent()
                 .stream()

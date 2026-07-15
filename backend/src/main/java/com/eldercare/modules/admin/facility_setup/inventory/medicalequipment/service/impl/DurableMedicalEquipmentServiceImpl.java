@@ -45,7 +45,7 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
     public PagedResponse<List<DurableMedicalEquipmentResponse>> getAllDurableMedicalEquipment(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<DurableMedicalEquipmentEntity> equipmentPage = durableMedicalEquipmentRepository
-                .findByPageableAndIsDeletedFalse(pageable);
+                .findAll(pageable);
         List<DurableMedicalEquipmentResponse> content = equipmentPage.getContent()
                 .stream()
                 .map(durableMedicalEquipmentMapper::toResponse)

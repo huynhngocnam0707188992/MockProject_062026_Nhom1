@@ -38,21 +38,3 @@ public class ConsumableSupplyResponse {
     private ConsumableSupplyEnum status;
 
 }
-
-@Data
-class InventoryCategoryResponse {
-
-    @JsonProperty("category_id")
-    private Long id;
-    @JsonProperty("category_name")
-    private String categoryName;
-}
-
-@Data
-class FacilityResponse {
-    @JsonProperty("facility_id")
-    private long id;
-
-    @JsonProperty("facility_name")
-    private String facilityName;
-}

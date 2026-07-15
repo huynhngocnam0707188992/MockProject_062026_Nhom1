@@ -9,5 +9,5 @@ import com.eldercare.modules.admin.facility_setup.inventory.category.entity.Inve
 public interface InventoryCategoryRepository extends JpaRepository<InventoryCategoryEntity, Long> {
 
     
-    Page<InventoryCategoryEntity> findByPageable(Pageable pageable);
+    
 }

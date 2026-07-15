@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.eldercare.modules.admin.facility_setup.inventory.consumablesupplies.entity.ConsumableSupplyEntity;
 
 public interface ConsumableSupplyRepository extends JpaRepository<ConsumableSupplyEntity, Long> {
-    Page<ConsumableSupplyEntity> findByPageableAndIsDeletedFalse(Pageable pageable);
+    
 
     Page<ConsumableSupplyEntity> findByStatusAndIsDeletedFalse(String status, Pageable pageable);
 }

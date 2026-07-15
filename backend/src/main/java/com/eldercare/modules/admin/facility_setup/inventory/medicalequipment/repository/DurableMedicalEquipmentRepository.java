@@ -10,8 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.entity.DurableMedicalEquipmentEntity;
 
 public interface DurableMedicalEquipmentRepository extends JpaRepository<DurableMedicalEquipmentEntity, Long> {
-    
-    Page<DurableMedicalEquipmentEntity> findByPageableAndIsDeletedFalse(Pageable pageable);
 
     Optional<DurableMedicalEquipmentEntity> findByAssetTagAndIsDeletedFalse(String assetTag);
 
