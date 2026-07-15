@@ -9,7 +9,6 @@ import com.eldercare.common.enums.CarePlanStatusEnum;
 import com.eldercare.modules.careplan_management.careplan_design.entity.resident_info.CarePlanResidentInfoEntity;
 import lombok.*;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -28,10 +27,11 @@ public class CarePlanEntity {
     private OffsetDateTime updatedAt;
     private Boolean isDeleted;
 
-
-    //------------------------CARE PLAN BUSINESS LOGIC---------------------------------//
+    // ------------------------CARE PLAN BUSINESS
+    // LOGIC---------------------------------//
     /**
-     * Nurse submit a care plan and wait for DON review, the status change to PENDING_REVIEW
+     * Nurse submit a care plan and wait for DON review, the status change to
+     * PENDING_REVIEW
      */
     public void submitForReview() {
         this.status = CarePlanStatusEnum.PENDING_REVIEW;
@@ -39,7 +39,7 @@ public class CarePlanEntity {
     }
 
     /***
-     *  DON want to approve the care plan, the status change to ACTIVE
+     * DON want to approve the care plan, the status change to ACTIVE
      */
     public void approve() {
         this.status = CarePlanStatusEnum.ACTIVE;
@@ -63,7 +63,8 @@ public class CarePlanEntity {
     }
 
     /**
-     * When we have an incident, care plan need to be update, status cahnge to NEEDS_UPDATE
+     * When we have an incident, care plan need to be update, status cahnge to
+     * NEEDS_UPDATE
      */
     public void markSignificant() {
         this.significantFlag = true;
@@ -100,14 +101,15 @@ public class CarePlanEntity {
      */
     public OffsetDateTime getNextReviewDateTime() {
         OffsetDateTime nexReviewDateTime = null;
-        if (this.lastReviewDateTime == null){
+        if (this.lastReviewDateTime == null) {
             return null;
         }
         nexReviewDateTime = this.lastReviewDateTime.plusDays(90);
         return nexReviewDateTime;
     }
 
-    //------------------------CARE GOAL BUSINESS LOGIC---------------------------------//
+    // ------------------------CARE GOAL BUSINESS
+    // LOGIC---------------------------------//
 
     /**
      * The Care Plan need to add one care goal
