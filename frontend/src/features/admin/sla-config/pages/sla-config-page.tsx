@@ -10,12 +10,17 @@ import { useSLAConfigs } from "../hooks/use-sla-config";
 import { useIncidentSeverityLevels } from "@/features/admin/incident-severity/hooks/use-incident-severity";
 import { createSLAConfig, updateSLAConfig } from "../services/sla-config-service";
 
+const defaultSLAContent = {
+    externalReportRequired: false,
+    regulatoryBody: "Regulatory body unavailable.",
+};
+
 type SLAConfigRow = {
   id: number;
   severityId: number;
   severityName: string;
   slaWindowHrs: number;
-  externalReportRequired: string;
+  externalReportRequired: boolean;
   regulatoryBody: string;
   isEditing: boolean;
 };
@@ -27,6 +32,8 @@ const SlaConfigPage = () => {
   const [rows, setRows] = useState<SLAConfigRow[]>([]);
   const [newSLASeverityId, setNewSLASeverityId] = useState<number | null>(null);
   const [newSLAWindowHrs, setNewSLAWindowHrs] = useState("");
+  const [newExternalReportRequired,setNewExternalReportRequired]=useState(false);
+  const [newRegulatoryBody,setNewRegulatoryBody]=useState("");
   const [newSLAError, setNewSLAError] = useState<string | null>(null);
 
   console.log("SLA page hook data", { slaData, slaLoading, slaError, severityData, severityLoading, severityError });
@@ -47,8 +54,8 @@ const SlaConfigPage = () => {
         severityId: item.severityId,
         severityName: severityMap.get(item.severityId) ?? "Unknown",
         slaWindowHrs: item.slaWindowHrs,
-        externalReportRequired: "No",
-        regulatoryBody: "—",
+        externalReportRequired: item.externalReportRequired ?? defaultSLAContent.externalReportRequired,
+        regulatoryBody: item.regulatoryBody ?? defaultSLAContent.regulatoryBody,
         isEditing: false,
       }))
     );
@@ -82,8 +89,8 @@ const SlaConfigPage = () => {
               ...row,
               severityName: severityMap.get(originalRow.severityId) ?? "Unknown",
               slaWindowHrs: originalRow.slaWindowHrs,
-              externalReportRequired: "No",
-              regulatoryBody: "—",
+              externalReportRequired: originalRow.externalReportRequired ?? defaultSLAContent.externalReportRequired,
+              regulatoryBody: originalRow.regulatoryBody ?? defaultSLAContent.regulatoryBody,
               isEditing: false,
             }
           : row
@@ -127,8 +134,12 @@ const SlaConfigPage = () => {
       await createSLAConfig({
         severity_id: newSLASeverityId,
         sla_window_hrs: hours,
+        external_report_required: newExternalReportRequired,
+        regulatory_body: newRegulatoryBody,
       });
       setNewSLAWindowHrs("");
+      setNewExternalReportRequired(false);
+      setNewRegulatoryBody("");
       setNewSLAError(null);
       queryClient.invalidateQueries({ queryKey: ["slaConfigs"] });
       setActiveTab("list");
@@ -157,6 +168,22 @@ const SlaConfigPage = () => {
         row.id === id ? { ...row, slaWindowHrs: numericValue } : row
       )
     );
+  };
+
+  const updateBooleanField = (
+    id: number,
+    value: boolean
+  ) => {
+      setRows((rows) =>
+          rows.map((row) =>
+              row.id === id
+                  ? {
+                        ...row,
+                        externalReportRequired: value,
+                    }
+                  : row
+          )
+      );
   };
 
   const [activeTab, setActiveTab] = useState("list");
@@ -233,7 +260,7 @@ const SlaConfigPage = () => {
                         <>
                           <td className="px-6 py-6">
                             <p className="text-body-base font-body-base text-on-surface">
-                              {row.externalReportRequired}
+                              {row.externalReportRequired ? "Yes" : "No"}
                             </p>
                           </td>
                           <td className="px-6 py-6">
@@ -253,11 +280,12 @@ const SlaConfigPage = () => {
                       editCells={
                         <>
                           <td className="px-6 py-6">
-                            <Input
-                              type="text"
-                              value={row.externalReportRequired}
-                              onChange={(event) => updateField(row.id, "externalReportRequired", event.target.value)}
-                              className="text-body-base font-body-base"
+                            <input
+                                type="checkbox"
+                                checked={row.externalReportRequired}
+                                onChange={(e) =>
+                                    updateBooleanField(row.id, e.target.checked)
+                                }
                             />
                           </td>
                           <td className="px-6 py-6">
@@ -293,9 +321,13 @@ const SlaConfigPage = () => {
               severityOptions={severityData}
               selectedSeverityId={newSLASeverityId}
               slaWindowHrs={newSLAWindowHrs}
+              externalReportRequired={newExternalReportRequired}
+              regulatoryBody={newRegulatoryBody}
               errorMessage={newSLAError}
               onSeverityChange={setNewSLASeverityId}
               onSLAWindowChange={setNewSLAWindowHrs}
+              onExternalReportRequiredChange={setNewExternalReportRequired}
+              onRegulatoryBodyChange={setNewRegulatoryBody}
               onCreate={handleCreateSLA}
             />
           </TabsContent>

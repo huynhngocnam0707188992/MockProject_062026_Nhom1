@@ -11,6 +11,8 @@ import com.eldercare.modules.resident_intake.assessment.dto.request.AssessmentUp
 import com.eldercare.modules.resident_intake.assessment.dto.response.AssessmentResponse;
 import com.eldercare.modules.resident_intake.assessment.dto.response.AssessmentSelectDTO;
 import com.eldercare.modules.resident_intake.assessment_metric.dto.AssessmentMetricDTO;
+import com.eldercare.modules.resident_intake.care_level.history.dto.response.LocClassificationResultResponse;
+
 
 public interface AssessmentService {
 
@@ -25,6 +27,10 @@ public interface AssessmentService {
   AssessmentResponse decide(Long id, AssessmentDecisionRequest request);
 
   List<AssessmentSelectDTO> listCompletedForSelect();
+
+  LocClassificationResultResponse getClassificationResult(Long residentId);
+
+  
 
   void deleteDraft(Long id);
 }

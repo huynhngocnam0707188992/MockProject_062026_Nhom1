@@ -16,6 +16,8 @@ public interface IncidentSeverityMapper {
                 .id(incidentSeverity.getId())
                 .levelName(incidentSeverity.getLevelName())
                 .chartLockTrigger(incidentSeverity.getChartLockTrigger())
+                .description(incidentSeverity.getDescription())
+                .example(incidentSeverity.getExample())
                 .build();
     }
 
@@ -27,6 +29,8 @@ public interface IncidentSeverityMapper {
         return IncidentSeverityEntity.builder()
                 .levelName(request.getLevelName())
                 .chartLockTrigger(request.getChartLockTrigger())
+                .description(request.getDescription())
+                .example(request.getExample())
                 .build();
     }
 
@@ -37,5 +41,7 @@ public interface IncidentSeverityMapper {
 
         target.setLevelName(request.getLevelName());
         target.setChartLockTrigger(request.getChartLockTrigger());
+        target.setDescription(request.getDescription());
+        target.setExample(request.getExample());
     }
 }

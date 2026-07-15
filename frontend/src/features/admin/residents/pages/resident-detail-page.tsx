@@ -8,12 +8,14 @@ import { CareLevelHistoryTab } from "../tabs/care-level-history";
 import { SensitiveInfoTab } from "../tabs/sensitive-info";
 import { PERMISSIONS } from "@/common/permissions";
 import { usePermissions } from "@/features/auth/hooks/use-current-user";
+import LocResultTab from "../tabs/loc-result-tab";
 import { residentService, type ResidentInfo } from "@/services/resident/residentService";
 
 const ResidentDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { can } = usePermissions();
+  const residentId = Number(id);
   const [resident, setResident] = useState<ResidentInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -34,31 +36,37 @@ const ResidentDetailPage = () => {
   }, [id]);
 
   const tabs = [
-    {
-      value: "info",
-      label: "Info",
-      permission: PERMISSIONS.RESIDENT_VIEW,
-      content: <InfoTab residentId={id || ""} />,
-    },
-    {
-      value: "contacts",
-      label: "Contacts",
-      permission: PERMISSIONS.RESIDENT_VIEW,
-      content: <ContactTab residentId={id || ""} />,
-    },
-    {
-      value: "care-level-history",
-      label: "Care Level History",
-      permission: PERMISSIONS.RESIDENT_VIEW,
-      content: <CareLevelHistoryTab residentId={id || ""} />,
-    },
-    {
-      value: "sensitive-info",
-      label: "Sensitive Info",
-      permission: PERMISSIONS.RESIDENT_SENSITIVE_VIEW,
-      content: <SensitiveInfoTab residentId={id || ""} />,
-    },
-  ];
+  {
+    value: "info",
+    label: "Info",
+    permission: PERMISSIONS.RESIDENT_VIEW,
+    content: <InfoTab residentId={id || ""} />,
+  },
+  {
+    value: "contacts",
+    label: "Contacts",
+    permission: PERMISSIONS.RESIDENT_VIEW,
+    content: <ContactTab residentId={id || ""} />,
+  },
+  {
+    value: "care-level-history",
+    label: "Care Level History",
+    permission: PERMISSIONS.RESIDENT_VIEW,
+    content: <CareLevelHistoryTab residentId={id || ""} />,
+  },
+  {
+    value: "loc-result",
+    label: "LOC Classification Result",
+    permission: PERMISSIONS.RESIDENT_VIEW,
+    content: <LocResultTab residentId={residentId} />,
+  },
+  {
+    value: "sensitive-info",
+    label: "Sensitive Info",
+    permission: PERMISSIONS.RESIDENT_SENSITIVE_VIEW,
+    content: <SensitiveInfoTab residentId={id || ""} />,
+  },
+];
 
   const visibleTabs = tabs.filter((t) => can(t.permission));
 
