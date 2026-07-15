@@ -22,4 +22,10 @@ public class SLAResponse {
 
     @JsonProperty("sla_window_hrs")
     private Integer slaWindowHrs;
+
+    @JsonProperty("external_report_required")
+    private Boolean externalReportRequired;
+
+    @JsonProperty("regulatory_body")
+    private String regulatoryBody;
 }

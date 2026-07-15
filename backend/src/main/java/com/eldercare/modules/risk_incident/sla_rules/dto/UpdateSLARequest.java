@@ -24,4 +24,10 @@ public class UpdateSLARequest {
     @JsonProperty("sla_window_hrs")
     @NotNull(message = "sla_window_hrs is required")
     private Integer slaWindowHrs;
+
+    @JsonProperty("external_report_required")
+    private Boolean externalReportRequired;
+
+    @JsonProperty("regulatory_body")
+    private String regulatoryBody;
 }
