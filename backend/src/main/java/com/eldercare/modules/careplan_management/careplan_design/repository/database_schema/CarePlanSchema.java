@@ -4,14 +4,8 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,22 +31,28 @@ public class CarePlanSchema {
     @Column(name = "significant_change_flag", nullable = false)
     private Boolean significantChangeFlag = false;
 
-    @Column(name = "resident_id", nullable = false)
-    private Long residentId;
 
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "resident_id", nullable = false)
+    private ResidentEntity resident;
+
 
     @OneToMany(mappedBy = "carePlan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareGoalSchema> listCareGoal = new ArrayList<>();
 
-    @OneToMany(mappedBy = "carePlan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CareInterventionSchema> listCareIntervention = new ArrayList<>();
+    @Column(name = "last_reviewed_by", nullable = true)
+    private String lastReviewdBy;
+
+    @Column(name = "last_reviewed_datetime", nullable = true)
+    private OffsetDateTime lastReviewedDateTime;
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
+
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
 
 }
