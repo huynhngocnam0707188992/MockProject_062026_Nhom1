@@ -69,12 +69,12 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
     public void updateOne(CarePlanEntity carePlanEntity) {
 //        CarePlanSchema schema = CarePlanMapper.toSchema(carePlanEntity);
         CarePlanSchema schema = jpaCarePlanRepository.findById(
-                (long)carePlanEntity.getId())
+                        (long) carePlanEntity.getId())
                 .orElseThrow();
         schema.setStatus(carePlanEntity.getStatus().toString());
         schema.setUpdatedAt(carePlanEntity.getUpdatedAt());
         schema.setSignificantChangeFlag(carePlanEntity.getSignificantFlag());
-        if (carePlanEntity.getIsDeleted() == true){
+        if (carePlanEntity.getIsDeleted() == true) {
             schema.setIsDeleted(true);
         }
         jpaCarePlanRepository.save(schema);
@@ -140,7 +140,7 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
 
         return carePlans.stream()
                 .map(schema -> {
-                  return CarePlanMapper.toEntity(schema);
+                    return CarePlanMapper.toEntity(schema);
                 })
                 .toList();
     }
@@ -311,5 +311,19 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
                 pageable,
                 page.getTotalElements()
         );
+    }
+
+    @Override
+    @Transactional()
+    public void saveOne(CarePlanEntity carePlanEntity) {
+        CarePlanSchema carePlanSchema = CarePlanMapper.toSchema(carePlanEntity);
+        this.jpaCarePlanRepository.save(carePlanSchema);
+    }
+
+    @Override
+    @Transactional()
+    public ResidentEntity getResidentInfo(long id) {
+        ResidentEntity residentEntity = this.jpaResidentRepositoty.findById(id).get();
+        return residentEntity;
     }
 }
