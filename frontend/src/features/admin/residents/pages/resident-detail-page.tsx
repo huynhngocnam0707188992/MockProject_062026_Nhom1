@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, Edit } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InfoTab } from "../tabs/info-tab";
-import { ContactTab } from "../tabs/contact-tab";
 import { CareLevelHistoryTab } from "../tabs/care-level-history";
 import { SensitiveInfoTab } from "../tabs/sensitive-info";
 import { PERMISSIONS } from "@/common/permissions";
 import { usePermissions } from "@/features/auth/hooks/use-current-user";
 import { residentService, type ResidentInfo } from "@/services/resident/residentService";
+import ResidentContactsTab from "../tabs/resident-contacts-tab";
 
 const ResidentDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +16,8 @@ const ResidentDetailPage = () => {
   const { can } = usePermissions();
   const [resident, setResident] = useState<ResidentInfo | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const residentId = Number(id);
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -44,7 +46,11 @@ const ResidentDetailPage = () => {
       value: "contacts",
       label: "Contacts",
       permission: PERMISSIONS.RESIDENT_VIEW,
-      content: <ContactTab residentId={id || ""} />,
+      content: (
+        <ResidentContactsTab
+          residentId={residentId}
+        />
+      ),
     },
     {
       value: "care-level-history",
@@ -70,8 +76,8 @@ const ResidentDetailPage = () => {
     );
   }
 
-  const residentName = resident 
-    ? `${resident.firstName} ${resident.middleName ? resident.middleName + ' ' : ''}${resident.lastName}` 
+  const residentName = resident
+    ? `${resident.firstName} ${resident.middleName ? resident.middleName + ' ' : ''}${resident.lastName}`
     : "Resident Detail";
 
   return (
@@ -79,8 +85,8 @@ const ResidentDetailPage = () => {
       {/* Breadcrumb & Navigation */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-medium">
-          <button 
-            onClick={() => navigate("/admin/residents")} 
+          <button
+            onClick={() => navigate("/admin/residents")}
             className="hover:text-primary transition-all flex items-center gap-1"
             id="btn-back-to-list"
           >
@@ -116,8 +122,8 @@ const ResidentDetailPage = () => {
       <Tabs defaultValue={visibleTabs[0]?.value} className="space-y-6">
         <TabsList className="bg-muted/50 p-1 rounded-xl border border-border/40">
           {visibleTabs.map((t) => (
-            <TabsTrigger 
-              key={t.value} 
+            <TabsTrigger
+              key={t.value}
               value={t.value}
               className="px-4 py-2 rounded-lg text-sm font-semibold transition-all data-active:bg-background data-active:text-foreground data-active:shadow-sm"
               id={`tab-trigger-${t.value}`}
@@ -127,8 +133,8 @@ const ResidentDetailPage = () => {
           ))}
         </TabsList>
         {visibleTabs.map((t) => (
-          <TabsContent 
-            key={t.value} 
+          <TabsContent
+            key={t.value}
             value={t.value}
             className="bg-card text-card-foreground rounded-xl border border-border/50 p-6 shadow-xs focus-visible:outline-hidden"
           >
