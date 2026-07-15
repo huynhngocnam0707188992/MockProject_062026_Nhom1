@@ -34,5 +34,10 @@ public interface ResidentService {
 
     ResidentResponseDto unlockResidentChartV1(Long id, ResidentChartLockRequestDto dto);
 
+    ResidentInfoResponseDto getResidentInfo(Long id);
+    List<ResidentContactResponseDto> getResidentContacts(Long id);
+    List<ResidentCareLevelHistoryResponseDto> getResidentCareLevelHistory(Long id);
+    ResidentSensitiveInfoResponseDto getResidentSensitiveInfo(Long id);
+
     List<ResidentPendingDTO> getPendingResidents();
 }

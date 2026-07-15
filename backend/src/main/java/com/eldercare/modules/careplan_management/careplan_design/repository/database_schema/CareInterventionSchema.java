@@ -31,10 +31,11 @@ public class CareInterventionSchema {
     @Column(name = "assigned_role", nullable = false)
     private String assignedRole;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "care_plan_id", nullable = false)
-    private CarePlanSchema carePlan;
+    @Column(name = "title")
+    private String title;
 
-    @Column(name = "care_plan_id", insertable = false, updatable = false)
-    public Long carePlanId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "care_goal_id", nullable = false)
+    private CareGoalSchema careGoal;
+
 }
