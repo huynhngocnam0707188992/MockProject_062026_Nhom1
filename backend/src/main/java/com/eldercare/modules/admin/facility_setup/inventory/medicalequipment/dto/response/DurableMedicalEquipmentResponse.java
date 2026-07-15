@@ -26,8 +26,8 @@ public class DurableMedicalEquipmentResponse {
     @JsonProperty("facility")
     private FacilityResponse facility;
 
-    @JsonProperty("user")
-    private UserResponse assignedToUser;
+    // @JsonProperty("user")
+    // private UserResponse assignedToUser;
 
     @JsonProperty("unit_value")
     private String unitValue;
