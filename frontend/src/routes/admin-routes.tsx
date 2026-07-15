@@ -10,6 +10,7 @@ import NotificationPage from "@/features/admin/notifications/pages/notification-
 import ProfilePage from "@/features/admin/profile/pages/profile-page";
 import ResidentPage from "@/features/admin/residents/pages/resident-page";
 import ResidentDetailPage from "@/features/admin/residents/pages/resident-detail-page";
+import ResidentEditPage from "@/features/admin/residents/pages/resident-edit-page";
 import SlaConfigPage from "@/features/admin/sla-config/pages/sla-config-page";
 import SettingPage from "@/features/admin/settings/pages/setting-page";
 import { AdminLayout } from "@/layouts/admin-layout";
@@ -52,6 +53,14 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.RESIDENT_VIEW}>
           <ResidentDetailPage />
+        </RequirePermission>
+      ),
+    },
+    {
+      path: "residents/:id/edit",
+      element: (
+        <RequirePermission permission={PERMISSIONS.RESIDENT_VIEW}>
+          <ResidentEditPage />
         </RequirePermission>
       ),
     },

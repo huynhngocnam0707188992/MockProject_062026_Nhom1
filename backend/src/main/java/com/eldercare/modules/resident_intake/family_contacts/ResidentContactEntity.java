@@ -4,6 +4,7 @@ import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -41,6 +42,9 @@ public class ResidentContactEntity {
     @Column(name = "is_primary", nullable = false)
     @Builder.Default
     private boolean isPrimary = false;
+
+    @Column(name = "financial_responsibility_pct")
+    private BigDecimal financialResponsibilityPct;
 
     @Column(name = "created_at", nullable = false)
     @Builder.Default
