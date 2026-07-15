@@ -6,9 +6,13 @@ interface AddSLATabProps {
   severityOptions: IncidentSeverityResponse[] | undefined;
   selectedSeverityId: number | null;
   slaWindowHrs: string;
+  externalReportRequired: boolean;
+  regulatoryBody: string;
   errorMessage: string | null;
   onSeverityChange: (value: number) => void;
   onSLAWindowChange: (value: string) => void;
+  onExternalReportRequiredChange: (value: boolean) => void;
+  onRegulatoryBodyChange: (value: string) => void;
   onCreate: () => void;
 }
 
@@ -16,9 +20,13 @@ export const AddSLATab = ({
   severityOptions,
   selectedSeverityId,
   slaWindowHrs,
+  externalReportRequired,
+  regulatoryBody,
   errorMessage,
   onSeverityChange,
   onSLAWindowChange,
+  onExternalReportRequiredChange,
+  onRegulatoryBodyChange,
   onCreate,
 }: AddSLATabProps) => {
   return (
@@ -37,6 +45,16 @@ export const AddSLATab = ({
           ))}
         </select>
       </div>
+      <div className="flex items-center gap-2">
+          <input
+              type="checkbox"
+              checked={externalReportRequired}
+              onChange={(e)=>
+                  onExternalReportRequiredChange(e.target.checked)
+              }
+          />
+          <label>External Report Required</label>
+      </div>
       <div>
         <label className="block text-sm font-medium text-on-surface mb-2">SLA window (hours)</label>
         <Input
@@ -45,6 +63,14 @@ export const AddSLATab = ({
           onChange={(event) => onSLAWindowChange(event.target.value)}
           placeholder="e.g. 24"
         />
+      </div>
+      <div>
+          <label>Regulatory Body</label>
+
+          <Input
+              value={regulatoryBody}
+              onChange={(e)=>onRegulatoryBodyChange(e.target.value)}
+          />
       </div>
       {errorMessage ? <p className="text-sm text-destructive">{errorMessage}</p> : null}
       <div className="flex justify-end gap-3">

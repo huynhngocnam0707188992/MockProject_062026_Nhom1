@@ -5,18 +5,26 @@ import type { IncidentSeverityResponse } from "../services/incident-severity-ser
 interface AddSeverityTabProps {
   newSeverityName: string;
   newChartLockTrigger: boolean;
+  newDescription: string;
+  newExample: string;
   newSeverityError: string | null;
   onSeverityNameChange: (value: string) => void;
   onChartLockTriggerChange: (value: boolean) => void;
+  onDescriptionChange: (value: string) => void;
+  onExampleChange: (value: string) => void;
   onCreate: () => void;
 }
 
 export const AddSeverityTab = ({
   newSeverityName,
   newChartLockTrigger,
+  newDescription,
+  newExample,
   newSeverityError,
   onSeverityNameChange,
   onChartLockTriggerChange,
+  onDescriptionChange,
+  onExampleChange,
   onCreate,
 }: AddSeverityTabProps) => {
   return (
@@ -28,6 +36,24 @@ export const AddSeverityTab = ({
           value={newSeverityName}
           onChange={(event) => onSeverityNameChange(event.target.value)}
           placeholder="e.g. Major"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-on-surface mb-2">Description</label>
+        <Input
+          type="text"
+          value={newDescription}
+          onChange={(event) => onDescriptionChange(event.target.value)}
+          placeholder="e.g. A major incident that requires immediate attention"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-on-surface mb-2">Example</label>
+        <Input
+          type="text"
+          value={newExample}
+          onChange={(event) => onExampleChange(event.target.value)}
+          placeholder="e.g. A critical system outage affecting multiple users"
         />
       </div>
       <div className="flex items-center gap-3">
