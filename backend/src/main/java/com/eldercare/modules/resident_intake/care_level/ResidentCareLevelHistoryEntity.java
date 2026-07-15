@@ -32,4 +32,7 @@ public class ResidentCareLevelHistoryEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "care_level_id", nullable = false)
     private CareLevelEntity careLevel;
+
+    @Column(name = "action", nullable = false)
+    private String action;
 }
