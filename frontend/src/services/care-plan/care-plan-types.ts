@@ -11,9 +11,11 @@ export type CarePlan = {
 };
 
 export type GetCarePlanListResponse = {
-  statusCode: number;
-  message: string;
-  data: {
-    list: CarePlan[];
-  };
+  statusCode?: number;
+  message?: string;
+  data?: {
+    list?: CarePlan[];
+  } | CarePlan[];
+  list?: CarePlan[];
+  content?: CarePlan[];
 };
