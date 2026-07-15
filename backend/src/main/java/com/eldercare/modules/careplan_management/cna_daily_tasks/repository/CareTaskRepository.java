@@ -21,8 +21,9 @@ public interface CareTaskRepository extends JpaRepository<CareTaskEntity, Long> 
             ct.scheduledTime, ct.completedAt, ct.taskType, CAST(ct.status AS string), ct.isAbnormalFlagged, ct.goal)
         FROM CareTaskEntity ct
         JOIN ct.careIntervention ci
-        JOIN ci.carePlan cp
-        JOIN com.eldercare.modules.resident_intake.resident_profile.ResidentEntity r ON cp.residentId = r.id
+        JOIN ci.careGoal cg
+        JOIN cg.carePlan cp
+        JOIN ResidentEntity r ON cp.resident.id = r.id
         LEFT JOIN r.bed b
         LEFT JOIN b.room rm
         LEFT JOIN ct.assignedCna u
@@ -51,8 +52,9 @@ public interface CareTaskRepository extends JpaRepository<CareTaskEntity, Long> 
             ct.scheduledTime, ct.completedAt, ct.taskType, CAST(ct.status AS string), ct.isAbnormalFlagged, ct.goal)
         FROM CareTaskEntity ct
         JOIN ct.careIntervention ci
-        JOIN ci.carePlan cp
-        JOIN com.eldercare.modules.resident_intake.resident_profile.ResidentEntity r ON cp.residentId = r.id
+        JOIN ci.careGoal cg
+        JOIN cg.carePlan cp
+        JOIN com.eldercare.modules.resident_intake.resident_profile.ResidentEntity r ON cp.resident.id = r.id
         LEFT JOIN r.bed b
         LEFT JOIN b.room rm
         LEFT JOIN ct.assignedCna u
@@ -68,8 +70,9 @@ public interface CareTaskRepository extends JpaRepository<CareTaskEntity, Long> 
         SELECT count(ct.id)
         FROM CareTaskEntity ct
         JOIN ct.careIntervention ci
-        JOIN ci.carePlan cp
-        JOIN com.eldercare.modules.resident_intake.resident_profile.ResidentEntity r ON cp.residentId = r.id
+        JOIN ci.careGoal cg
+        JOIN cg.carePlan cp
+        JOIN com.eldercare.modules.resident_intake.resident_profile.ResidentEntity r ON cp.resident.id = r.id
         LEFT JOIN ct.assignedCna u
         WHERE (CAST(:startOfDay AS java.time.OffsetDateTime) IS NULL OR ct.scheduledTime >= :startOfDay)
           AND (CAST(:endOfDay AS java.time.OffsetDateTime) IS NULL OR ct.scheduledTime < :endOfDay)
