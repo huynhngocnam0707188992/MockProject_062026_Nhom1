@@ -22,6 +22,7 @@ import com.eldercare.modules.admin.facility_setup.inventory.category.service.Inv
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -33,7 +34,7 @@ public class InventoryCategoryController {
 
     @GetMapping
     public ResponseEntity<PagedResponse<List<InventoryCategoryResponse>>> getAllInventoryCategories(
-            @Positive(message = "Page must be a positive number") @RequestParam(defaultValue = "0") int page,
+            @PositiveOrZero(message = "Page must be zero or a positive number") @RequestParam(defaultValue = "0") int page,
             @Positive(message = "Size must be a positive number") @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(inventoryCategoryService.getInventoryCategoryList(size, page));
     }

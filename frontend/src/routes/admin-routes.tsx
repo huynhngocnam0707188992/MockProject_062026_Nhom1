@@ -24,6 +24,7 @@ import RolePage from "@/features/admin/roles/pages/role-page";
 import { AssessmentPage } from "@/features/admin/assessment/pages/assessment-page";
 import CarePlanReviewPage from "@/features/admin/care-plans/pages/care-plan-review-page";
 import CarePlanDetailPage from "@/features/admin/care-plans/pages/care-plan-detail/care-plan-detail-page";
+import EquipmentPage from "@/features/admin/intervention/pages/equipment-page";
 
 export const adminRoutes: RouteObject = {
   path: "/admin",
@@ -187,6 +188,14 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.USER_VIEW}>
           <DemoDataPage />
+        </RequirePermission>
+      ),
+    },
+    {
+      path: "equipment",
+      element: (
+        <RequirePermission permission={PERMISSIONS.EQUIPMENT_VIEW}>
+          <EquipmentPage />
         </RequirePermission>
       ),
     },
