@@ -1,71 +1,132 @@
 package com.eldercare.modules.careplan_management.careplan_design.entity;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.eldercare.common.enums.CarePlanStatusEnum;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.eldercare.modules.careplan_management.careplan_design.entity.resident_info.CarePlanResidentInfoEntity;
+import lombok.*;
+
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class CarePlanEntity {
 
     private int id;
     private CarePlanStatusEnum status = CarePlanStatusEnum.DRAFT;
     private Boolean significantFlag = false;
-    private int residentId;
-    private List<CareGoalEntity> listCareGoal;
-    private List<CareInterventionEntity> listCareIntervention;
+    private CarePlanResidentInfoEntity resident;
+    private List<CareGoalEntity> listCareGoal = new ArrayList<>();
+    private OffsetDateTime lastReviewDateTime = null;
+    private String lastReviewBy = null;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private Boolean isDeleted;
 
-    public CarePlanEntity() {
+
+    //------------------------CARE PLAN BUSINESS LOGIC---------------------------------//
+    /**
+     * Nurse submit a care plan and wait for DON review, the status change to PENDING_REVIEW
+     */
+    public void submitForReview() {
+        this.status = CarePlanStatusEnum.PENDING_REVIEW;
+        this.updatedAt = OffsetDateTime.now();
     }
 
-    public CarePlanEntity(int id, CarePlanStatusEnum status, Boolean significantFlag, int residentId,
-            List<CareGoalEntity> listCareGoal, List<CareInterventionEntity> listCareIntervention,
-            OffsetDateTime createdAt, OffsetDateTime updatedAt,
-            Boolean isDeleted) {
-        this.id = id;
-        this.status = status;
-        this.significantFlag = significantFlag;
-        this.residentId = residentId;
-        this.listCareGoal = listCareGoal;
-        this.listCareIntervention = listCareIntervention;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.isDeleted = isDeleted;
-    }
-
-    public void active() {
-        if (!(this.status == CarePlanStatusEnum.DRAFT)) {
-            throw new RuntimeException("This care plan is not in the status that can be active");
-        }
+    /***
+     *  DON want to approve the care plan, the status change to ACTIVE
+     */
+    public void approve() {
         this.status = CarePlanStatusEnum.ACTIVE;
         this.updatedAt = OffsetDateTime.now();
     }
 
-    public void discontinue() {
-        if (this.status == CarePlanStatusEnum.DISCONTINUED) {
-            throw new RuntimeException("This care plan is already discontinued");
-        }
-        this.status = CarePlanStatusEnum.DISCONTINUED;
+    /**
+     * DON want to reject the care plan, the status come back into DRAFT
+     */
+    public void reject() {
+        this.status = CarePlanStatusEnum.DRAFT;
         this.updatedAt = OffsetDateTime.now();
     }
 
-    public void markSignificant() {
-        if (this.significantFlag == false) {
-            this.significantFlag = true;
-            this.updatedAt = OffsetDateTime.now();
-        }
+    /**
+     * When the care plan due to the review, status change to REVIEW_DUE
+     */
+    public void markReviewDue() {
+        this.status = CarePlanStatusEnum.REVIEW_DUE;
+        this.updatedAt = OffsetDateTime.now();
     }
 
-    // public void setGoal(CarePlanGoalStatusEnum goal) {
-    // this.goal = goal;
-    // this.updatedAt = OffsetDateTime.now();
-    // }
+    /**
+     * When we have an incident, care plan need to be update, status cahnge to NEEDS_UPDATE
+     */
+    public void markSignificant() {
+        this.significantFlag = true;
+        this.status = CarePlanStatusEnum.NEEDS_UPDATE;
+        this.updatedAt = OffsetDateTime.now();
+    }
 
+    /**
+     * DON will do reassessment
+     *
+     */
+    public void confirmNoChanges() {
+        if (status != CarePlanStatusEnum.REVIEW_DUE &&
+                status != CarePlanStatusEnum.NEEDS_UPDATE) {
+            throw new RuntimeException("Care plan is not waiting for review.");
+        }
+
+        this.status = CarePlanStatusEnum.ACTIVE;
+        this.significantFlag = false;
+        this.updatedAt = OffsetDateTime.now();
+    }
+
+    /**
+     * Resident discharde
+     */
+    public void archive() {
+        this.status = CarePlanStatusEnum.ARCHIVED;
+        this.updatedAt = OffsetDateTime.now();
+        this.isDeleted = true; // not ready yet
+    }
+
+    /**
+     * We want to calculate the time that care plan would be in REWIVEW_DUE state
+     */
+    public OffsetDateTime getNextReviewDateTime() {
+        OffsetDateTime nexReviewDateTime = null;
+        if (this.lastReviewDateTime == null){
+            return null;
+        }
+        nexReviewDateTime = this.lastReviewDateTime.plusDays(90);
+        return nexReviewDateTime;
+    }
+
+    //------------------------CARE GOAL BUSINESS LOGIC---------------------------------//
+
+    /**
+     * The Care Plan need to add one care goal
+     *
+     */
+    public void addCareGoal(CareGoalEntity careGoalEntity) {
+        this.listCareGoal.add(careGoalEntity);
+    }
+
+    /**
+     * The Care Plan need to be remove one care goal
+     *
+     */
+    public void removeCareGoal(int id) {
+        for (int i = 0; i < this.listCareGoal.size(); i++) {
+            if (this.listCareGoal.get(i).getId() == id) {
+                this.listCareGoal.remove(i);
+                return;
+            }
+        }
+    }
 }
