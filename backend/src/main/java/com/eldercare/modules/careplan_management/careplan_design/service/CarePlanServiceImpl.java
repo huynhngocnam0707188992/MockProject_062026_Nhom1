@@ -6,6 +6,7 @@ import java.util.List;
 import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.common.enums.CarePlanGoalStatusEnum;
 import com.eldercare.common.enums.CarePlanStatusEnum;
+import com.eldercare.modules.admin.user_management.UserRepository;
 import com.eldercare.modules.careplan_management.careplan_design.dto.createCarePlanDTO.CreateCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.createCarePlanDTO.CreateCarePlanResponseDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.getCarePlanDetailDTO.GetCarePlanDetailRequestDTO;
@@ -38,7 +39,6 @@ public class CarePlanServiceImpl implements ICarePlanService {
 
     private static final Logger log = LoggerFactory.getLogger(CarePlanServiceImpl.class);
     private final ICarePlanRepository carePlanRepository;
-
     public CarePlanServiceImpl(ICarePlanRepository carePlanRepository) {
         this.carePlanRepository = carePlanRepository;
     }
@@ -46,8 +46,12 @@ public class CarePlanServiceImpl implements ICarePlanService {
     @Override
     public ActiveCarePlanResponseDTO activateCarePlan(ActiveCarePlanRequestDTO requestDTO) {
         int id = requestDTO.carePlanId;
+
         CarePlanEntity carePlanEntity = this.carePlanRepository.findById(id);
-        carePlanEntity.approve();
+
+        // TODO: need to get from context
+        // now hardcode DON id
+        carePlanEntity.approve("DON-001");
         this.carePlanRepository.updateOne(carePlanEntity);
         return new ActiveCarePlanResponseDTO(carePlanEntity.getId(), carePlanEntity.getStatus().toString(),
                 carePlanEntity.getUpdatedAt().toString());
@@ -213,7 +217,6 @@ public class CarePlanServiceImpl implements ICarePlanService {
 
     @Override
     public CreateCarePlanResponseDTO createCarePlan(CreateCarePlanRequestDTO requestDTO, String purpose) {
-
         //create care plan entity
         CarePlanEntity carePlan = new CarePlanEntity();
         carePlan.setLastReviewBy(null);
@@ -222,11 +225,22 @@ public class CarePlanServiceImpl implements ICarePlanService {
         carePlan.setIsDeleted(false);
         carePlan.setLastReviewDateTime(null);
 
-        switch (purpose){
-            case "NEED_REVIEW":
-                carePlan.setStatus(CarePlanStatusEnum.PENDING_REVIEW);
-            default:
-                carePlan.setStatus(CarePlanStatusEnum.DRAFT);
+        if (purpose != null) {
+            switch (purpose) {
+                case "NEED_REVIEW":
+                    carePlan.setStatus(CarePlanStatusEnum.PENDING_REVIEW);
+                    break;
+                default:
+                    carePlan.setStatus(CarePlanStatusEnum.DRAFT);
+                    break;
+            }
+        } else {
+            carePlan.setStatus(CarePlanStatusEnum.DRAFT);
+        }
+
+        // check list care goal
+        if (requestDTO.listCareGoal == null || requestDTO.listCareGoal.size()<1){
+            throw new RuntimeException("Care plan need at least one care goal");
         }
 
         //TODO: find resident info
@@ -234,7 +248,7 @@ public class CarePlanServiceImpl implements ICarePlanService {
         ResidentEntity resident = this.carePlanRepository.getResidentInfo((long) residentId);
 
         //TODO: check chart lock ,...
-        if (resident.isChartLocked() == true){
+        if (resident.isChartLocked() == true) {
             throw new RuntimeException("Resident is locked, can not create care plan for this resident");
         }
 
@@ -274,8 +288,11 @@ public class CarePlanServiceImpl implements ICarePlanService {
         System.out.println(carePlan);
 
         //TODO: call repo to save
-        this.carePlanRepository.saveOne(carePlan);
-        return null;
+        CarePlanEntity carePlanEntityAfterSaved = this.carePlanRepository.saveOne(carePlan);
+
+        CreateCarePlanResponseDTO responseDTO = new CreateCarePlanResponseDTO();
+        responseDTO.id = carePlanEntityAfterSaved.getId();
+        return responseDTO;
     }
 
 }
