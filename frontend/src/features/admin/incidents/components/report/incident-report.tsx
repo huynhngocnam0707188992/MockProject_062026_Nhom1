@@ -1,32 +1,71 @@
-"use client"
+"use client";
 
-import { IncidentDetailsSection } from "./incident-details-section";
-import { ReportingPartySidebar } from "./reporting-party-sidebar";
+import { useState } from "react";
+
+import {
+    IncidentDetailsSection,
+    type IncidentFormValues,
+} from "./incident-details-section";
+
 import { ReportFooter } from "./report-footer";
 
+import { incidentsApi } from "@/services/incidents/incidents-api";
+
 export function IncidentReport() {
-  return (
-    <div className="space-y-6">
-      <div className="rounded-[20px] border border-border bg-background p-6 shadow-sm">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-              Report New Incident
-            </p>
-            <h1 className="mt-2 text-2xl font-semibold text-foreground">
-              Incident Report
-            </h1>
-          </div>
-          <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-            Complete all required fields. Submitting will auto-lock the resident&apos;s chart (BR-07).
-          </p>
-        </div>
-        <div className="grid gap-6 xl:grid-cols-[1.4fr_0.8fr]">
-          <IncidentDetailsSection />
-          <ReportingPartySidebar />
-        </div>
-      </div>
-      <ReportFooter />
-    </div>
-  );
+
+    const [form, setForm] = useState<IncidentFormValues>({
+        residentLabel: "",
+        incidentType: "FALL",
+        severityId: undefined,
+        residentId: undefined,
+        dateTime: "",
+        location: "",
+        description: "",
+        witnesses: "",
+    });
+
+    // Không dùng alert nữa. Nếu có lỗi (validate hoặc gọi API thất bại),
+    // ném Error ra để ReportFooter bắt và hiển thị bằng dialog.
+    const handleSubmit = async () => {
+        if (!form.residentId) {
+            throw new Error("Vui lòng chọn Resident trước khi báo cáo.");
+        }
+
+        if (!form.severityId) {
+            throw new Error("Vui lòng chọn mức độ nghiêm trọng (Severity).");
+        }
+
+        await incidentsApi.create({
+
+            residentID: form.residentId,
+
+            incidentType: form.incidentType as any,
+
+            severityID: form.severityId,
+            occurredAt: form.dateTime.replace("T", " ") + ":00",
+
+            location: form.location,
+
+            description: form.description,
+
+            witnesses: form.witnesses,
+
+        });
+
+    };
+
+    return (
+
+        <>
+            <IncidentDetailsSection
+                onChange={setForm}
+            />
+
+            <ReportFooter
+                onSubmit={handleSubmit}
+            />
+        </>
+
+    );
+
 }

@@ -25,18 +25,33 @@ const chartStyles: Record<string, string> = {
   Unlocked: "bg-emerald-100 text-emerald-700",
 };
 
+const PAGE_SIZE = 20;
+
 export function IncidentList() {
   const [incidents, setIncidents] = useState<ReturnType<typeof toIncidentRow>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // currentPage ở đây dùng kiểu 1-based (dành cho UI Pagination).
+  // Backend Spring Data Page<T> lại đánh số "number" theo kiểu 0-based,
+  // nên khi gọi API phải trừ 1, và totalElements lấy từ response chứ
+  // không phải suy ra từ incidents.length (vì incidents chỉ chứa 1 trang).
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
   useEffect(() => {
+    setLoading(true);
+    setError(null);
+
     incidentsApi
-      .getAll(0, 20)
-      .then((page) => setIncidents(page.content.map(toIncidentRow)))
+      .getAll(currentPage - 1, PAGE_SIZE)
+      .then((page) => {
+        setIncidents(page.content.map(toIncidentRow));
+        setTotalItems(page.totalElements);
+      })
       .catch((e) => setError(e?.response?.data?.message ?? e.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [currentPage]);
 
   const cards = [
     { label: "Open", value: incidents.filter((i) => i.status === "Open").length, icon: <AlarmClock className="size-5 text-amber-500" />, iconBg: "bg-amber-100" },
@@ -54,7 +69,7 @@ export function IncidentList() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Incidents</h1>
-            <p className="mt-1 text-sm text-slate-500">{incidents.length} incidents this month</p>
+            <p className="mt-1 text-sm text-slate-500">{totalItems} incidents this month</p>
           </div>
           <Button className="rounded-full bg-blue-600 px-5 py-3 text-white hover:bg-blue-700">+ Report Incident</Button>
         </div>
@@ -68,7 +83,12 @@ export function IncidentList() {
       <CardSummary cards={cards} />
 
       <IncidentsTable incidents={incidents} severityStyles={severityStyles} statusStyles={statusStyles} chartStyles={chartStyles}>
-        <Pagination />
+        <Pagination
+          currentPage={currentPage}
+          totalItems={totalItems}
+          pageSize={PAGE_SIZE}
+          onPageChange={setCurrentPage}
+        />
       </IncidentsTable>
     </div>
   );
