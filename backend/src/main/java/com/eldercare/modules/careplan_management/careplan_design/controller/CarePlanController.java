@@ -36,9 +36,11 @@ public class CarePlanController {
 
     @PatchMapping("/{carePlanId}/activate")
     public ResponseEntity<ApiResponse<ActiveCarePlanResponseDTO>> activateCarePlan(@PathVariable int carePlanId) {
-        ApiResponse<ActiveCarePlanResponseDTO> response = ApiResponse
-                .success(this.carePlanService.activateCarePlan(new ActiveCarePlanRequestDTO(carePlanId)));
-        response.setMessage("Care plan " + carePlanId + "activated");
+        ActiveCarePlanResponseDTO data = this.carePlanService.activateCarePlan(
+                new ActiveCarePlanRequestDTO(carePlanId)
+        );
+        ApiResponse<ActiveCarePlanResponseDTO> response = ApiResponse.success(data);
+        response.setMessage("Care plan " + carePlanId + " activated successfully");
         return ResponseEntity.ok(response);
     }
 
