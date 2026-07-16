@@ -30,4 +30,10 @@ public class IncidentSeverityEntity {
 
     @Column(name = "chart_lock_trigger", nullable = false)
     private Boolean chartLockTrigger;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "example")
+    private String example;
 }

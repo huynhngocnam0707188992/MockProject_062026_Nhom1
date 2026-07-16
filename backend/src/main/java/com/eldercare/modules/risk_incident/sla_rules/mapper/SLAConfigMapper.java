@@ -17,6 +17,8 @@ public interface SLAConfigMapper {
                 .id(slaConfig.getId())
                 .severityId(slaConfig.getSeverity().getId())
                 .slaWindowHrs(slaConfig.getSlaWindowHrs())
+                .externalReportRequired(slaConfig.getExternalReportRequired())
+                .regulatoryBody(slaConfig.getRegulatoryBody())
                 .build();
     }
 
@@ -28,6 +30,8 @@ public interface SLAConfigMapper {
         return SLAConfigEntity.builder()
                 .slaWindowHrs(request.getSlaWindowHrs())
                 .severity(severity)
+                .externalReportRequired(request.getExternalReportRequired())
+                .regulatoryBody(request.getRegulatoryBody())
                 .build();
     }
 
@@ -38,5 +42,7 @@ public interface SLAConfigMapper {
 
         target.setSlaWindowHrs(request.getSlaWindowHrs());
         target.setSeverity(severity);
+        target.setExternalReportRequired(request.getExternalReportRequired());
+        target.setRegulatoryBody(request.getRegulatoryBody());
     }
 }
