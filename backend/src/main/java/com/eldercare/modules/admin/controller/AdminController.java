@@ -43,7 +43,7 @@ public class AdminController {
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "20") int pageSize) {
+            @RequestParam(defaultValue = "10") int pageSize) {
 
         Map<String, Object> result = adminService.getAuditLogs(
                 table_name, record_id, performed_by, action, dateFrom, dateTo, page, pageSize);
@@ -58,7 +58,7 @@ public class AdminController {
             @RequestParam(required = false) Long accessed_by,
             @RequestParam(required = false) String access_type,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "20") int pageSize) {
+            @RequestParam(defaultValue = "10") int pageSize) {
 
         Map<String, Object> result = adminService.getPHIAccessLogs(
                 table_name, record_id, accessed_by, access_type, page, pageSize);

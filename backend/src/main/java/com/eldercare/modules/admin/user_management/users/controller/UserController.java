@@ -1,5 +1,6 @@
 package com.eldercare.modules.admin.user_management.users.controller;
 
+import com.eldercare.common.constants.RouteConstants;
 import com.eldercare.modules.admin.user_management.users.dto.request.ChangeStatusRequest;
 import com.eldercare.modules.admin.user_management.users.dto.request.CreateUserRequest;
 import com.eldercare.modules.admin.user_management.users.dto.request.UpdateUserRequest;
@@ -12,16 +13,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/v1/admin/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping
+    @PreAuthorize("hasRole('NHA_ADMIN')")
+    @GetMapping(RouteConstants.ADMIN_API_PREFIX + "/users")
     public ResponseEntity<Page<UserResponse>> getUsers(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long roleId,
@@ -37,7 +41,15 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('NHA_ADMIN') or hasRole('DON')")
+    @GetMapping(RouteConstants.API_USERS_CNAS)
+    public ResponseEntity<List<UserResponse>> getActiveCnas() {
+        List<UserResponse> cnas = userService.getActiveCnas();
+        return ResponseEntity.ok(cnas);
+    }
+
+    @PreAuthorize("hasRole('NHA_ADMIN')")
+    @GetMapping(RouteConstants.ADMIN_API_PREFIX + "/users/{id}")
     public ResponseEntity<UserDetailResponse> getUserById(
             @PathVariable Long id) {
 
@@ -46,7 +58,8 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping
+    @PreAuthorize("hasRole('NHA_ADMIN')")
+    @PostMapping(RouteConstants.ADMIN_API_PREFIX + "/users")
     public ResponseEntity<UserDetailResponse> createUser(
             @Valid @RequestBody CreateUserRequest request) {
 
@@ -57,7 +70,8 @@ public class UserController {
                 .body(createdUser);
     }
 
-    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('NHA_ADMIN')")
+    @PutMapping(RouteConstants.ADMIN_API_PREFIX + "/users/{id}")
     public ResponseEntity<UserDetailResponse> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequest request) {
@@ -67,7 +81,8 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('NHA_ADMIN')")
+    @PatchMapping(RouteConstants.ADMIN_API_PREFIX + "/users/{id}/status")
     public ResponseEntity<UserDetailResponse> changeUserStatus(
             @PathVariable Long id,
             @Valid @RequestBody ChangeStatusRequest request) {

@@ -32,6 +32,12 @@ public class SLAConfigEntity {
     @Column(name = "sla_window_hrs", nullable = false)
     private Integer slaWindowHrs;
 
+    @Column(name = "external_report_required")
+    private Boolean externalReportRequired;
+
+    @Column(name = "regulatory_body")
+    private String regulatoryBody;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "severity_id", nullable = false)
     private IncidentSeverityEntity severity;

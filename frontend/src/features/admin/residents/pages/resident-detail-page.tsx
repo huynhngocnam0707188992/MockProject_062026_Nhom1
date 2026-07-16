@@ -9,15 +9,15 @@ import { PERMISSIONS } from "@/common/permissions";
 import { usePermissions } from "@/features/auth/hooks/use-current-user";
 import { residentService, type ResidentInfo } from "@/services/resident/residentService";
 import ResidentContactsTab from "../tabs/resident-contacts-tab";
+import LocResultTab from "../tabs/loc-result-tab";
 
 const ResidentDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { can } = usePermissions();
+  const residentId = Number(id);
   const [resident, setResident] = useState<ResidentInfo | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const residentId = Number(id);
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -57,6 +57,12 @@ const ResidentDetailPage = () => {
       label: "Care Level History",
       permission: PERMISSIONS.RESIDENT_VIEW,
       content: <CareLevelHistoryTab residentId={id || ""} />,
+    },
+    {
+      value: "loc-result",
+      label: "LOC Classification Result",
+      permission: PERMISSIONS.RESIDENT_VIEW,
+      content: <LocResultTab residentId={residentId} />,
     },
     {
       value: "sensitive-info",
