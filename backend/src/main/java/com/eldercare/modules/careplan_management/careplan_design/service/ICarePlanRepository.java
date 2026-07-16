@@ -2,6 +2,7 @@ package com.eldercare.modules.careplan_management.careplan_design.service;
 
 import java.util.List;
 
+import com.eldercare.modules.careplan_management.careplan_design.dto.listCarePlansDTO.CarePlanOutput;
 import com.eldercare.modules.careplan_management.careplan_design.dto.listCarePlansDTO.ListCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.entity.CarePlanEntity;
@@ -22,7 +23,7 @@ public interface ICarePlanRepository {
 
     Page<CarePlanEntity> searchPagination(SearchCarePlanRequestDTO request);
 
-    void saveOne(CarePlanEntity carePlanEntity);
+    CarePlanEntity saveOne(CarePlanEntity carePlanEntity);
 
     ResidentEntity getResidentInfo(long id);
 
