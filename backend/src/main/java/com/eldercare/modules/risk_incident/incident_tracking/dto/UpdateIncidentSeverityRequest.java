@@ -25,4 +25,10 @@ public class UpdateIncidentSeverityRequest {
     @JsonProperty("chart_lock_trigger")
     @NotNull(message = "chart_lock_trigger is required")
     private Boolean chartLockTrigger;
+
+    @JsonProperty("description")
+    private String description;
+
+    @JsonProperty("example")
+    private String example;
 }

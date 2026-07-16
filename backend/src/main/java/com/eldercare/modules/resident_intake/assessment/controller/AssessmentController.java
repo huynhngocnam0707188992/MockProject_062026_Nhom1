@@ -18,6 +18,7 @@ import com.eldercare.modules.resident_intake.assessment.dto.response.AssessmentR
 import com.eldercare.modules.resident_intake.assessment.dto.response.AssessmentSelectDTO;
 import com.eldercare.modules.resident_intake.assessment.service.AssessmentService;
 import com.eldercare.modules.resident_intake.assessment_metric.dto.AssessmentMetricDTO;
+import com.eldercare.modules.resident_intake.care_level.history.dto.response.LocClassificationResultResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -94,4 +95,12 @@ public class AssessmentController {
                 service.deleteDraft(id);
                 return ResponseEntity.ok(ApiResponse.success("Deleted successfully", null));
         }
+        @GetMapping("/resident/{residentId}/classification-result")
+public ResponseEntity<ApiResponse<LocClassificationResultResponse>> getClassificationResult(
+        @PathVariable Long residentId) {
+
+    return ResponseEntity.ok(
+            ApiResponse.success(
+                    service.getClassificationResult(residentId)));
+}
 }

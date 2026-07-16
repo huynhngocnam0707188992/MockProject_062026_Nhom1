@@ -49,11 +49,11 @@ public class ResidentController {
 
     // 13. updateResident: PATCH /api/v1/residents/{id}
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<Map<String, ResidentResponseDto>>> updateResident(
+    public ResponseEntity<ApiResponse<Void>> updateResident(
             @PathVariable Long id, 
-            @RequestBody ResidentUpdateRequestDto dto) {
-        ResidentResponseDto updated = residentService.updateResidentV1(id, dto);
-        return ResponseEntity.ok(ApiResponse.success(Map.of("resident", updated)));
+            @RequestBody ResidentSaveRequestDto dto) {
+        residentService.saveResident(id, dto);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     // 14. updateResidentStatus: PATCH /api/v1/residents/{id}/status
@@ -98,5 +98,35 @@ public class ResidentController {
         ApiResponse<Void> response = ApiResponse.error(HttpStatus.METHOD_NOT_ALLOWED.value(), 
                 "Hard delete is not supported via public API due to PHI retention requirements.");
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
+    }
+
+    @GetMapping("/{id}/info")
+    public ResponseEntity<ApiResponse<ResidentInfoResponseDto>> getResidentInfo(@PathVariable Long id) {
+        ResidentInfoResponseDto info = residentService.getResidentInfo(id);
+        return ResponseEntity.ok(ApiResponse.success(info));
+    }
+
+    @GetMapping("/{id}/contacts")
+    public ResponseEntity<ApiResponse<List<ResidentContactResponseDto>>> getResidentContacts(@PathVariable Long id) {
+        List<ResidentContactResponseDto> contacts = residentService.getResidentContacts(id);
+        return ResponseEntity.ok(ApiResponse.success(contacts));
+    }
+
+    @GetMapping("/{id}/care-level-history")
+    public ResponseEntity<ApiResponse<List<ResidentCareLevelHistoryResponseDto>>> getResidentCareLevelHistory(@PathVariable Long id) {
+        List<ResidentCareLevelHistoryResponseDto> history = residentService.getResidentCareLevelHistory(id);
+        return ResponseEntity.ok(ApiResponse.success(history));
+    }
+
+    @GetMapping("/{id}/sensitive-info")
+    public ResponseEntity<ApiResponse<ResidentSensitiveInfoResponseDto>> getResidentSensitiveInfo(@PathVariable Long id) {
+        ResidentSensitiveInfoResponseDto sensitive = residentService.getResidentSensitiveInfo(id);
+        return ResponseEntity.ok(ApiResponse.success(sensitive));
+    }
+
+    @GetMapping("/{id}/detail")
+    public ResponseEntity<ApiResponse<ResidentDetailResponseDto>> getResidentDetail(@PathVariable Long id) {
+        ResidentDetailResponseDto detail = residentService.getResidentDetail(id);
+        return ResponseEntity.ok(ApiResponse.success(detail));
     }
 }

@@ -22,4 +22,10 @@ public class IncidentSeverityResponse {
 
     @JsonProperty("chart_lock_trigger")
     private Boolean chartLockTrigger;
+
+    @JsonProperty("description")
+    private String description;
+
+    @JsonProperty("example")
+    private String example;
 }
