@@ -13,7 +13,7 @@ export function CardSummary({ cards }: { cards: Card[] }) {
       {cards.map((card) => (
         <div key={card.label} className="rounded-[20px] border border-gray-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className={"flex h-10 w-10 shrink-0 items-center justify-center rounded-full " + card.iconBg}>
+            <div className={"flex h-10 w-z10 shrink-0 items-center justify-center rounded-full " + card.iconBg}>
               {card.icon}
             </div>
             <div>

@@ -5,6 +5,7 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { incidentSeverityApi, type SeverityLevel } from "@/services/incidents/incidents-severity-api";
 
 const inputClass =
   "h-10 w-full rounded-md border border-gray-300 bg-white px-3 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20";
@@ -40,10 +41,32 @@ function Field({
   );
 }
 
+// incidentType values must match the backend enum exactly (IncidentType.java):
+// FALL, MEDICATION_ERROR, ALTERCATION, SKIN_TEAR
+const incidentTypeOptions: { value: string; label: string }[] = [
+  { value: "FALL", label: "Fall" },
+  { value: "MEDICATION_ERROR", label: "Medication Error" },
+  { value: "ALTERCATION", label: "Altercation" },
+  { value: "SKIN_TEAR", label: "Skin Tear" },
+];
+
+export type IncidentFormValues = {
+  residentId?: number;
+  residentLabel: string;
+  incidentType: string;
+  severityId?: number;
+  dateTime: string;
+  location: string;
+  description: string;
+  witnesses: string;
+  immediateAction: string;
+};
+
 export type IncidentDetailsData = {
+  residentId?: number;
   resident?: string;
   incidentType?: string;
-  severity?: string;
+  severityId?: number;
   dateTime?: string;
   location?: string;
   description?: string;
@@ -54,19 +77,61 @@ export type IncidentDetailsData = {
 export function IncidentDetailsSection({
   mode = "edit",
   data,
+  onChange,
 }: {
   mode?: "edit" | "view";
   data?: IncidentDetailsData;
+  // Called on every field change so the parent (incident-report.tsx) can
+  // hold the current form state and use it when the user hits "Report Incident".
+  onChange?: (values: IncidentFormValues) => void;
 }) {
-  const [resident, setResident] = React.useState(data?.resident ?? "Robert Hayes - Room 204B");
-  const [incidentType, setIncidentType] = React.useState(data?.incidentType ?? "Fall");
-  const [severity, setSeverity] = React.useState(data?.severity ?? "Major");
+  const [residentLabel, setResidentLabel] = React.useState(data?.resident ?? "Robert Hayes - Room 204B");
+  const [residentId, setResidentId] = React.useState<number | undefined>(data?.residentId);
+  const [incidentType, setIncidentType] = React.useState(data?.incidentType ?? "FALL");
+  const [severityId, setSeverityId] = React.useState<number | undefined>(data?.severityId);
   const [dateTime, setDateTime] = React.useState(data?.dateTime ?? "2026-07-03T09:15");
   const [location, setLocation] = React.useState(data?.location ?? "Room 204B - bathroom");
-  const [description, setDescription] = React.useState(data?.description ??
-    "Resident found on bathroom floor near the toilet; complaint of right hip pain. No loss of consciousness observed.");
+  const [description, setDescription] = React.useState(
+    data?.description ??
+      "Resident found on bathroom floor near the toilet; complaint of right hip pain. No loss of consciousness observed."
+  );
   const [witnesses, setWitnesses] = React.useState(data?.witnesses ?? "Marcus Rivera, CNA (present at time of fall)");
-  const [immediateAction, setImmediateAction] = React.useState(data?.immediateAction ?? "Assisted resident to bed, vitals taken, physician notified per facility protocol.");
+  const [immediateAction, setImmediateAction] = React.useState(
+    data?.immediateAction ?? "Assisted resident to bed, vitals taken, physician notified per facility protocol."
+  );
+
+  const [severities, setSeverities] = React.useState<SeverityLevel[]>([]);
+  const [severitiesError, setSeveritiesError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    incidentSeverityApi
+      .getAll()
+      .then((list) => {
+        setSeverities(list);
+        // default to first option if nothing selected yet
+        if (severityId === undefined && list.length > 0) {
+          setSeverityId(list[0].id);
+        }
+      })
+      .catch((e) => setSeveritiesError(e?.response?.data?.message ?? e.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Push current values up to parent whenever anything changes.
+  React.useEffect(() => {
+    onChange?.({
+      residentId,
+      residentLabel,
+      incidentType,
+      severityId,
+      dateTime,
+      location,
+      description,
+      witnesses,
+      immediateAction,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [residentId, residentLabel, incidentType, severityId, dateTime, location, description, witnesses, immediateAction]);
 
   return (
     <div className="rounded-[20px] border border-border bg-card p-6 shadow-sm">
@@ -82,10 +147,14 @@ export function IncidentDetailsSection({
       <div className="space-y-5">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Resident" required>
+            {/* TODO: replace with a real resident picker (dropdown/search) that
+                sets residentId to the resident's actual DB id. Free text here
+                cannot be sent as residentID to POST /api/v1/incidents. */}
             <Input
               className={inputClass}
-              value={resident}
-              onChange={(e) => setResident(e.target.value)}
+              value={residentLabel}
+              onChange={(e) => setResidentLabel(e.target.value)}
+              placeholder="Chọn resident..."
             />
           </Field>
 
@@ -95,10 +164,11 @@ export function IncidentDetailsSection({
               value={incidentType}
               onChange={(e) => setIncidentType(e.target.value)}
             >
-              <option>Fall</option>
-              <option>Medication Error</option>
-              <option>Skin Breakdown</option>
-              <option>Other</option>
+              {incidentTypeOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
             </select>
           </Field>
         </div>
@@ -107,13 +177,20 @@ export function IncidentDetailsSection({
           <Field label="Severity" required>
             <select
               className={inputClass}
-              value={severity}
-              onChange={(e) => setSeverity(e.target.value)}
+              value={severityId ?? ""}
+              onChange={(e) => setSeverityId(e.target.value ? Number(e.target.value) : undefined)}
+              disabled={severities.length === 0}
             >
-              <option>Major</option>
-              <option>Moderate</option>
-              <option>Minor</option>
+              {severities.length === 0 && <option value="">Đang tải...</option>}
+              {severities.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.level_name}
+                </option>
+              ))}
             </select>
+            {severitiesError && (
+              <p className="text-xs text-destructive">Không tải được danh sách severity: {severitiesError}</p>
+            )}
           </Field>
 
           <Field label="Date / Time of Incident" required>
@@ -157,7 +234,8 @@ export function IncidentDetailsSection({
 
         <div className="flex items-center justify-end gap-3 pt-2">
           <Button variant="outline">Cancel</Button>
-          <Button>Save</Button>
+          {/* Actual "Save"/"Report Incident" submit button lives in report-footer.tsx,
+              which reads the values from onChange above via the parent state. */}
         </div>
       </div>
     </div>

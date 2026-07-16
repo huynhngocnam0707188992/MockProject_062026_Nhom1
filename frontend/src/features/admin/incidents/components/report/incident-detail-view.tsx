@@ -51,6 +51,7 @@ export type IncidentDetailsData = {
   chartSince?: string;
   sla?: string;
   slaDeadline?: string;
+  slaDeadlineHours?: number;
   slaRule?: string;
   attachments?: IncidentAttachment[];
   timeline?: TimelineEntry[];

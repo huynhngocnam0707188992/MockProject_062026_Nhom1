@@ -5,6 +5,7 @@ import {
   type IncidentDetailsData,
 } from "@/features/admin/incidents/components/report/incident-detail-view";
 import { ChartLockedModal } from "@/features/admin/incidents/components/report/chart-locked-modal";
+import { incidentsApi, type IncidentApiResponse } from "@/services/incidents/incidents-api";
 
 type Incident = {
   id: number;
@@ -18,26 +19,58 @@ type Incident = {
   chart: string;
 };
 
-// Extra mock data for rows that don't carry the full narrative in the table itself.
-// Keyed by incident id — add an entry here as real detail data becomes available per row.
-const extraDetails: Record<number, Partial<IncidentDetailsData>> = {
-  2: {
-    reportedBy: "Anna Lee, RN",
-    location: "Room 204B — bathroom",
-    description: "Resident found on bathroom floor near the toilet; c/o right hip pain.",
-    witnesses: "Marcus Rivera, CNA (present at time of fall)",
-    immediateAction: "Assisted resident to bed, vitals taken, physician notified.",
-    chartSince: "09:22",
-    slaDeadline: "2026-07-04 09:15",
-    slaRule: "NFR-06 · 24-48h regulatory window",
-    attachments: [{ name: "incident_form_signed.pdf" }, { name: "photo_bruise.jpg" }],
-    timeline: [
-      { title: "Chart auto-locked (BR-07)", actor: "System", time: "2026-07-03 09:22", filled: true },
-      { title: "DON notified · SLA countdown started", actor: "System", time: "2026-07-03 09:20" },
-      { title: "Incident reported", actor: "Anna Lee, RN", time: "2026-07-03 09:15" },
-    ],
-  },
+const typeLabels: Record<string, string> = {
+  FALL: "Fall",
+  MEDICATION_ERROR: "Medication Error",
+  ALTERCATION: "Altercation",
+  SKIN_TEAR: "Skin Tear",
 };
+
+const statusLabels: Record<string, string> = {
+  OPEN: "Open",
+  UNDER_INVESTIGATION: "Under Investigation",
+  SUBMITTED: "Submitted",
+  RESOLVED: "Resolved",
+};
+
+// Converts the full detail response from GET /api/v1/incidents/{id}
+// into the shape IncidentDetailPage expects.
+function mapFullDetail(api: IncidentApiResponse): IncidentDetailsData {
+  const room = api.resident.bed?.room?.roomNumber;
+
+  let sla = "—";
+  if (api.slaCountDown !== null && api.slaCountDown !== undefined) {
+    sla = api.slaCountDown < 0 ? "OVERDUE" : `${api.slaCountDown}h left`;
+  }
+
+  const timeline = (api.timelines ?? [])
+    .slice()
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)) // newest first
+    .map((t, idx) => ({
+      title: t.action,
+      actor: t.actor?.displayName ?? "System",
+      time: t.createdAt.replace("T", " ").slice(0, 16),
+      filled: idx === 0,
+    }));
+
+  return {
+    id: `INC-${api.id}`,
+    resident: api.resident.displayName,
+    room,
+    incidentType: typeLabels[api.incidentType] ?? api.incidentType,
+    severity: api.severity.levelName,
+    status: statusLabels[api.status] ?? api.status,
+    reported: api.reportedAt ? api.reportedAt.replace("T", " ").slice(0, 16) : "",
+    reportedBy: api.reporter?.displayName,
+    location: api.location,
+    description: api.description,
+    witnesses: api.witnesses,
+    chartStatus: api.isLocked ? "Locked" : "Unlocked",
+    sla,
+    slaDeadlineHours: api.slaDeadlineHours,
+    timeline: timeline.length > 0 ? timeline : undefined,
+  };
+}
 
 export function IncidentsTable({
   incidents,
@@ -53,23 +86,19 @@ export function IncidentsTable({
   children?: React.ReactNode;
 }) {
   const [selected, setSelected] = useState<Incident | null>(null);
+  const [detail, setDetail] = useState<IncidentDetailsData | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState<string | null>(null);
   // When a locked incident is opened, we show the Chart Locked notice first.
   // Clicking "View Incident" inside that notice flips this to true and reveals
   // the normal read-only detail view underneath.
   const [showDetailAnyway, setShowDetailAnyway] = useState(false);
 
-  const open = (incident: Incident) => {
-    setSelected(incident);
-    setShowDetailAnyway(false);
-  };
-  const close = () => {
-    setSelected(null);
-    setShowDetailAnyway(false);
-  };
-
   const isLockedRow = (inc: Incident) => inc.chart === "Locked";
 
-  const dataFrom = (inc: Incident): IncidentDetailsData => {
+  // Fallback shape built straight from the table row, used while the detail
+  // call is loading or if it fails.
+  const fallbackFrom = (inc: Incident): IncidentDetailsData => {
     const [name, room] = inc.resident.split(" · ");
     return {
       id: `INC-${2000 + inc.id}`,
@@ -81,8 +110,31 @@ export function IncidentsTable({
       reported: inc.reported,
       sla: inc.sla,
       chartStatus: inc.chart as "Locked" | "Unlocked",
-      ...extraDetails[inc.id],
     };
+  };
+
+  const open = async (incident: Incident) => {
+    setSelected(incident);
+    setShowDetailAnyway(false);
+    setDetail(fallbackFrom(incident));
+    setDetailError(null);
+    setDetailLoading(true);
+    try {
+      const full = await incidentsApi.getById(incident.id);
+      setDetail(mapFullDetail(full));
+    } catch (e: any) {
+      setDetailError(e?.response?.data?.message ?? e.message ?? "Không tải được chi tiết incident");
+      // keep the fallback data already set above
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const close = () => {
+    setSelected(null);
+    setDetail(null);
+    setDetailError(null);
+    setShowDetailAnyway(false);
   };
 
   return (
@@ -164,8 +216,8 @@ export function IncidentsTable({
         <ChartLockedModal
           open
           residentName={selected.resident.split(" · ")[0] ?? selected.resident}
-          lockedAt={extraDetails[selected.id]?.chartSince ?? selected.reported}
-          incidentId={dataFrom(selected).id}
+          lockedAt={detail?.reported ?? selected.reported}
+          incidentId={detail?.id ?? `INC-${2000 + selected.id}`}
           onBackToProfile={close}
           onViewIncident={() => setShowDetailAnyway(true)}
         />
@@ -187,7 +239,17 @@ export function IncidentsTable({
             >
               <X className="size-5" />
             </button>
-            <IncidentDetailPage mode="view" data={dataFrom(selected)} />
+
+            {detailLoading && (
+              <p className="mb-3 text-sm text-slate-500">Đang tải chi tiết incident...</p>
+            )}
+            {detailError && (
+              <p className="mb-3 text-sm text-red-600">
+                {detailError} — đang hiển thị dữ liệu tạm thời từ bảng danh sách.
+              </p>
+            )}
+
+            {detail && <IncidentDetailPage mode="view" data={detail} />}
           </div>
         </div>
       )}

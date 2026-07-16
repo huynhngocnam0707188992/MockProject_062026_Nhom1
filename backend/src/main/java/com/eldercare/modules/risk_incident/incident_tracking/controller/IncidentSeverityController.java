@@ -1,8 +1,8 @@
 package com.eldercare.modules.risk_incident.incident_tracking.controller;
 
-import com.eldercare.modules.risk_incident.incident_tracking.dto.CreateIncidentSeverityRequest;
-import com.eldercare.modules.risk_incident.incident_tracking.dto.IncidentSeverityResponse;
-import com.eldercare.modules.risk_incident.incident_tracking.dto.UpdateIncidentSeverityRequest;
+import com.eldercare.modules.risk_incident.incident_tracking.dto.reponse.IncidentSeverityResponse;
+import com.eldercare.modules.risk_incident.incident_tracking.dto.request.CreateIncidentSeverityRequest;
+import com.eldercare.modules.risk_incident.incident_tracking.dto.request.UpdateIncidentSeverityRequest;
 import com.eldercare.modules.risk_incident.incident_tracking.service.IncidentSeverityService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,3 +46,4 @@ public class IncidentSeverityController {
         return incidentSeverityService.updateSeverityLevel(severityId, request);
     }
 }
+                                                                                                                
