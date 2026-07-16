@@ -25,6 +25,7 @@ import com.eldercare.modules.admin.facility_setup.inventory.medicalequipment.ser
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -36,9 +37,9 @@ public class DurableMedicalEquipmentController {
 
     @GetMapping
     public ResponseEntity<PagedResponse<List<DurableMedicalEquipmentResponse>>> getEquipmentList(
-            @Positive(message = "Page must be a positive number") @RequestParam(defaultValue = "0") int page,
+            @PositiveOrZero(message = "Page must be zero or a positive number") @RequestParam(defaultValue = "0") int page,
             @Positive(message = "Size must be a positive number") @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(durableMedicalEquipmentService.getAllDurableMedicalEquipment(size, page));
+        return ResponseEntity.ok(durableMedicalEquipmentService.getAllDurableMedicalEquipment(page, size));
     }
 
     @PostMapping

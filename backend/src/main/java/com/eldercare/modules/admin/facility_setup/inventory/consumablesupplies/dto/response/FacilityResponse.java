@@ -10,5 +10,5 @@ public class FacilityResponse {
     private long id;
 
     @JsonProperty("facility_name")
-    private String facilityName;
+    private String name;
 }

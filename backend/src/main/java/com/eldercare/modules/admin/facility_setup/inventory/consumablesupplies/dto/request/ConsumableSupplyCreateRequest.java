@@ -2,9 +2,13 @@ package com.eldercare.modules.admin.facility_setup.inventory.consumablesupplies.
 
 import java.math.BigDecimal;
 
+import org.springframework.security.core.parameters.P;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 @Data
 public class ConsumableSupplyCreateRequest {
@@ -18,22 +22,27 @@ public class ConsumableSupplyCreateRequest {
     private Long categoryId;
 
     @JsonProperty("facility_id")
-    @NotBlank(message = "Facility ID is required")
+    @NotNull(message = "Facility ID is required")
+    @Positive(message = "Facility ID must be a positive number")
     private Long facilityId;
 
     @JsonProperty("initial_stock")
-    @NotBlank(message = "Initial stock is required")
+    @NotNull(message = "Initial stock is required")
+    @Positive(message = "Initial stock must be a positive number")
     private int stockOnHand;
 
     @JsonProperty("reorder_threshold")
-    @NotBlank(message = "Reorder threshold is required")
+    @NotNull(message = "Reorder threshold is required")
+    @Positive(message = "Reorder threshold must be a positive number")
     private int reorderThreshold;
 
     @JsonProperty("unit_cost")
-    @NotBlank(message = "Unit cost is required")
+    @NotNull(message = "Unit cost is required")
+    @Positive(message = "Unit cost must be a positive number")
     private BigDecimal unitCost;
 
     @JsonProperty("private_pay_rate")
-    @NotBlank(message = "Private pay rate is required")
+    @NotNull(message = "Private pay rate is required")
+    @Positive(message = "Private pay rate must be a positive number")
     private BigDecimal privatePayRate;
 }

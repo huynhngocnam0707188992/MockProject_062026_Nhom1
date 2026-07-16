@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eldercare.common.dto.PagedResponse;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.repository.FacilityRepository;
 import com.eldercare.modules.admin.facility_setup.inventory.category.entity.InventoryCategoryEntity;
 import com.eldercare.modules.admin.facility_setup.inventory.category.repository.InventoryCategoryRepository;
 import com.eldercare.modules.admin.facility_setup.inventory.consumablesupplies.dto.mapper.ConsumableSupplyMapper;
@@ -32,6 +34,8 @@ public class ConsumableSupplyServiceImpl implements ConsumableSupplyService {
 
     private final InventoryCategoryRepository inventoryCategoryRepository;
 
+    private final FacilityRepository facilityRepository;
+
     @Override
     public PagedResponse<List<ConsumableSupplyResponse>> getAllConsumableSupplies(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -51,6 +55,12 @@ public class ConsumableSupplyServiceImpl implements ConsumableSupplyService {
     @Transactional
     public ConsumableSupplyResponse createConsumableSupply(ConsumableSupplyCreateRequest consumableSupplyRequest) {
         ConsumableSupplyEntity consumableSupplyEntity = consumableSupplyMapper.toEntity(consumableSupplyRequest);
+        long newCategoryId = consumableSupplyRequest.getCategoryId();
+        InventoryCategoryEntity newCategory = inventoryCategoryRepository.getReferenceById(newCategoryId);
+        long newFacilityId = consumableSupplyRequest.getFacilityId();
+        FacilityEntity newFacility = facilityRepository.getReferenceById(newFacilityId);
+        consumableSupplyEntity.setCategory(newCategory);
+        consumableSupplyEntity.setFacility(newFacility);
         consumableSupplyEntity.setStatus(getSupplyStatus(consumableSupplyRequest));
         consumableSupplyEntity.setTotal(consumableSupplyRequest.getStockOnHand());
         ConsumableSupplyEntity savedEntity = consumableSupplyRepository.save(consumableSupplyEntity);
@@ -81,14 +91,17 @@ public class ConsumableSupplyServiceImpl implements ConsumableSupplyService {
 
     @Override
     @Transactional
-    public ConsumableSupplyResponse updateConsumableSupply(Long id, ConsumableSupplyUpdateRequest consumableSupplyRequest) {
+    public ConsumableSupplyResponse updateConsumableSupply(Long id,
+            ConsumableSupplyUpdateRequest consumableSupplyRequest) {
         ConsumableSupplyEntity consumableSupplyEntity = consumableSupplyRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Consumable supply not found with id: " + id));
-
+        long newFacilityId = consumableSupplyRequest.getFacilityId();
         long newCategoryId = consumableSupplyRequest.getCategoryId();
         InventoryCategoryEntity newCategory = inventoryCategoryRepository.getReferenceById(newCategoryId);
+        FacilityEntity newFacility = facilityRepository.getReferenceById(newFacilityId);
         consumableSupplyEntity.setItemName(consumableSupplyRequest.getItemName());
         consumableSupplyEntity.setCategory(newCategory);
+        consumableSupplyEntity.setFacility(newFacility);
         consumableSupplyEntity.setReorderThreshold(consumableSupplyRequest.getReorderThreshold());
         consumableSupplyEntity.setUnitCost(consumableSupplyRequest.getUnitCost());
         consumableSupplyEntity.setPrivatePayRate(consumableSupplyRequest.getPrivatePayRate());

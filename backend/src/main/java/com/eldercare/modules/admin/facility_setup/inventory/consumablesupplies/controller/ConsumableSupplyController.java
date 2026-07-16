@@ -23,6 +23,7 @@ import com.eldercare.modules.admin.facility_setup.inventory.consumablesupplies.s
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -34,7 +35,7 @@ public class ConsumableSupplyController {
 
     @GetMapping
     public ResponseEntity<PagedResponse<List<ConsumableSupplyResponse>>> getAllConsumableSupplies(
-            @Positive(message = "Page must be a positive number") @RequestParam(defaultValue = "0") int page,
+            @PositiveOrZero(message = "Page must be a positive number") @RequestParam(defaultValue = "0") int page,
             @Positive(message = "Size must be a positive number") @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(consumableSupplyService.getAllConsumableSupplies(page, size));
     }
@@ -48,7 +49,7 @@ public class ConsumableSupplyController {
 
     @GetMapping("/low-stock")
     public ResponseEntity<PagedResponse<List<ConsumableSupplyResponse>>> getReorderSupplies(
-            @Positive(message = "Page must be a positive number") @RequestParam(defaultValue = "0") int page,
+            @PositiveOrZero(message = "Page must be a positive number") @RequestParam(defaultValue = "0") int page,
             @Positive(message = "Size must be a positive number") @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(consumableSupplyService.getLowStockSupplies(page, size));
     }

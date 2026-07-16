@@ -50,7 +50,7 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
                 .stream()
                 .map(durableMedicalEquipmentMapper::toResponse)
                 .toList();
-
+        System.out.println(content);
         return PagedResponse.of(content, 200, "Durable medical equipment retrieved successfully",
                 page, equipmentPage.getTotalPages(), size, equipmentPage.getTotalElements());
     }
@@ -63,7 +63,13 @@ public class DurableMedicalEquipmentServiceImpl implements DurableMedicalEquipme
                 .findByAssetTagAndIsDeletedFalse(durableMedicalEquipmentRequest.getAssetTag()).isPresent()) {
             throw new RuntimeException("Asset tag already exists");
         }
+        long newCategoryId = durableMedicalEquipmentRequest.getCategoryId();
+        InventoryCategoryEntity newCategory = inventoryCategoryRepository.getReferenceById(newCategoryId);
+        long newFacilityId = durableMedicalEquipmentRequest.getFacilityId();
+        FacilityEntity newFacility = facilityRepository.getReferenceById(newFacilityId);
         DurableMedicalEquipmentEntity entity = durableMedicalEquipmentMapper.toEntity(durableMedicalEquipmentRequest);
+        entity.setCategory(newCategory);
+        entity.setFacility(newFacility);
         DurableMedicalEquipmentEntity savedEntity = durableMedicalEquipmentRepository.save(entity);
         return durableMedicalEquipmentMapper.toResponse(savedEntity);
     }
