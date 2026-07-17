@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, Edit } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InfoTab } from "../tabs/info-tab";
-import { ContactTab } from "../tabs/contact-tab";
 import { CareLevelHistoryTab } from "../tabs/care-level-history";
 import { SensitiveInfoTab } from "../tabs/sensitive-info";
 import { PERMISSIONS } from "@/common/permissions";
 import { usePermissions } from "@/features/auth/hooks/use-current-user";
-import LocResultTab from "../tabs/loc-result-tab";
 import { residentService, type ResidentInfo } from "@/services/resident/residentService";
+import ResidentContactsTab from "../tabs/resident-contacts-tab";
+import LocResultTab from "../tabs/loc-result-tab";
 
 const ResidentDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -36,37 +36,41 @@ const ResidentDetailPage = () => {
   }, [id]);
 
   const tabs = [
-  {
-    value: "info",
-    label: "Info",
-    permission: PERMISSIONS.RESIDENT_VIEW,
-    content: <InfoTab residentId={id || ""} />,
-  },
-  {
-    value: "contacts",
-    label: "Contacts",
-    permission: PERMISSIONS.RESIDENT_VIEW,
-    content: <ContactTab residentId={id || ""} />,
-  },
-  {
-    value: "care-level-history",
-    label: "Care Level History",
-    permission: PERMISSIONS.RESIDENT_VIEW,
-    content: <CareLevelHistoryTab residentId={id || ""} />,
-  },
-  {
-    value: "loc-result",
-    label: "LOC Classification Result",
-    permission: PERMISSIONS.RESIDENT_VIEW,
-    content: <LocResultTab residentId={residentId} />,
-  },
-  {
-    value: "sensitive-info",
-    label: "Sensitive Info",
-    permission: PERMISSIONS.RESIDENT_SENSITIVE_VIEW,
-    content: <SensitiveInfoTab residentId={id || ""} />,
-  },
-];
+    {
+      value: "info",
+      label: "Info",
+      permission: PERMISSIONS.RESIDENT_VIEW,
+      content: <InfoTab residentId={id || ""} />,
+    },
+    {
+      value: "contacts",
+      label: "Contacts",
+      permission: PERMISSIONS.RESIDENT_VIEW,
+      content: (
+        <ResidentContactsTab
+          residentId={residentId}
+        />
+      ),
+    },
+    {
+      value: "care-level-history",
+      label: "Care Level History",
+      permission: PERMISSIONS.RESIDENT_VIEW,
+      content: <CareLevelHistoryTab residentId={id || ""} />,
+    },
+    {
+      value: "loc-result",
+      label: "LOC Classification Result",
+      permission: PERMISSIONS.RESIDENT_VIEW,
+      content: <LocResultTab residentId={residentId} />,
+    },
+    {
+      value: "sensitive-info",
+      label: "Sensitive Info",
+      permission: PERMISSIONS.RESIDENT_SENSITIVE_VIEW,
+      content: <SensitiveInfoTab residentId={id || ""} />,
+    },
+  ];
 
   const visibleTabs = tabs.filter((t) => can(t.permission));
 
@@ -78,8 +82,8 @@ const ResidentDetailPage = () => {
     );
   }
 
-  const residentName = resident 
-    ? `${resident.firstName} ${resident.middleName ? resident.middleName + ' ' : ''}${resident.lastName}` 
+  const residentName = resident
+    ? `${resident.firstName} ${resident.middleName ? resident.middleName + ' ' : ''}${resident.lastName}`
     : "Resident Detail";
 
   return (
@@ -87,8 +91,8 @@ const ResidentDetailPage = () => {
       {/* Breadcrumb & Navigation */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 font-medium">
-          <button 
-            onClick={() => navigate("/admin/residents")} 
+          <button
+            onClick={() => navigate("/admin/residents")}
             className="hover:text-primary transition-all flex items-center gap-1"
             id="btn-back-to-list"
           >
@@ -124,8 +128,8 @@ const ResidentDetailPage = () => {
       <Tabs defaultValue={visibleTabs[0]?.value} className="space-y-6">
         <TabsList className="bg-muted/50 p-1 rounded-xl border border-border/40">
           {visibleTabs.map((t) => (
-            <TabsTrigger 
-              key={t.value} 
+            <TabsTrigger
+              key={t.value}
               value={t.value}
               className="px-4 py-2 rounded-lg text-sm font-semibold transition-all data-active:bg-background data-active:text-foreground data-active:shadow-sm"
               id={`tab-trigger-${t.value}`}
@@ -135,8 +139,8 @@ const ResidentDetailPage = () => {
           ))}
         </TabsList>
         {visibleTabs.map((t) => (
-          <TabsContent 
-            key={t.value} 
+          <TabsContent
+            key={t.value}
             value={t.value}
             className="bg-card text-card-foreground rounded-xl border border-border/50 p-6 shadow-xs focus-visible:outline-hidden"
           >
