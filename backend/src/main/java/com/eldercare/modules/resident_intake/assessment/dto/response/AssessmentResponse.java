@@ -17,5 +17,7 @@ public class AssessmentResponse {
   private Long suggestedCareLevelId;
   private String residentName;
   private Boolean isOverridden;
+  private Long admissionId;
+  private String overrideReason;
   private List<AssessmentDetailResponse> details;
 }

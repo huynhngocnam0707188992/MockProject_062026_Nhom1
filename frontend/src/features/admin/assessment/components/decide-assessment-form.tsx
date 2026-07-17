@@ -16,16 +16,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 import { useDecideAssessment } from "../hooks/use-decide-assessment";
 import { useCareLevels } from "../hooks/use-care-levels";
 import { useDialogStore } from "@/store/use-dialog-store";
 import type { AssessmentResponse } from "../types/assessment-type";
 
-const formSchema = z.object({
-  status: z.enum(["COMPLETED", "REJECTED"]),
-  confirmedCareLevelId: z.number().min(1, "Please select a care level."),
-});
+const formSchema = z
+  .object({
+    status: z.enum(["COMPLETED", "REJECTED"]),
+    confirmedCareLevelId: z.number().min(1, "Please select a care level."),
+    overrideReason: z.string().optional(),
+  })
+  .refine(
+    (data) =>
+      data.confirmedCareLevelId === undefined || !data.overrideReason || true,
+    {},
+  );
 
 export const DecideAssessmentForm = ({ row }: { row: AssessmentResponse }) => {
   const { data: careLevels, isLoading } = useCareLevels();
@@ -38,16 +46,28 @@ export const DecideAssessmentForm = ({ row }: { row: AssessmentResponse }) => {
     defaultValues: {
       status: "COMPLETED",
       confirmedCareLevelId: row.suggestedCareLevelId,
+      overrideReason: "",
     },
   });
 
+  const confirmedCareLevelId = form.watch("confirmedCareLevelId");
+  const isOverridden = confirmedCareLevelId !== row.suggestedCareLevelId;
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (isOverridden && !values.overrideReason?.trim()) {
+      form.setError("overrideReason", {
+        message: "Override reason is required.",
+      });
+      return;
+    }
+
     decideMutation.mutate(
       {
         id: row.id,
         payload: {
           status: values.status,
           confirmedCareLevelId: Number(values.confirmedCareLevelId),
+          overrideReason: isOverridden ? values.overrideReason : undefined,
         },
       },
       { onSuccess: close },
@@ -119,6 +139,26 @@ export const DecideAssessmentForm = ({ row }: { row: AssessmentResponse }) => {
             </Field>
           )}
         />
+        {isOverridden && (
+          <Controller
+            name="overrideReason"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Override Reason</FieldLabel>
+                <Textarea
+                  id={field.name}
+                  value={field.value}
+                  onChange={field.onChange}
+                  aria-invalid={fieldState.invalid}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+        )}
       </FieldGroup>
       <Button type="submit" disabled={decideMutation.isPending}>
         Confirm

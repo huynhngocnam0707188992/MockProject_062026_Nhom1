@@ -1,8 +1,9 @@
 package com.eldercare.modules.risk_incident.incident_tracking.service;
 
-import com.eldercare.modules.risk_incident.incident_tracking.dto.CreateIncidentSeverityRequest;
-import com.eldercare.modules.risk_incident.incident_tracking.dto.IncidentSeverityResponse;
-import com.eldercare.modules.risk_incident.incident_tracking.dto.UpdateIncidentSeverityRequest;
+import com.eldercare.modules.risk_incident.incident_tracking.dto.reponse.IncidentSeverityResponse;
+import com.eldercare.modules.risk_incident.incident_tracking.dto.request.CreateIncidentSeverityRequest;
+import com.eldercare.modules.risk_incident.incident_tracking.dto.request.UpdateIncidentSeverityRequest;
+
 import java.util.List;
 
 public interface IncidentSeverityService {
@@ -12,4 +13,6 @@ public interface IncidentSeverityService {
     IncidentSeverityResponse createSeverityLevel(CreateIncidentSeverityRequest request);
 
     IncidentSeverityResponse updateSeverityLevel(Long severityId, UpdateIncidentSeverityRequest request);
+    
+
 }

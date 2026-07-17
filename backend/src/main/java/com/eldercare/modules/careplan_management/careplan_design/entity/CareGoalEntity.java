@@ -32,9 +32,5 @@ public class CareGoalEntity {
         }
     }
 
-    @Override
-    public String toString() {
-        return "CareGoalEntity [id=" + id + ", status=" + status + "]";
-    }
 
 }

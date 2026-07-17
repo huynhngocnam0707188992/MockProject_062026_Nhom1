@@ -15,4 +15,6 @@ public interface AdmissionRepository extends JpaRepository<AdmissionEntity, Long
   Optional<AdmissionEntity> findByResidentIdAndIsCurrentTrue(Long residentId);
 
   List<AdmissionEntity> findByResidentId(Long residentId);
+
+  List<AdmissionEntity> findByIsCurrentTrueAndDischargeDateIsNull();
 }
