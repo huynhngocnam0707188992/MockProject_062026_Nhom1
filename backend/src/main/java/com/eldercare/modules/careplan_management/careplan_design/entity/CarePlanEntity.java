@@ -9,7 +9,6 @@ import com.eldercare.common.enums.CarePlanStatusEnum;
 import com.eldercare.modules.careplan_management.careplan_design.entity.resident_info.CarePlanResidentInfoEntity;
 import lombok.*;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,6 +23,7 @@ public class CarePlanEntity {
     private List<CareGoalEntity> listCareGoal = new ArrayList<>();
     private OffsetDateTime lastReviewDateTime = null;
     private String lastReviewBy = null;
+    private int createdBy;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private Boolean isDeleted;
@@ -38,8 +38,7 @@ public class CarePlanEntity {
     public void submitForReview() {
         if (status != CarePlanStatusEnum.DRAFT && status != CarePlanStatusEnum.NEEDS_UPDATE) {
             throw new IllegalStateException(
-                    "Only draft or needs update care plan can be submitted."
-            );
+                    "Only draft or needs update care plan can be submitted.");
         }
         this.status = CarePlanStatusEnum.PENDING_REVIEW;
         this.updatedAt = OffsetDateTime.now();
@@ -78,7 +77,8 @@ public class CarePlanEntity {
      */
     public void markReviewDue() {
         if (this.status != CarePlanStatusEnum.ACTIVE) {
-            throw new IllegalStateException("This care plan is in status " + this.status + " that cannot be mark review due");
+            throw new IllegalStateException(
+                    "This care plan is in status " + this.status + " that cannot be mark review due");
         }
         this.status = CarePlanStatusEnum.REVIEW_DUE;
         this.updatedAt = OffsetDateTime.now();
@@ -102,7 +102,8 @@ public class CarePlanEntity {
     public void confirmNoChanges(String lastReviewBy) {
         if (status != CarePlanStatusEnum.REVIEW_DUE &&
                 status != CarePlanStatusEnum.NEEDS_UPDATE) {
-            throw new IllegalStateException("This care plan is in status " + status + " that cannot confirm no changes.");
+            throw new IllegalStateException(
+                    "This care plan is in status " + status + " that cannot confirm no changes.");
         }
 
         if (lastReviewBy == null || lastReviewBy.isBlank()) {
@@ -137,11 +138,12 @@ public class CarePlanEntity {
         return nexReviewDateTime;
     }
 
-// ------------------------CARE GOAL BUSINESS
-// LOGIC---------------------------------//
+    // ------------------------CARE GOAL BUSINESS
+    // LOGIC---------------------------------//
 
     /**
-     * The Care Plan need to add care goal, have to change the status into PENDING_REVIEW, need DON review
+     * The Care Plan need to add care goal, have to change the status into
+     * PENDING_REVIEW, need DON review
      *
      */
     public void addCareGoal(CareGoalEntity careGoalEntity) {
@@ -156,7 +158,8 @@ public class CarePlanEntity {
     }
 
     /**
-     * The Care Plan need to be remove one care goal, have to change the status into PENDING_REVIEW, need DON review
+     * The Care Plan need to be remove one care goal, have to change the status into
+     * PENDING_REVIEW, need DON review
      *
      */
     public void removeCareGoal(int id) {
