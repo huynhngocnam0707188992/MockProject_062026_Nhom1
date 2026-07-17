@@ -24,6 +24,7 @@ export const PERMISSIONS = {
   INCIDENTS_LIST_VIEW: "INCIDENTS:VIEW",
 
   SLA_CONFIG_VIEW: "SLA_CONFIG:VIEW",
+  EQUIPMENT_VIEW: "EQUIPMENT:VIEW",
 } as const;
 
 export type PermissionCode = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
