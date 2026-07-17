@@ -5,7 +5,6 @@ import type {
   AssessmentDecisionRequest,
   AssessmentMetricDTO,
   AssessmentResponse,
-  AssessmentSelectDTO,
   AssessmentUpdateRequest,
 } from "../types/assessment-type";
 
@@ -21,24 +20,13 @@ export const getMetrics = async () => {
   const { data } = await axiosInstance.get<ApiResponse<AssessmentMetricDTO[]>>(
     `${BASE_URL}/metrics`,
   );
-
   return data;
 };
 
 export const getAssessments = async (params: AssessmentListParams) => {
   const { data } = await axiosInstance.get<
     PagedApiResponse<AssessmentResponse[]>
-  >(BASE_URL, {
-    params,
-  });
-
-  return data;
-};
-
-export const getCompletedForSelect = async () => {
-  const { data } = await axiosInstance.get<ApiResponse<AssessmentSelectDTO[]>>(
-    `${BASE_URL}/select-completed`,
-  );
+  >(BASE_URL, { params });
   return data;
 };
 
@@ -47,7 +35,6 @@ export const createAssessment = async (payload: AssessmentCreateRequest) => {
     BASE_URL,
     payload,
   );
-
   return data;
 };
 
@@ -70,7 +57,6 @@ export const decideAssessment = async (
     `${BASE_URL}/${id}/decision`,
     payload,
   );
-
   return data;
 };
 
@@ -78,6 +64,5 @@ export const deleteAssessment = async (id: number) => {
   const { data } = await axiosInstance.delete<ApiResponse<null>>(
     `${BASE_URL}/${id}`,
   );
-
   return data;
 };

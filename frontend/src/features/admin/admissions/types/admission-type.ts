@@ -1,8 +1,9 @@
 export type AdmissionStatus = "ACTIVE" | "DISCHARGED";
 
 export interface AdmissionCreateRequest {
-  assessmentId: number;
+  preAdmissionScreeningId: number;
   facilityId: number;
+  bedId: number;
   admissionDate: string;
 }
 
@@ -17,8 +18,13 @@ export interface AdmissionResponse {
   residentId: number;
   residentName: string;
   facilityId: number;
-  assessmentId: number;
+  preAdmissionScreeningId: number;
   dischargeDate: string | null;
   dischargeReason: string | null;
   status: AdmissionStatus;
+}
+
+export interface AdmissionSelectDTO {
+  id: number;
+  residentName: string;
 }

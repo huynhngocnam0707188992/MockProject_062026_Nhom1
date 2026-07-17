@@ -2,7 +2,8 @@ package com.eldercare.modules.careplan_management.careplan_design.dto.activeCare
 
 public class ActiveCarePlanRequestDTO {
     public int carePlanId;
-
+    public int donId;
+    public int donPassword;
     public ActiveCarePlanRequestDTO(int carePlanId) {
         this.carePlanId = carePlanId;
     }

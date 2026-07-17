@@ -8,7 +8,7 @@ public class CareGoalMapper {
 
         return new CareGoalEntity(
 
-                schema.getId().intValue(),
+                schema.getId() == null ? 0 : schema.getId().intValue(),
 
                 schema.getTitle(),
 

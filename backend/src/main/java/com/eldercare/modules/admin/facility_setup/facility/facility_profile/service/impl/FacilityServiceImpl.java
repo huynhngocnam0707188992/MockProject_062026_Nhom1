@@ -7,6 +7,12 @@ import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityC
 import com.eldercare.modules.admin.facility_setup.facility.dto.request.FacilityUpdateRequest;
 import com.eldercare.modules.admin.facility_setup.facility.dto.response.FacilityResponse;
 import com.eldercare.modules.admin.facility_setup.facility.dto.response.FacilitySelectResponse;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.dto.response.BedSelectResponse;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.dto.response.RoomSelectResponse;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.BedEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.RoomEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.repository.BedRepository;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.repository.RoomRepository;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.mapper.FacilityMapper;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.repository.FacilityRepository;
@@ -19,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +34,8 @@ public class FacilityServiceImpl implements FacilityService {
 
     private final FacilityRepository facilityRepository;
     private final FacilityMapper facilityMapper;
+    private final RoomRepository roomRepository;
+    private final BedRepository bedRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -73,10 +82,36 @@ public class FacilityServiceImpl implements FacilityService {
     @Override
     @Transactional(readOnly = true)
     public List<FacilitySelectResponse> getFacilitiesForSelect() {
-        return facilityRepository.findByIsDeletedFalse()
-                .stream()
-                .map(f -> new FacilitySelectResponse(f.getId(), f.getName()))
-                .collect(Collectors.toList());
+
+        List<FacilityEntity> facilities = facilityRepository.findByIsDeletedFalse();
+        List<RoomEntity> rooms = roomRepository.findAll();
+        List<BedEntity> beds = bedRepository.findAll();
+
+        Map<Long, List<BedSelectResponse>> bedsByRoom = beds.stream()
+                .collect(Collectors.groupingBy(
+                        bed -> bed.getRoom().getId(),
+                        Collectors.mapping(
+                                bed -> new BedSelectResponse(
+                                        bed.getId(),
+                                        bed.getBedNumber()),
+                                Collectors.toList())));
+
+        Map<Long, List<RoomSelectResponse>> roomsByFacility = rooms.stream()
+                .collect(Collectors.groupingBy(
+                        room -> room.getFacility().getId(),
+                        Collectors.mapping(
+                                room -> new RoomSelectResponse(
+                                        room.getId(),
+                                        room.getRoomNumber(),
+                                        bedsByRoom.getOrDefault(room.getId(), List.of())),
+                                Collectors.toList())));
+
+        return facilities.stream()
+                .map(facility -> new FacilitySelectResponse(
+                        facility.getId(),
+                        facility.getName(),
+                        roomsByFacility.getOrDefault(facility.getId(), List.of())))
+                .toList();
     }
 
     @Override

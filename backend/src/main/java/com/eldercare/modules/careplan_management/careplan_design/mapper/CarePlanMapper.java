@@ -50,7 +50,7 @@ public class CarePlanMapper {
         newEntity.setUpdatedAt(schema.getUpdatedAt());
         newEntity.setIsDeleted(schema.getIsDeleted());
         newEntity.setSignificantFlag(schema.getSignificantChangeFlag());
-        newEntity.setLastReviewDateTime(schema.getLastReviewedDateTime() == null ? null: schema.getLastReviewedDateTime());
+        newEntity.setLastReviewDateTime(schema.getLastReviewedDateTime() == null ? null : schema.getLastReviewedDateTime());
         newEntity.setLastReviewBy(schema.getLastReviewdBy());
 
         return newEntity;
@@ -60,8 +60,12 @@ public class CarePlanMapper {
         if (entity == null) return null;
 
         CarePlanSchema schema = new CarePlanSchema();
-
-        schema.setId((long) entity.getId());
+        ResidentEntity resident = new ResidentEntity();
+        resident.setId((long)entity.getResident().getId());
+        schema.setResident(resident);
+        if (entity.getId() > 0) {
+            schema.setId((long) entity.getId());
+        }
         schema.setStatus(entity.getStatus().name());
         schema.setSignificantChangeFlag(entity.getSignificantFlag());
         schema.setIsDeleted(entity.getIsDeleted());
