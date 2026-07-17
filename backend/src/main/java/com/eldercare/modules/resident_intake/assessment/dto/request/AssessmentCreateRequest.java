@@ -10,6 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AssessmentCreateRequest {
-  private Long preAdmissionScreeningId;
+  private Long admissionId;
   private List<AssessmentDetailRequest> details;
 }

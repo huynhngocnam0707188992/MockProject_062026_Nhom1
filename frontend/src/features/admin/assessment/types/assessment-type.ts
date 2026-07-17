@@ -26,17 +26,19 @@ export interface AssessmentResponse {
   suggestedCareLevelId: number;
   residentName: string;
   isOverridden: boolean | null;
+  overrideReason?: string | null;
+  admissionId: number;
   details: AssessmentDetailResponse[];
 }
 
-export interface AssessmentSelectDTO {
-  id: number;
-  residentName: string;
-  adlTotalScore: number;
+export interface AssessmentDecisionRequest {
+  status: "COMPLETED" | "REJECTED";
+  confirmedCareLevelId: number;
+  overrideReason?: string;
 }
 
 export interface AssessmentCreateRequest {
-  preAdmissionScreeningId: number;
+  admissionId: number;
   details: AssessmentDetailRequest[];
 }
 
@@ -47,4 +49,5 @@ export interface AssessmentUpdateRequest {
 export interface AssessmentDecisionRequest {
   status: "COMPLETED" | "REJECTED";
   confirmedCareLevelId: number;
+  overrideReason?: string;
 }

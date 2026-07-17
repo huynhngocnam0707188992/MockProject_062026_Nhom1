@@ -4,6 +4,7 @@ import type {
   AdmissionCreateRequest,
   AdmissionDischargeRequest,
   AdmissionResponse,
+  AdmissionSelectDTO,
 } from "../types/admission-type";
 
 const BASE_URL = "/admissions";
@@ -17,10 +18,14 @@ export interface AdmissionListParams {
 export const getAdmissions = async (params: AdmissionListParams) => {
   const { data } = await axiosInstance.get<
     PagedApiResponse<AdmissionResponse[]>
-  >(BASE_URL, {
-    params,
-  });
+  >(BASE_URL, { params });
+  return data;
+};
 
+export const getActiveAdmissions = async () => {
+  const { data } = await axiosInstance.get<ApiResponse<AdmissionSelectDTO[]>>(
+    `${BASE_URL}/select-active`,
+  );
   return data;
 };
 
@@ -29,7 +34,6 @@ export const createAdmission = async (payload: AdmissionCreateRequest) => {
     BASE_URL,
     payload,
   );
-
   return data;
 };
 
@@ -41,6 +45,5 @@ export const dischargeAdmission = async (
     `${BASE_URL}/${id}/discharge`,
     payload,
   );
-
   return data;
 };
