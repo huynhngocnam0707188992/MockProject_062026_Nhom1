@@ -123,7 +123,19 @@ public class CarePlanEntity {
     public void archive() {
         this.status = CarePlanStatusEnum.ARCHIVED;
         this.updatedAt = OffsetDateTime.now();
-        this.isDeleted = true; // not ready yet
+    }
+
+    /**
+     * Soft-delete a care plan by setting is_deleted = 1; no physical deletion, to
+     * preserve care history and audit trail.
+     */
+    public void softDelete() {
+        if (this.status != CarePlanStatusEnum.DRAFT) {
+            throw new IllegalStateException(
+                    "This care plan is in status " + this.status + " that cannot confirm no changes.");
+        }
+        this.updatedAt = OffsetDateTime.now();
+        this.isDeleted = true;
     }
 
     /**
