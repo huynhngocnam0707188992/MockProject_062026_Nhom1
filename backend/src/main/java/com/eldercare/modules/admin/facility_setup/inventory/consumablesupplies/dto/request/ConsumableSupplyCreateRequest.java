@@ -26,7 +26,7 @@ public class ConsumableSupplyCreateRequest {
     @Positive(message = "Facility ID must be a positive number")
     private Long facilityId;
 
-    @JsonProperty("initial_stock")
+    @JsonProperty("stock_on_hand")
     @NotNull(message = "Initial stock is required")
     @Positive(message = "Initial stock must be a positive number")
     private int stockOnHand;
