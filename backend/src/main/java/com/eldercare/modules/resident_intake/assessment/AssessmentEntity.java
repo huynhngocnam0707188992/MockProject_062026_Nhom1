@@ -4,21 +4,12 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 import com.eldercare.modules.admin.user_management.UserEntity;
+import com.eldercare.modules.resident_intake.admission_ledger.AdmissionEntity;
 import com.eldercare.modules.resident_intake.assessment_detail.AssessmentDetailEntity;
 import com.eldercare.modules.resident_intake.care_level.CareLevelEntity;
-import com.eldercare.modules.resident_intake.pre_admission.PreAdmissionScreeningEntity;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,7 +23,8 @@ public class AssessmentEntity {
   private Long id;
   private Integer adlTotalScore;
   private Boolean isOverridden;
-  private String status; // DRAFT, COMPLETED
+  private String overrideReason;
+  private String status;
   @ManyToOne
   @JoinColumn(name = "suggested_care_level_id")
   private CareLevelEntity suggestedCareLevel;
@@ -46,10 +38,10 @@ public class AssessmentEntity {
   @JoinColumn(name = "assessed_by")
   private UserEntity assessedBy;
   @ManyToOne
-  @JoinColumn(name = "pre_admission_screening_id")
-  private PreAdmissionScreeningEntity preAdmissionScreening;
+  @JoinColumn(name = "admission_id")
+  private AdmissionEntity admission;
   private Boolean isCurrent;
   private OffsetDateTime createdAt;
-  @OneToMany(mappedBy = "assessment", cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "assessment", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   private List<AssessmentDetailEntity> details;
 }
