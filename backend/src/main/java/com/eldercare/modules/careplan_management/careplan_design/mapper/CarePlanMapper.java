@@ -1,5 +1,7 @@
 package com.eldercare.modules.careplan_management.careplan_design.mapper;
 
+import java.util.List;
+
 import com.eldercare.common.enums.CarePlanStatusEnum;
 import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.BedEntity;
 import com.eldercare.modules.admin.user_management.UserEntity;
@@ -7,6 +9,7 @@ import com.eldercare.modules.careplan_management.careplan_design.entity.CareGoal
 import com.eldercare.modules.careplan_management.careplan_design.entity.CareInterventionEntity;
 import com.eldercare.modules.careplan_management.careplan_design.entity.CarePlanEntity;
 import com.eldercare.modules.careplan_management.careplan_design.entity.resident_info.CarePlanResidentInfoEntity;
+import com.eldercare.modules.careplan_management.careplan_design.repository.database_schema.CareGoalSchema;
 import com.eldercare.modules.careplan_management.careplan_design.repository.database_schema.CarePlanSchema;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 
@@ -70,12 +73,29 @@ public class CarePlanMapper {
                 if (entity.getId() > 0) {
                         schema.setId((long) entity.getId());
                 }
+
+                List<CareGoalSchema> goalSchemas = entity.getListCareGoal()
+                                .stream()
+                                .map(goal -> {
+                                        CareGoalSchema goalSchema = new CareGoalSchema();
+
+                                        goalSchema.setTitle(goal.getName());
+                                        goalSchema.setDescription(goal.getDescription());
+                                        goalSchema.setStatus(goal.getStatus());
+
+                                        goalSchema.setCarePlan(schema);
+
+                                        return goalSchema;
+                                })
+                                .toList();
+
                 schema.setStatus(entity.getStatus().name());
                 schema.setSignificantChangeFlag(entity.getSignificantFlag());
                 schema.setIsDeleted(entity.getIsDeleted());
                 schema.setCreatedAt(entity.getCreatedAt());
                 schema.setUpdatedAt(entity.getUpdatedAt());
                 schema.setCreatedBy(user);
+                schema.setListCareGoal(goalSchemas);
                 return schema;
         }
 }
