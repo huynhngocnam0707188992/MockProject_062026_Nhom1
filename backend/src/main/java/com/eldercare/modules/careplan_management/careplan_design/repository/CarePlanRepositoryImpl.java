@@ -76,7 +76,7 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
 
     @Override
     @Transactional()
-    public void updateOne(CarePlanEntity carePlanEntity) {
+    public CarePlanEntity updateOne(CarePlanEntity carePlanEntity) {
         // CarePlanSchema schema = CarePlanMapper.toSchema(carePlanEntity);
         CarePlanSchema schema = jpaCarePlanRepository.findById(
                 (long) carePlanEntity.getId())
@@ -88,6 +88,8 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
             schema.setIsDeleted(true);
         }
         jpaCarePlanRepository.save(schema);
+
+        return carePlanEntity;
     }
 
     @Override

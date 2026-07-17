@@ -15,7 +15,7 @@ public interface ICarePlanRepository {
 
     CarePlanEntity findById(int id);
 
-    void updateOne(CarePlanEntity carePlanEntity);
+    CarePlanEntity updateOne(CarePlanEntity carePlanEntity);
 
     List<CarePlanEntity> getAll(ListCarePlanRequestDTO request);
 
