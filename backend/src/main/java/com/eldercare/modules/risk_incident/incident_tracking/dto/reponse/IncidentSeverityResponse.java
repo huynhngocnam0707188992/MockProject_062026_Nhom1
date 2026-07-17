@@ -1,9 +1,6 @@
-package com.eldercare.modules.risk_incident.incident_tracking.dto;
+package com.eldercare.modules.risk_incident.incident_tracking.dto.reponse;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,15 +12,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class UpdateIncidentSeverityRequest {
+public class IncidentSeverityResponse {
+
+    @JsonProperty("id")
+    private Long id;
 
     @JsonProperty("level_name")
-    @NotBlank(message = "level_name is required")
     private String levelName;
 
     @JsonProperty("chart_lock_trigger")
-    @NotNull(message = "chart_lock_trigger is required")
     private Boolean chartLockTrigger;
 
     @JsonProperty("description")

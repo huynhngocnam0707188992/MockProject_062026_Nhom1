@@ -112,6 +112,15 @@ export const adminNavGroups: AdminNavGroup[] = [
         permission: PERMISSIONS.INCIDENT_SEVERITY_VIEW,
       },
       {
+        label: "Incidents",
+        path: "/admin/incidents",
+        icon: ShieldAlert,
+        permission: [
+          PERMISSIONS.INCIDENT_SEVERITY_VIEW,
+          PERMISSIONS.PERMISSION_VIEW,
+        ],
+      },
+      {
         label: "SLA Config",
         path: "/admin/sla-config",
         icon: AlarmClock,
