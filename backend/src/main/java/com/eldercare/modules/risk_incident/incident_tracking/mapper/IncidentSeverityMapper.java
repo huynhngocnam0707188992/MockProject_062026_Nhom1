@@ -1,8 +1,8 @@
 package com.eldercare.modules.risk_incident.incident_tracking.mapper;
 
-import com.eldercare.modules.risk_incident.incident_tracking.dto.CreateIncidentSeverityRequest;
-import com.eldercare.modules.risk_incident.incident_tracking.dto.IncidentSeverityResponse;
-import com.eldercare.modules.risk_incident.incident_tracking.dto.UpdateIncidentSeverityRequest;
+import com.eldercare.modules.risk_incident.incident_tracking.dto.reponse.IncidentSeverityResponse;
+import com.eldercare.modules.risk_incident.incident_tracking.dto.request.CreateIncidentSeverityRequest;
+import com.eldercare.modules.risk_incident.incident_tracking.dto.request.UpdateIncidentSeverityRequest;
 import com.eldercare.modules.risk_incident.incident_tracking.entity.IncidentSeverityEntity;
 
 public interface IncidentSeverityMapper {

@@ -17,6 +17,7 @@ import {
   Shield,
   Clock,
   Clock3,
+  Package,
 } from "lucide-react";
 import { PERMISSIONS, type PermissionCode } from "@/common/permissions";
 
@@ -106,10 +107,25 @@ export const adminNavGroups: AdminNavGroup[] = [
         permission: PERMISSIONS.STAFFING_RATIO_VIEW,
       },
       {
+        label: "Equipment",
+        path: "/admin/equipment",
+        icon: Package,
+        permission: PERMISSIONS.EQUIPMENT_VIEW,
+      },
+      {
         label: "Incident Severity",
         path: "/admin/incident-severity",
         icon: ShieldAlert,
         permission: PERMISSIONS.INCIDENT_SEVERITY_VIEW,
+      },
+      {
+        label: "Incidents",
+        path: "/admin/incidents",
+        icon: ShieldAlert,
+        permission: [
+          PERMISSIONS.INCIDENT_SEVERITY_VIEW,
+          PERMISSIONS.PERMISSION_VIEW,
+        ],
       },
       {
         label: "SLA Config",
