@@ -2,9 +2,11 @@ package com.eldercare.modules.careplan_management.careplan_design.service;
 
 import java.util.List;
 
+import com.eldercare.modules.careplan_management.careplan_design.dto.listCarePlansDTO.CarePlanOutput;
 import com.eldercare.modules.careplan_management.careplan_design.dto.listCarePlansDTO.ListCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.entity.CarePlanEntity;
+import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import org.springframework.data.domain.Page;
 
 public interface ICarePlanRepository {
@@ -20,5 +22,9 @@ public interface ICarePlanRepository {
     List<CarePlanEntity> search(SearchCarePlanRequestDTO request);
 
     Page<CarePlanEntity> searchPagination(SearchCarePlanRequestDTO request);
+
+    CarePlanEntity saveOne(CarePlanEntity carePlanEntity);
+
+    ResidentEntity getResidentInfo(long id);
 
 }
