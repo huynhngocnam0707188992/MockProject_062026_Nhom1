@@ -1,7 +1,9 @@
 package com.eldercare.modules.careplan_management.careplan_design.service;
 
 import java.util.List;
+import java.util.Map;
 
+import com.eldercare.modules.admin.user_management.UserEntity;
 import com.eldercare.modules.careplan_management.careplan_design.dto.listCarePlansDTO.CarePlanOutput;
 import com.eldercare.modules.careplan_management.careplan_design.dto.listCarePlansDTO.ListCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
@@ -26,5 +28,9 @@ public interface ICarePlanRepository {
     CarePlanEntity saveOne(CarePlanEntity carePlanEntity);
 
     ResidentEntity getResidentInfo(long id);
+
+    List<UserEntity> getListUserByIDs(List<Long> ids);
+
+    Map<Long, Integer> getLOCTierFromResidentIds(List<Long> ids);
 
 }
