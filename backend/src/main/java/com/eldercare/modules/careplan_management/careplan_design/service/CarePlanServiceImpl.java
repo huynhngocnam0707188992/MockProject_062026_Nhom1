@@ -14,6 +14,8 @@ import com.eldercare.modules.admin.user_management.UserEntity;
 import com.eldercare.modules.admin.user_management.UserRepository;
 import com.eldercare.modules.careplan_management.careplan_design.dto.createCarePlanDTO.CreateCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.createCarePlanDTO.CreateCarePlanResponseDTO;
+import com.eldercare.modules.careplan_management.careplan_design.dto.deleteCarePlanDTO.DeleteCarePlanRequestDTO;
+import com.eldercare.modules.careplan_management.careplan_design.dto.deleteCarePlanDTO.DeleteCarePlanResponseDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.getCarePlanDetailDTO.GetCarePlanDetailRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.getCarePlanDetailDTO.GetCarePlanDetailResponseDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
@@ -351,6 +353,17 @@ public class CarePlanServiceImpl implements ICarePlanService {
                 CreateCarePlanResponseDTO responseDTO = new CreateCarePlanResponseDTO();
                 responseDTO.id = carePlanEntityAfterSaved.getId();
                 return responseDTO;
+        }
+
+        @Override
+        public DeleteCarePlanResponseDTO softDeleteCarePlan(DeleteCarePlanRequestDTO requestDTO) {
+                CarePlanEntity carePlanEntity = this.carePlanRepository.findById(requestDTO.carePlanId);
+                carePlanEntity.softDelete();
+                CarePlanEntity carePlanEntityAfterUpdated = this.carePlanRepository.updateOne(carePlanEntity);
+
+                DeleteCarePlanResponseDTO responseDTo = new DeleteCarePlanResponseDTO(
+                                carePlanEntityAfterUpdated.getId(), carePlanEntityAfterUpdated.getIsDeleted());
+                return responseDTo;
         }
 
 }
