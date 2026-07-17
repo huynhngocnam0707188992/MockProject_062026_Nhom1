@@ -77,16 +77,16 @@ export const adminNavGroups: AdminNavGroup[] = [
         permission: PERMISSIONS.SCREENING_VIEW,
       },
       {
-        label: "Assessment",
-        path: "/admin/assessment",
-        icon: ClipboardList,
-        permission: PERMISSIONS.ASSESSMENT_VIEW,
-      },
-      {
         label: "Admissions & Bed Assignment",
         path: "/admin/admissions",
         icon: ClipboardList,
         permission: PERMISSIONS.ADMISSION_VIEW,
+      },
+      {
+        label: "Assessment",
+        path: "/admin/assessment",
+        icon: ClipboardList,
+        permission: PERMISSIONS.ASSESSMENT_VIEW,
       },
     ],
   },

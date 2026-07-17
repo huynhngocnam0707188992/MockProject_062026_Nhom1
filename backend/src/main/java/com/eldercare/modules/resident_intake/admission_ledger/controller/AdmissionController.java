@@ -14,6 +14,7 @@ import com.eldercare.common.response.ApiResponse;
 import com.eldercare.modules.resident_intake.admission_ledger.dto.request.AdmissionCreateRequest;
 import com.eldercare.modules.resident_intake.admission_ledger.dto.request.AdmissionDischargeRequest;
 import com.eldercare.modules.resident_intake.admission_ledger.dto.response.AdmissionResponse;
+import com.eldercare.modules.resident_intake.admission_ledger.dto.response.AdmissionSelectDTO;
 import com.eldercare.modules.resident_intake.admission_ledger.service.AdmissionService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,45 +24,41 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdmissionController {
 
-  private final AdmissionService service;
+    private final AdmissionService service;
 
-  @GetMapping
-  public ResponseEntity<PagedResponse<List<AdmissionResponse>>> list(
-      @PageableDefault(size = 10) Pageable pageable) {
+    @GetMapping
+    public ResponseEntity<PagedResponse<List<AdmissionResponse>>> list(
+            @PageableDefault(size = 10) Pageable pageable) {
 
-    Page<AdmissionResponse> page = service.listPaged(pageable);
+        Page<AdmissionResponse> page = service.listPaged(pageable);
 
-    return ResponseEntity.ok(
-        PagedResponse.of(
-            page.getContent(),
-            200,
-            "Success",
-            page.getNumber(),
-            page.getTotalPages(),
-            page.getSize(),
-            page.getTotalElements()));
-  }
+        return ResponseEntity.ok(
+                PagedResponse.of(
+                        page.getContent(), 200, "Success",
+                        page.getNumber(), page.getTotalPages(), page.getSize(), page.getTotalElements()));
+    }
 
-  @PostMapping
-  public ResponseEntity<ApiResponse<AdmissionResponse>> create(
-      @RequestBody AdmissionCreateRequest req) {
+    @GetMapping("/select-active")
+    public ResponseEntity<ApiResponse<List<AdmissionSelectDTO>>> selectActive() {
+        return ResponseEntity.ok(ApiResponse.success(service.listActiveForSelect()));
+    }
 
-    AdmissionResponse response = service.create(req);
+    @PostMapping
+    public ResponseEntity<ApiResponse<AdmissionResponse>> create(
+            @RequestBody AdmissionCreateRequest req) {
 
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(ApiResponse.created(
-            "Admission created successfully",
-            response));
-  }
+        AdmissionResponse response = service.create(req);
 
-  @PutMapping("/{id}/discharge")
-  public ResponseEntity<ApiResponse<AdmissionResponse>> discharge(
-      @PathVariable Long id,
-      @RequestBody AdmissionDischargeRequest req) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.created("Admission created successfully", response));
+    }
 
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            "Resident discharged successfully",
-            service.discharge(id, req)));
-  }
+    @PutMapping("/{id}/discharge")
+    public ResponseEntity<ApiResponse<AdmissionResponse>> discharge(
+            @PathVariable Long id,
+            @RequestBody AdmissionDischargeRequest req) {
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Resident discharged successfully", service.discharge(id, req)));
+    }
 }

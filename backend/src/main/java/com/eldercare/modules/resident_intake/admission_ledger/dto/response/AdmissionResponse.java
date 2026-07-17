@@ -13,7 +13,7 @@ public class AdmissionResponse {
   private Long residentId;
   private String residentName;
   private Long facilityId;
-  private Long assessmentId;
+  private Long preAdmissionScreeningId;
   private LocalDate dischargeDate;
   private String dischargeReason;
   private String status;

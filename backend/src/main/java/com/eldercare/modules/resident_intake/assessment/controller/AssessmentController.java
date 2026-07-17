@@ -15,7 +15,6 @@ import com.eldercare.modules.resident_intake.assessment.dto.request.AssessmentCr
 import com.eldercare.modules.resident_intake.assessment.dto.request.AssessmentDecisionRequest;
 import com.eldercare.modules.resident_intake.assessment.dto.request.AssessmentUpdateRequest;
 import com.eldercare.modules.resident_intake.assessment.dto.response.AssessmentResponse;
-import com.eldercare.modules.resident_intake.assessment.dto.response.AssessmentSelectDTO;
 import com.eldercare.modules.resident_intake.assessment.service.AssessmentService;
 import com.eldercare.modules.resident_intake.assessment_metric.dto.AssessmentMetricDTO;
 import com.eldercare.modules.resident_intake.care_level.history.dto.response.LocClassificationResultResponse;
@@ -31,63 +30,38 @@ public class AssessmentController {
 
         @GetMapping("/metrics")
         public ResponseEntity<ApiResponse<List<AssessmentMetricDTO>>> metrics() {
-                return ResponseEntity.ok(
-                                ApiResponse.success(service.getMetrics()));
+                return ResponseEntity.ok(ApiResponse.success(service.getMetrics()));
         }
 
         @PostMapping
-        public ResponseEntity<ApiResponse<AssessmentResponse>> create(
-                        @RequestBody AssessmentCreateRequest req) {
-
+        public ResponseEntity<ApiResponse<AssessmentResponse>> create(@RequestBody AssessmentCreateRequest req) {
                 AssessmentResponse response = service.create(req);
-
                 return ResponseEntity.status(HttpStatus.CREATED)
-                                .body(ApiResponse.created(
-                                                "Assessment created successfully",
-                                                response));
+                                .body(ApiResponse.created("Assessment created successfully", response));
         }
 
         @PutMapping("/{id}")
         public ResponseEntity<ApiResponse<AssessmentResponse>> update(
-                        @PathVariable Long id,
-                        @RequestBody AssessmentUpdateRequest req) {
-
-                return ResponseEntity.ok(
-                                ApiResponse.success("Assessment updated successfully", service.update(id, req)));
+                        @PathVariable Long id, @RequestBody AssessmentUpdateRequest req) {
+                return ResponseEntity
+                                .ok(ApiResponse.success("Assessment updated successfully", service.update(id, req)));
         }
 
         @GetMapping
         public ResponseEntity<PagedResponse<List<AssessmentResponse>>> list(
                         @PageableDefault(size = 10) Pageable pageable) {
-
                 Page<AssessmentResponse> page = service.listPaged(pageable);
-
                 return ResponseEntity.ok(
-                                PagedResponse.of(
-                                                page.getContent(),
-                                                200,
-                                                "Success",
-                                                page.getNumber(),
-                                                page.getTotalPages(),
-                                                page.getSize(),
+                                PagedResponse.of(page.getContent(), 200, "Success",
+                                                page.getNumber(), page.getTotalPages(), page.getSize(),
                                                 page.getTotalElements()));
-        }
-
-        @GetMapping("/select-completed")
-        public ResponseEntity<ApiResponse<List<AssessmentSelectDTO>>> selectCompleted() {
-                return ResponseEntity.ok(
-                                ApiResponse.success(service.listCompletedForSelect()));
         }
 
         @PutMapping("/{id}/decision")
         public ResponseEntity<ApiResponse<AssessmentResponse>> decide(
-                        @PathVariable Long id,
-                        @RequestBody AssessmentDecisionRequest req) {
-
-                return ResponseEntity.ok(
-                                ApiResponse.success(
-                                                "Assessment updated successfully",
-                                                service.decide(id, req)));
+                        @PathVariable Long id, @RequestBody AssessmentDecisionRequest req) {
+                return ResponseEntity
+                                .ok(ApiResponse.success("Assessment updated successfully", service.decide(id, req)));
         }
 
         @DeleteMapping("/{id}")
@@ -95,12 +69,10 @@ public class AssessmentController {
                 service.deleteDraft(id);
                 return ResponseEntity.ok(ApiResponse.success("Deleted successfully", null));
         }
-        @GetMapping("/resident/{residentId}/classification-result")
-public ResponseEntity<ApiResponse<LocClassificationResultResponse>> getClassificationResult(
-        @PathVariable Long residentId) {
 
-    return ResponseEntity.ok(
-            ApiResponse.success(
-                    service.getClassificationResult(residentId)));
-}
+        @GetMapping("/resident/{residentId}/classification-result")
+        public ResponseEntity<ApiResponse<LocClassificationResultResponse>> getClassificationResult(
+                        @PathVariable Long residentId) {
+                return ResponseEntity.ok(ApiResponse.success(service.getClassificationResult(residentId)));
+        }
 }
