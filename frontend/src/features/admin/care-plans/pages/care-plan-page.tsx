@@ -5,27 +5,40 @@ import CarePlanStatistical from "../components/care-plan-statistical";
 import CarePlanTable from "../components/care-plan-table";
 import { getCarePlanList } from "@/services/care-plan/care-plan-services";
 import { useEffect, useState } from "react";
-import type { CarePlan } from "@/services/care-plan/care-plan-types";
+import type { GetCarePlanListResponse } from "@/services/care-plan/care-plan-types";
 const CarePlanPage = () => {
-  const [carePlans, setCarePlans] = useState<CarePlan[]>([]);
+  // const [carePlans, setCarePlans] = useState<CarePlan[]>([]);
+  const [carePlanResponse, setCarePlanResponse] =
+    useState<GetCarePlanListResponse | null>(null);
 
   useEffect(() => {
     loadCarePlans();
   }, []);
+
   const loadCarePlans = async () => {
     try {
-      const data = await getCarePlanList();
-      setCarePlans(data);
+      const response = await getCarePlanList();
+      setCarePlanResponse(response);
     } catch (error) {
       console.error(error);
     }
   };
+
+  if (!carePlanResponse) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div>
-      <CarePlanTitle></CarePlanTitle>
-      <CarePlanOptions></CarePlanOptions>
-      <CarePlanStatistical carePlans={carePlans}></CarePlanStatistical>
-      <CarePlanTable carePlans={carePlans}></CarePlanTable>
+      <CarePlanTitle />
+      <CarePlanOptions />
+
+      <CarePlanStatistical
+        carePlans={carePlanResponse.data.list}
+        carePlanMetadata={carePlanResponse.metadata}
+      />
+
+      <CarePlanTable carePlans={carePlanResponse.data.list} />
     </div>
   );
 };

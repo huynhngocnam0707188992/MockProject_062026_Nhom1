@@ -24,4 +24,19 @@ public class CareGoalMapper {
         );
     }
 
+    public static CareGoalSchema toSchema(CareGoalEntity entity) {
+
+        CareGoalSchema schema = new CareGoalSchema();
+        if (entity.getId() > 0) {
+            schema.setId((long) entity.getId());
+        }
+
+        schema.setCarePlan(null);
+        schema.setDescription(entity.getDescription());
+        schema.setStatus(entity.getStatus());
+        // schema.setListCareIntervention(null); handle this later
+        schema.setTitle(entity.getName());
+        return schema;
+    }
+
 }

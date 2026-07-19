@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eldercare.modules.admin.user_management.UserEntity;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,11 +32,9 @@ public class CarePlanSchema {
     @Column(name = "significant_change_flag", nullable = false)
     private Boolean significantChangeFlag = false;
 
-
-    @ManyToOne(fetch =  FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resident_id", nullable = false)
     private ResidentEntity resident;
-
 
     @OneToMany(mappedBy = "carePlan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareGoalSchema> listCareGoal = new ArrayList<>();
@@ -45,6 +44,10 @@ public class CarePlanSchema {
 
     @Column(name = "last_reviewed_datetime", nullable = true)
     private OffsetDateTime lastReviewedDateTime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", nullable = false)
+    private UserEntity createdBy;
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
