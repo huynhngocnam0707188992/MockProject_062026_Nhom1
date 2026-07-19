@@ -3,8 +3,12 @@ package com.eldercare.modules.careplan_management.careplan_design.controller;
 import com.eldercare.common.dto.PagedResponse;
 import com.eldercare.modules.careplan_management.careplan_design.dto.createCarePlanDTO.CreateCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.createCarePlanDTO.CreateCarePlanResponseDTO;
+import com.eldercare.modules.careplan_management.careplan_design.dto.deleteCarePlanDTO.DeleteCarePlanRequestDTO;
+import com.eldercare.modules.careplan_management.careplan_design.dto.deleteCarePlanDTO.DeleteCarePlanResponseDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanResponseDTO;
+
+import org.apache.catalina.connector.Response;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +41,7 @@ public class CarePlanController {
     @PatchMapping("/{carePlanId}/activate")
     public ResponseEntity<ApiResponse<ActiveCarePlanResponseDTO>> activateCarePlan(@PathVariable int carePlanId) {
         ActiveCarePlanResponseDTO data = this.carePlanService.activateCarePlan(
-                new ActiveCarePlanRequestDTO(carePlanId)
-        );
+                new ActiveCarePlanRequestDTO(carePlanId));
         ApiResponse<ActiveCarePlanResponseDTO> response = ApiResponse.success(data);
         response.setMessage("Care plan " + carePlanId + " activated successfully");
         return ResponseEntity.ok(response);
@@ -62,23 +65,6 @@ public class CarePlanController {
         return ResponseEntity.ok(response);
     }
 
-    // @GetMapping("")
-    // public ResponseEntity<ApiResponse<ListCarePlanResponseDTO>> listCarePlans(
-    // @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue =
-    // "20") Integer size,
-    // @RequestParam(required = false) Long residentId, @RequestParam(required =
-    // false) CarePlanStatusEnum status,
-    // @RequestParam(required = false) Boolean significantChangeFlag,
-    // @RequestParam(defaultValue = "updatedAt") String sortBy,
-    // @RequestParam(defaultValue = "DESC") Sort.Direction sortDir) {
-    // ListCarePlanRequestDTO request = new ListCarePlanRequestDTO(page, size,
-    // residentId, status,
-    // significantChangeFlag, sortBy, sortDir);
-    // ApiResponse<ListCarePlanResponseDTO> response = ApiResponse
-    // .success(this.carePlanService.listCarePlans(request));
-    //
-    // return ResponseEntity.ok(response);
-    // }
     @GetMapping("")
     public ResponseEntity<PagedResponse<ListCarePlanResponseDTO>> listCarePlans(
             @RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "20") Integer size,
@@ -103,27 +89,6 @@ public class CarePlanController {
                 .success(this.carePlanService.getCarePlanDetail(requestDTO));
         return ResponseEntity.ok(response);
     }
-
-    // @GetMapping("/search")
-    // public ResponseEntity<ApiResponse<List<SearchCarePlanResponseDTO>>>
-    // searchCarePlan(
-    // @RequestParam(required = false) String keyword,
-    // @RequestParam(required = false) CarePlanStatusEnum status,
-    // @RequestParam(required = false) Boolean significantChangeFlag,
-    // @RequestParam(defaultValue = "0") int page,
-    // @RequestParam(defaultValue = "20") int size) {
-    // SearchCarePlanRequestDTO requestDTO = new SearchCarePlanRequestDTO();
-    //
-    // requestDTO.keyword = keyword;
-    // requestDTO.status = status;
-    // requestDTO.significantChangeFlag = significantChangeFlag;
-    // requestDTO.page = page;
-    // requestDTO.size = size;
-    //
-    // ApiResponse<List<SearchCarePlanResponseDTO>> response = ApiResponse.success(
-    // this.carePlanService.searchCarePlan(requestDTO));
-    // return ResponseEntity.ok(response);
-    // }
 
     @GetMapping("/search")
     public ResponseEntity<PagedResponse<List<SearchCarePlanResponseDTO>>> searchCarePlan(
@@ -151,6 +116,15 @@ public class CarePlanController {
 
         ApiResponse<CreateCarePlanResponseDTO> response = ApiResponse
                 .success(this.carePlanService.createCarePlan(requestDTO, purpose));
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{carePlanId}")
+    public ResponseEntity<ApiResponse<DeleteCarePlanResponseDTO>> deleteCarePlan(
+            @PathVariable() int carePlanId) {
+        DeleteCarePlanRequestDTO requetsDTO = new DeleteCarePlanRequestDTO(carePlanId);
+        DeleteCarePlanResponseDTO responseDTO = this.carePlanService.softDeleteCarePlan(requetsDTO);
+        ApiResponse<DeleteCarePlanResponseDTO> response = ApiResponse.success(responseDTO);
         return ResponseEntity.ok(response);
     }
 }

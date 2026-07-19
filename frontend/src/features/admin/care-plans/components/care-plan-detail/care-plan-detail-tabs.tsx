@@ -2,8 +2,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import CarePlainDetailTabActivity from "../../pages/care-plan-detail/tab/care-plan-detail-tab-acitivity";
 import CarePlanDetailTabOverview from "../../pages/care-plan-detail/tab/care-plan-detail-tab-overview";
 import CarePlanDetailTabCost from "../../pages/care-plan-detail/tab/care-plan-detail-tab-cost";
+import type { CarePlanGoal } from "@/services/care-plan/care-plan-types";
 
-export default function CarePlanNavBar() {
+type CarePlanNavBarProps = {
+  listCareGoals: CarePlanGoal[];
+  lastReview: string;
+  nextReview: string;
+  cycle: number;
+};
+export default function CarePlanNavBar(props: CarePlanNavBarProps) {
   return (
     <div>
       <Tabs defaultValue="carePlanDetail" className="w-full">
@@ -14,7 +21,12 @@ export default function CarePlanNavBar() {
         </TabsList>
 
         <TabsContent value="overview">
-          <CarePlanDetailTabOverview></CarePlanDetailTabOverview>
+          <CarePlanDetailTabOverview
+            listCareGoals={props.listCareGoals}
+            reviewCycle={props.cycle}
+            lastReview={props.lastReview}
+            nextReview={props.nextReview}
+          ></CarePlanDetailTabOverview>
         </TabsContent>
 
         <TabsContent value="activity">

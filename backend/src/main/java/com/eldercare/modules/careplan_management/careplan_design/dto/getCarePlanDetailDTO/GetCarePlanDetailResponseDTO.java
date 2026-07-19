@@ -7,6 +7,7 @@ import java.util.List;
 public class GetCarePlanDetailResponseDTO {
     public int id;
     public String status;
+    public int locTier;
     public Boolean significantFlag;
     public CarePlanOutput.CarePlanResidentOutput resident;
     public CarePlanOutput.CarePlanResidentDefinitionOutput definition;
@@ -21,13 +22,15 @@ public class GetCarePlanDetailResponseDTO {
 
     public static class Goal {
         public int id;
+        public String title;
+        public String goalDescription;
         public String status;
-        public List<Intervention> interventions ;
+        public List<Intervention> interventions;
     }
 
     public static class Intervention {
         public int id;
+        public String title;
         public String assignedRole;
-        public int taskCount;
     }
 }
