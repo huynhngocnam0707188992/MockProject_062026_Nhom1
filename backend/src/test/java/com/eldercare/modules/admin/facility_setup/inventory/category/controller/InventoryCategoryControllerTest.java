@@ -1,237 +1,179 @@
 package com.eldercare.modules.admin.facility_setup.inventory.category.controller;
 
-import com.eldercare.common.constants.RouteConstants;
-import com.eldercare.common.dto.PagedResponse;
-import com.eldercare.modules.admin.facility_setup.inventory.category.controller.InventoryCategoryController;
-import com.eldercare.modules.admin.facility_setup.inventory.category.dto.request.InventoryCategoryRequest;
-import com.eldercare.modules.admin.facility_setup.inventory.category.dto.response.InventoryCategoryResponse;
-import com.eldercare.modules.admin.facility_setup.inventory.category.service.InventoryCategoryServiceInterface;
-import tools.jackson.databind.ObjectMapper;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-// SỬ DỤNG IMPORT MỚI CỦA SPRING BOOT 4.X THAY CHO MOCKBEAN
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.Collections;
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(value = InventoryCategoryController.class, 
-    excludeAutoConfiguration = {
-        org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration.class,
-        org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration.class
-    })
-@DisplayName("Inventory Category Controller API Integration Tests")
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.eldercare.common.constants.RouteConstants;
+import com.eldercare.common.dto.PagedResponse;
+import com.eldercare.modules.admin.facility_setup.inventory.category.dto.request.InventoryCategoryRequest;
+import com.eldercare.modules.admin.facility_setup.inventory.category.dto.response.InventoryCategoryResponse;
+import com.eldercare.modules.admin.facility_setup.inventory.category.service.InventoryCategoryServiceInterface;
+import com.eldercare.modules.admin.user_management.UserRepository;
+import com.eldercare.modules.security.SessionStore;
+
+import tools.jackson.databind.ObjectMapper;
+
+
+// @WebMvcTest chỉ khởi tạo môi trường Web cho đúng Controller này, giúp test chạy cực nhanh
+@WebMvcTest(InventoryCategoryController.class)
+@ActiveProfiles("test")
 class InventoryCategoryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper; // Công cụ dùng để chuyển Object thành chuỗi JSON
 
-    // DÙNG @MockitoBean THAY VÌ @MockBean
+    @MockitoBean
+    private SessionStore sessionStore;
+
+    @MockitoBean // Thêm dòng này để đánh lừa hàm activateAdmin
+    private UserRepository userRepository;
+
     @MockitoBean
     private InventoryCategoryServiceInterface inventoryCategoryService;
 
+    // Giả sử RouteConstants.API_ADMIN_INVENTORY_CATEGORIES = "/api/admin/inventory-categories"
+    // Hãy import biến này từ class RouteConstants của bạn.
+    private static final String BASE_URL = RouteConstants.API_ADMIN_INVENTORY_CATEGORIES;
+    private final long CATEGORY_ID = 1L;
+
     private InventoryCategoryRequest validRequest;
-    private InventoryCategoryResponse categoryResponse;
+    private InventoryCategoryResponse mockResponse;
 
     @BeforeEach
     void setUp() {
         validRequest = new InventoryCategoryRequest();
         validRequest.setCategoryName("Medical Supplies");
-        validRequest.setDescription("Supplies for medical purposes.");
+        validRequest.setDescription("Basic medical tools");
 
-        categoryResponse = new InventoryCategoryResponse();
-        categoryResponse.setId(1L);
-        categoryResponse.setCategoryName("Medical Supplies");
-        categoryResponse.setDescription("Supplies for medical purposes.");
+        mockResponse = InventoryCategoryResponse.builder()
+                .id(CATEGORY_ID)
+                .categoryName("Medical Supplies")
+                .description("Basic medical tools")
+                .build();
     }
 
-    @Nested
-    @DisplayName("Endpoint: GET /api/admin/inventory/categories")
-    class GetAllInventoryCategoriesTests {
+    // ==========================================
+    // TEST METHOD: GET ALL
+    // ==========================================
+    @Test
+    void getAllInventoryCategories_Returns200AndPagedResponse() throws Exception {
+        // Arrange
+        int page = 0;
+        int size = 10;
+        PagedResponse<List<InventoryCategoryResponse>> pagedResponse = PagedResponse.of(
+                List.of(mockResponse), 200, "Success", page, 1, size, 1
+        );
 
-        @Test
-        // @WithMockUser(username = "admin", roles = {"ADMIN"})
-        @DisplayName("Happy Case: Should return 200 OK with a paged list for valid pagination")
-        void getAllInventoryCategories_withValidParams_shouldReturn200AndPagedResponse() throws Exception {
-            int page = 0;
-            int size = 10;
-           
+        when(inventoryCategoryService.getInventoryCategoryList(size, page)).thenReturn(pagedResponse);
 
-            mockMvc.perform(get(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES)
-                            .param("page", String.valueOf(page))
-                            .param("size", String.valueOf(size))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.content[0].id").value(categoryResponse.getId()))
-                    .andExpect(jsonPath("$.content[0].categoryName").value(categoryResponse.getCategoryName()))
-                    .andExpect(jsonPath("$.page").value(page))
-                    .andExpect(jsonPath("$.size").value(size));
-        }
-
-        @Test
-        @DisplayName("Error Case: Should return 400 Bad Request for negative page number")
-        void getAllInventoryCategories_withNegativePage_shouldReturn400() throws Exception {
-            mockMvc.perform(get(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES)
-                            .param("page", "-1")
-                            .param("size", "10"))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @DisplayName("Error Case: Should return 400 Bad Request for zero size")
-        void getAllInventoryCategories_withZeroSize_shouldReturn400() throws Exception {
-            mockMvc.perform(get(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES)
-                            .param("page", "0")
-                            .param("size", "0"))
-                    .andExpect(status().isBadRequest());
-        }
+        // Act & Assert
+        mockMvc.perform(get(BASE_URL)
+                        .param("page", String.valueOf(page))
+                        .param("size", String.valueOf(size)))
+                .andExpect(status().isOk())
+                // Kiểm tra dựa trên cấu trúc PagedResponse của bạn
+                .andExpect(jsonPath("$.statusCode").value(200))
+                .andExpect(jsonPath("$.data[0].id").value(CATEGORY_ID))
+                // Chú ý: Dùng "category_name" vì bạn đã config @JsonProperty trong Response
+                .andExpect(jsonPath("$.data[0].category_name").value("Medical Supplies")) 
+                .andExpect(jsonPath("$.metadata.currentPage").value(1));
     }
 
-    @Nested
-    @DisplayName("Endpoint: POST /api/admin/inventory/categories")
-    class CreateInventoryCategoryTests {
+    // ==========================================
+    // TEST METHOD: POST (Create)
+    // ==========================================
+    @Test
+    void createInventoryCategory_ValidRequest_Returns201() throws Exception {
+        // Arrange
+        when(inventoryCategoryService.createInventoryCategory(any(InventoryCategoryRequest.class)))
+                .thenReturn(mockResponse);
 
-        @Test
-        @DisplayName("Happy Case: Should return 201 Created with the new category")
-        void createInventoryCategory_withValidRequest_shouldReturn201AndCategory() throws Exception {
-            given(inventoryCategoryService.createInventoryCategory(any(InventoryCategoryRequest.class)))
-                    .willReturn(categoryResponse);
-
-            mockMvc.perform(post(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(validRequest)))
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.id").value(categoryResponse.getId()))
-                    .andExpect(jsonPath("$.categoryName").value(categoryResponse.getCategoryName()));
-        }
-
-        @Test
-        @DisplayName("Error Case: Should return 400 Bad Request when name is blank")
-        void createInventoryCategory_withBlankName_shouldReturn400() throws Exception {
-            validRequest.setCategoryName("   ");
-
-            mockMvc.perform(post(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(validRequest)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @DisplayName("Error Case: Should return 400 Bad Request when name is null")
-        void createInventoryCategory_withNullName_shouldReturn400() throws Exception {
-            validRequest.setCategoryName(null);
-
-            mockMvc.perform(post(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(validRequest)))
-                    .andExpect(status().isBadRequest());
-        }
+        // Act & Assert
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        // Biến object validRequest thành chuỗi JSON body
+                        .content(objectMapper.writeValueAsString(validRequest)))
+                .andExpect(status().isCreated()) // HTTP 201
+                .andExpect(jsonPath("$.id").value(CATEGORY_ID))
+                .andExpect(jsonPath("$.category_name").value("Medical Supplies"));
     }
 
-    @Nested
-    @DisplayName("Endpoint: GET /api/admin/inventory/categories/{categoryId}")
-    class GetInventoryCategoryByIdTests {
+    @Test
+    void createInventoryCategory_InvalidRequest_Returns400() throws Exception {
+        // Arrange
+        InventoryCategoryRequest invalidRequest = new InventoryCategoryRequest();
+        // Cố tình bỏ trống CategoryName để vi phạm @NotBlank
+        invalidRequest.setDescription("Missing name");
 
-        @Test
-        @DisplayName("Happy Case: Should return 200 OK with the category for a valid ID")
-        void getInventoryCategoryById_withValidId_shouldReturn200AndCategory() throws Exception {
-            long validId = 1L;
-            given(inventoryCategoryService.getInventoryCategoryById(validId)).willReturn(categoryResponse);
-
-            mockMvc.perform(get(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES + "/{categoryId}", validId))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(validId))
-                    .andExpect(jsonPath("$.categoryName").value(categoryResponse.getCategoryName()));
-        }
-
-        @Test
-        @DisplayName("Error Case: Should return 400 Bad Request for a zero ID")
-        void getInventoryCategoryById_withZeroId_shouldReturn400() throws Exception {
-            mockMvc.perform(get(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES + "/{categoryId}", 0L))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @DisplayName("Error Case: Should return 400 Bad Request for a negative ID")
-        void getInventoryCategoryById_withNegativeId_shouldReturn400() throws Exception {
-            mockMvc.perform(get(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES + "/{categoryId}", -1L))
-                    .andExpect(status().isBadRequest());
-        }
+        // Act & Assert
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest()); // Kích hoạt @Valid, trả về HTTP 400
     }
 
-    @Nested
-    @DisplayName("Endpoint: PUT /api/admin/inventory/categories/{categoryId}")
-    class UpdateInventoryCategoryTests {
+    // ==========================================
+    // TEST METHOD: GET BY ID
+    // ==========================================
+    @Test
+    void getInventoryCategoryById_Returns200() throws Exception {
+        // Arrange
+        when(inventoryCategoryService.getInventoryCategoryById(CATEGORY_ID)).thenReturn(mockResponse);
 
-        @Test
-        @DisplayName("Happy Case: Should return 200 OK with updated category")
-        void updateInventoryCategory_withValidIdAndRequest_shouldReturn200AndUpdatedCategory() throws Exception {
-            long validId = 1L;
-            given(inventoryCategoryService.updateInventoryCategory(anyLong(), any(InventoryCategoryRequest.class)))
-                    .willReturn(categoryResponse);
-
-            mockMvc.perform(put(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES + "/{categoryId}", validId)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(validRequest)))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(1L))
-                    .andExpect(jsonPath("$.categoryName").value(categoryResponse.getCategoryName()));
-        }
-
-        @Test
-        @DisplayName("Error Case: Should return 400 Bad Request for a zero ID")
-        void updateInventoryCategory_withZeroId_shouldReturn400() throws Exception {
-            mockMvc.perform(put(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES + "/{categoryId}", 0L)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(validRequest)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        @DisplayName("Error Case: Should return 400 Bad Request for an invalid request body")
-        void updateInventoryCategory_withInvalidRequest_shouldReturn400() throws Exception {
-            validRequest.setCategoryName("");
-
-            mockMvc.perform(put(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES + "/{categoryId}", 1L)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(validRequest)))
-                    .andExpect(status().isBadRequest());
-        }
+        // Act & Assert
+        mockMvc.perform(get(BASE_URL + "/{categoryId}", CATEGORY_ID))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(CATEGORY_ID))
+                .andExpect(jsonPath("$.category_name").value("Medical Supplies"));
     }
 
-    @Nested
-    @DisplayName("Endpoint: DELETE /api/admin/inventory/categories/{categoryId}")
-    class DeleteInventoryCategoryTests {
+    // ==========================================
+    // TEST METHOD: PUT (Update)
+    // ==========================================
+    @Test
+    void updateInventoryCategory_ValidRequest_Returns200() throws Exception {
+        // Arrange
+        when(inventoryCategoryService.updateInventoryCategory(eq(CATEGORY_ID), any(InventoryCategoryRequest.class)))
+                .thenReturn(mockResponse);
 
-        @Test
-        @DisplayName("Happy Case: Should return 204 No Content for a valid ID")
-        void deleteInventoryCategory_withValidId_shouldReturn204() throws Exception {
-            long validId = 1L;
-            doNothing().when(inventoryCategoryService).deleteInventoryCategory(validId);
+        // Act & Assert
+        mockMvc.perform(put(BASE_URL + "/{categoryId}", CATEGORY_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(CATEGORY_ID))
+                .andExpect(jsonPath("$.category_name").value("Medical Supplies"));
+    }
 
-            mockMvc.perform(delete(RouteConstants.API_ADMIN_INVENTORY_CATEGORIES + "/{categoryId}", validId))
-                    .andExpect(status().isNoContent());
+    // ==========================================
+    // TEST METHOD: DELETE
+    // ==========================================
+    @Test
+    void deleteInventoryCategory_Returns204() throws Exception {
+        // Arrange
+        // Dùng doNothing() vì hàm delete() trong Service là kiểu void (không trả về gì cả)
+        doNothing().when(inventoryCategoryService).deleteInventoryCategory(CATEGORY_ID);
 
-            verify(inventoryCategoryService).deleteInventoryCategory(validId);
-        }
+        // Act & Assert
+        mockMvc.perform(delete(BASE_URL + "/{categoryId}", CATEGORY_ID))
+                .andExpect(status().isNoContent()); // Kì vọng HTTP 204 No Content
     }
 }

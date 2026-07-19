@@ -46,7 +46,7 @@ public class ConsumableSupplyServiceImpl implements ConsumableSupplyService {
                 .stream()
                 .map(consumableSupplyMapper::toResponse)
                 .toList();
-
+        System.out.println("Content: " + content);
         return PagedResponse.of(content, 200, "Consumable supplies retrieved successfully",
                 page, consumableSupplyPage.getTotalPages(), size, consumableSupplyPage.getTotalElements());
     }

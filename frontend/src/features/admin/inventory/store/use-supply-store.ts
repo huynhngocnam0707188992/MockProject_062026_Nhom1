@@ -27,7 +27,7 @@ export interface SupplyFormValues {
     itemName: string;
     categoryId: string;
     facilityId: string;
-    stockOnHand: number;
+    stockOnHand:number;
     reorderThreshold: string;
     unitCost: string;
     privatePayRate: string;
@@ -62,7 +62,7 @@ const emptyFormValues: SupplyFormValues = {
     itemName: '',
     categoryId: '',
     facilityId: '',
-    stockOnHand: 0,
+    stockOnHand:0,
     reorderThreshold: '',
     unitCost: '',
     privatePayRate: '',
@@ -112,7 +112,8 @@ export const useSupplyStore = create<SupplyState>((set, get) => ({
             selectedSupply: supply,
             errorMessage: null,
             deleteDialogOpen: false,
-        }),
+        })
+        ,
     openUpdate: () => {
         const selectedSupply = get().selectedSupply;
 

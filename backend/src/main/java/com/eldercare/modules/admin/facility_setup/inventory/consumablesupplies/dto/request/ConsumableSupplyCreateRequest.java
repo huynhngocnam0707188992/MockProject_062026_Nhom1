@@ -18,7 +18,8 @@ public class ConsumableSupplyCreateRequest {
     private String itemName;
 
     @JsonProperty("category_id")
-    @NotBlank(message = "Category ID is required")
+    @NotNull(message = "Category ID is required")
+    @Positive(message = "Category ID must be a positive number")
     private Long categoryId;
 
     @JsonProperty("facility_id")
