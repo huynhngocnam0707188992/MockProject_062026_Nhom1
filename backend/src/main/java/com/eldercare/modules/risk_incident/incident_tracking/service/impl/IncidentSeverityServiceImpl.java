@@ -60,6 +60,14 @@ public class IncidentSeverityServiceImpl implements IncidentSeverityService {
             existing.setChartLockTrigger(request.getChartLockTrigger());
         }
 
+        if (request.getDescription() != null) {
+            existing.setDescription(request.getDescription());
+        }
+
+        if (request.getExample() != null) {
+            existing.setExample(request.getExample());
+        }
+
         return IncidentSeverityMapper.toResponse(
                 incidentSeverityRepository.save(existing)
         );
