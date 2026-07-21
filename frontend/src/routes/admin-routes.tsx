@@ -1,17 +1,17 @@
 import AdmissionPage from "@/features/admin/admissions/pages/admission-page";
 import PreAdmissionPage from "@/features/admin/pre-admission/pages/pre-admission-page";
-import PreAdmissionDetailPage from "@/features/admin/pre-admission/pages/pre-admission-detail-page";
 import AuditlogPage from "@/features/admin/audit-logs/pages/audit-log-page";
 import CarePlanPage from "@/features/admin/care-plans/pages/care-plan-page";
-import CarePlanDetailPage from "@/features/admin/care-plans/pages/care-plan-detail-page";
 import CareTaskPage from "@/features/admin/care-tasks/pages/care-task-page";
 import DashboardPage from "@/features/admin/dashboard/pages/dashboard-page";
 import FacilityPage from "@/features/admin/facilities/pages/facility-page";
 import IncidentSeverityPage from "@/features/admin/incident-severity/pages/incident-severity-page";
+import IncidentPage from "@/features/admin/incidents/pages/incident-page";
 import NotificationPage from "@/features/admin/notifications/pages/notification-page";
 import ProfilePage from "@/features/admin/profile/pages/profile-page";
 import ResidentPage from "@/features/admin/residents/pages/resident-page";
 import ResidentDetailPage from "@/features/admin/residents/pages/resident-detail-page";
+import ResidentEditPage from "@/features/admin/residents/pages/resident-edit-page";
 import SlaConfigPage from "@/features/admin/sla-config/pages/sla-config-page";
 import SettingPage from "@/features/admin/settings/pages/setting-page";
 import { AdminLayout } from "@/layouts/admin-layout";
@@ -22,6 +22,10 @@ import { FacilityDetailPage } from "@/features/admin/facilities/pages/facility-d
 import DemoDataPage from "@/features/admin/demo-data/pages/demo-data-page";
 import StaffingRatioPage from "@/features/admin/staffing-ratios/pages/staffing-ratio-page";
 import RolePage from "@/features/admin/roles/pages/role-page";
+import { AssessmentPage } from "@/features/admin/assessment/pages/assessment-page";
+import CarePlanReviewPage from "@/features/admin/care-plans/pages/care-plan-review-page";
+import CarePlanDetailPage from "@/features/admin/care-plans/pages/care-plan-detail/care-plan-detail-page";
+import EquipmentPage from "@/features/admin/inventory/pages/equipment-page";
 
 import { LOCRatesPage } from "@/features/admin/facilities/pages/loc-rates-page";
 
@@ -57,22 +61,26 @@ export const adminRoutes: RouteObject = {
       ),
     },
     {
+      path: "residents/:id/edit",
+      element: (
+        <RequirePermission permission={PERMISSIONS.RESIDENT_VIEW}>
+          <ResidentEditPage />
+        </RequirePermission>
+      ),
+    },
+    {
       path: "pre-admission",
       element: (
-        <RequirePermission
-          permission={[PERMISSIONS.SCREENING_VIEW, PERMISSIONS.ASSESSMENT_VIEW]}
-        >
+        <RequirePermission permission={PERMISSIONS.SCREENING_VIEW}>
           <PreAdmissionPage />
         </RequirePermission>
       ),
     },
     {
-      path: "pre-admission/:id",
+      path: "assessment",
       element: (
-        <RequirePermission
-          permission={[PERMISSIONS.SCREENING_VIEW, PERMISSIONS.ASSESSMENT_VIEW]}
-        >
-          <PreAdmissionDetailPage />
+        <RequirePermission permission={PERMISSIONS.ASSESSMENT_VIEW}>
+          <AssessmentPage />
         </RequirePermission>
       ),
     },
@@ -125,13 +133,22 @@ export const adminRoutes: RouteObject = {
       ),
     },
     {
+      path: "incidents",
+      element: (
+        <RequirePermission permission={PERMISSIONS.INCIDENTS_VIEW}>
+          <IncidentPage />
+        </RequirePermission>
+      ),
+    },
+
+    {
       path: "sla-config",
       element: (
         <RequirePermission permission={PERMISSIONS.SLA_CONFIG_VIEW}>
           <SlaConfigPage />
         </RequirePermission>
       ),
-},
+    },
     {
       path: "care-plans",
       element: (
@@ -145,6 +162,15 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.CARE_PLAN_VIEW}>
           <CarePlanDetailPage />
+
+        </RequirePermission>
+      ),
+    },
+    {
+      path: "care-plans/review",
+      element: (
+        <RequirePermission permission={PERMISSIONS.CARE_PLAN_VIEW}>
+          <CarePlanReviewPage />
         </RequirePermission>
       ),
     },
@@ -182,6 +208,14 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.USER_VIEW}>
           <DemoDataPage />
+        </RequirePermission>
+      ),
+    },
+    {
+      path: "equipment",
+      element: (
+        <RequirePermission permission={PERMISSIONS.EQUIPMENT_VIEW}>
+          <EquipmentPage />
         </RequirePermission>
       ),
     },

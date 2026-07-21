@@ -1,5 +1,7 @@
 package com.eldercare.modules.resident_intake.admission_ledger;
 
+import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
+import com.eldercare.modules.resident_intake.pre_admission.PreAdmissionScreeningEntity;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,9 +35,15 @@ public class AdmissionEntity {
     @JoinColumn(name = "resident_id", nullable = false)
     private ResidentEntity resident;
 
-    @Column(name = "facility_id", nullable = false)
-    private Long facilityId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "facility_id", nullable = false)
+    private FacilityEntity facility;
 
+    @ManyToOne
+    @JoinColumn(name = "pre_admission_screening_id")
+    private PreAdmissionScreeningEntity preAdmissionScreening;
+
+    private Boolean isCurrent;
     @Column(name = "created_at", nullable = false)
     @Builder.Default
     private OffsetDateTime createdAt = OffsetDateTime.now();

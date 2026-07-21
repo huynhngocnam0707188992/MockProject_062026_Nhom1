@@ -2,18 +2,15 @@ package com.eldercare.modules.admin.user_management;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "roles")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class RoleEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,7 +21,8 @@ public class RoleEntity {
     private String description;
 
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
 
     @Column(name = "created_at")
     private OffsetDateTime createdAt;

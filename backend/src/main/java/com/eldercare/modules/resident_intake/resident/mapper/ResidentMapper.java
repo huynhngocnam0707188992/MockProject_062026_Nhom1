@@ -134,8 +134,8 @@ public class ResidentMapper {
         List<ResidentDetailResponseDto.Badge> badges = new ArrayList<>();
         badges.add(new ResidentDetailResponseDto.Badge(dto.getStatus(), "active"));
         
-        // DNR (mocked)
-        boolean isDnr = false;
+        // DNR (mapped from resident chart locked flag representing DNR status)
+        boolean isDnr = resident.isChartLocked();
         badges.add(new ResidentDetailResponseDto.Badge(isDnr ? "DNR" : "No DNR", isDnr ? "dnr" : "nodnr"));
 
         // LOC level
@@ -170,11 +170,11 @@ public class ResidentMapper {
         if (!admissions.isEmpty()) {
             demo.setAdmissionDate(admissions.get(0).getAdmissionDate());
         } else {
-            demo.setAdmissionDate(LocalDate.now().minusYears(1));
+            demo.setAdmissionDate(resident.getCreatedAt() != null ? resident.getCreatedAt().toLocalDate() : LocalDate.now());
         }
 
         // SSN from sensitive info
-        demo.setSsn(sensitive.isPresent() ? sensitive.get().getSsnEncrypted() : "XXX-XX-0000");
+        demo.setSsn(sensitive.isPresent() ? sensitive.get().getSsnEncrypted() : "—");
 
         demo.setRoomBed(resident.getBed() != null ? resident.getBed().getRoom().getRoomNumber() + " / " + resident.getBed().getBedNumber() : "—");
         demo.setGender(resident.getGender());
@@ -223,14 +223,14 @@ public class ResidentMapper {
         if (diagnoses != null && !diagnoses.isEmpty()) {
             dto.setDiagnoses(diagnoses.stream().map(ClinicalRecordEntity::getDescription).collect(Collectors.toList()));
         } else {
-            dto.setDiagnoses(Arrays.asList("Type 2 DM (E11.9)", "HTN (I10)", "CKD Stage 3 (N18.3)"));
+            dto.setDiagnoses(new ArrayList<>());
         }
 
         // Allergies (Clinical records)
         if (allergies != null && !allergies.isEmpty()) {
             dto.setAllergies(allergies.stream().map(ClinicalRecordEntity::getDescription).collect(Collectors.toList()));
         } else {
-            dto.setAllergies(Arrays.asList("Penicillin", "Sulfa drugs", "Latex"));
+            dto.setAllergies(new ArrayList<>());
         }
 
         // Insurance

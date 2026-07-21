@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { LogOut, User } from "lucide-react";
 import {
   DropdownMenu,
@@ -22,6 +22,14 @@ export const UserAvatarMenu = ({
   subtitle,
   profilePath,
 }: UserAvatarMenuProps) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("eldcare_token");
+    navigate("/login");
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none">
@@ -41,14 +49,17 @@ export const UserAvatarMenu = ({
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Link to={profilePath} className="flex items-center gap-2">
+            <Link to={profilePath} className="flex items-center gap-2 w-full">
               <User className="w-4 h-4" />
               Profile
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuGroup>
-          <DropdownMenuItem className="flex items-center gap-2 text-destructive">
+          <DropdownMenuItem 
+            className="flex items-center gap-2 text-destructive cursor-pointer"
+            onClick={handleLogout}
+          >
             <LogOut className="w-4 h-4" />
             Log out
           </DropdownMenuItem>
