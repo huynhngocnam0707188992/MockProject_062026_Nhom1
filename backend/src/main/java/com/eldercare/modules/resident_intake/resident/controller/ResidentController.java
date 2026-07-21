@@ -112,11 +112,11 @@ public class ResidentController {
         return ResponseEntity.ok(ApiResponse.success(contacts));
     }
 
-    @GetMapping("/{id}/care-level-history")
-    public ResponseEntity<ApiResponse<List<ResidentCareLevelHistoryResponseDto>>> getResidentCareLevelHistory(@PathVariable Long id) {
-        List<ResidentCareLevelHistoryResponseDto> history = residentService.getResidentCareLevelHistory(id);
-        return ResponseEntity.ok(ApiResponse.success(history));
-    }
+    // @GetMapping("/{id}/care-level-history")
+    // public ResponseEntity<ApiResponse<List<ResidentCareLevelHistoryResponseDto>>> getResidentCareLevelHistory(@PathVariable Long id) {
+    //     List<ResidentCareLevelHistoryResponseDto> history = residentService.getResidentCareLevelHistory(id);
+    //     return ResponseEntity.ok(ApiResponse.success(history));
+    // }
 
     @GetMapping("/{id}/sensitive-info")
     public ResponseEntity<ApiResponse<ResidentSensitiveInfoResponseDto>> getResidentSensitiveInfo(@PathVariable Long id) {

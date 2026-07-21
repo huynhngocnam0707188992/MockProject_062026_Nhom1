@@ -273,12 +273,16 @@ public class ResidentCareLevelHistoryServiceImpl
     // DELETE blocked
     // ==========================================================
     @Override
-    public void deleteCareLevelHistory(Long historyId) {
+public void deleteCareLevelHistory(Long historyId) {
 
+    if (!historyRepository.existsById(historyId)) {
         throw new RuntimeException(
-                "Care level history deletion is not allowed"
+                "Care level history not found with id: " + historyId
         );
     }
+
+
+}
 
 
 
