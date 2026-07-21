@@ -39,10 +39,10 @@ const buildSchema = (mode: "create" | "update"): z.ZodType<SupplyFormValues> =>
         itemName: z.string().min(1, "Supply name is required"),
         categoryId: z.string().min(1, "Category is required"),
         facilityId: z.string().min(1, "Facility is required"),
-        stockOnHand: z.number().min(0, "Initial stock must be a non-negative number"),
-        reorderThreshold: z.string().min(1, "Reorder threshold is required"),
-        unitCost: z.string().min(1, "Unit cost is required"),
-        privatePayRate: z.string().min(1, "Private pay rate is required"),
+        stockOnHand: z.coerce.number().min(1, "Initial stock must be a non-negative number"),
+        reorderThreshold: z.coerce.string().min(1, "Reorder threshold is required"),
+        unitCost: z.coerce.string().min(1, "Unit cost is required"),
+        privatePayRate: z.coerce.string().min(1, "Private pay rate is required"),
     }).superRefine((values, context) => {
         if (mode === "create" && !values.stockOnHand) {
             context.addIssue({
@@ -151,8 +151,10 @@ export function SupplyFormView({
                   <Input
                     {...field}
                     className="h-11 rounded-sm border-slate-300 bg-white text-slate-900"
-                    disabled={mode === "update"}
                     placeholder="Reorder Threshold"
+                    type="number"
+                    min="0"
+                    step="0.01"
                   />
                 </FormControl>
                 <FormMessage />
@@ -194,8 +196,10 @@ export function SupplyFormView({
                   <Input
                     {...field}
                     className="h-11 rounded-sm border-slate-300 bg-white text-slate-900"
-                    disabled={mode === "update"}
                     placeholder="Unit Cost"
+                    type="number"
+                    min="0"
+                    step="0.01"
                   />
                 </FormControl>
                 <FormMessage />
@@ -212,8 +216,10 @@ export function SupplyFormView({
                   <Input
                     {...field}
                     className="h-11 rounded-sm border-slate-300 bg-white text-slate-900"
-                    disabled={mode === "update"}
                     placeholder="Private Pay Rate"
+                    type="number"
+                    min="0"
+                    step="0.01"
                   />
                 </FormControl>
                 <FormMessage />

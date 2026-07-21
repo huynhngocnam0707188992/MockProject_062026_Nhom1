@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,6 +27,7 @@ public class BackendApplication {
 	}
 
 	@Bean
+	@Profile("!test")
 	public CommandLineRunner activateAdmin(UserRepository userRepository, RoleRepository roleRepository) {
 		return args -> {
 			// Ensure CNA role exists

@@ -115,6 +115,7 @@ export default function SupplyTab() {
   };
 
   const handleUpdateSubmit = async (values: SupplyFormValues) => {
+    console.log("Debug - selectedSupply:", selectedSupply);
     if (!selectedSupply) {
       return;
     }

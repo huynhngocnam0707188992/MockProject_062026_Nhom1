@@ -8,16 +8,20 @@ import type { SupplyItem } from "../store/use-supply-store";
 const supplyQueryKey = ["inventory-supply"] as const;
 const supplyOptionsQueryKey = ["inventory-supply-options"] as const;
 
-const mapSupplyResponse = (supply: SupplyResponse): SupplyItem => ({
+const mapSupplyResponse = (supply: SupplyResponse): SupplyItem => {
+  // Thực hiện console.log ở đây
+  console.log('Mapping supply:', supply);
+
+  return {
     id: supply.id,
     itemName: supply.item_name,
     category: {
-        id: supply.category.category_id,
-        name: supply.category.category_name,
+      id: supply.category.category_id,
+      name: supply.category.category_name,
     },
     facility: {
-        id: supply.facility.facility_id,
-        name: supply.facility.facility_name,
+      id: supply.facility.facility_id,
+      name: supply.facility.facility_name,
     },
     stockOnHand: supply.stock_on_hand,
     total: supply.total,
@@ -25,7 +29,9 @@ const mapSupplyResponse = (supply: SupplyResponse): SupplyItem => ({
     unitCost: supply.unit_cost,
     privatePayRate: supply.private_pay_rate,
     status: supply.status,
-});
+  };
+};
+
 
 const mapSupplyList = (supply: SupplyResponse[] | undefined): SupplyItem[] => {
     if (!Array.isArray(supply)) {

@@ -10,9 +10,9 @@ import com.eldercare.modules.admin.facility_setup.inventory.consumablesupplies.e
 @Mapper(componentModel = "spring")
 public interface ConsumableSupplyMapper {
 
-    @Mapping(target = "id", ignore = true)
     ConsumableSupplyResponse toResponse(ConsumableSupplyEntity entity);
 
+    @Mapping(target = "id", ignore = true)
     ConsumableSupplyEntity toEntity(ConsumableSupplyCreateRequest request);
 
 }
