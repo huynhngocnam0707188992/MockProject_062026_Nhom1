@@ -11,12 +11,16 @@ import com.eldercare.modules.resident_intake.resident.repository.ResidentReposit
 import com.eldercare.modules.resident_intake.resident.service.ResidentService;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.repository.FacilityRepository;
+import com.eldercare.modules.resident_intake.admission_ledger.repository.AdmissionRepository;
+import com.eldercare.modules.resident_intake.resident.repository.ResidentCareLevelHistoryRepository;
+import com.eldercare.modules.resident_intake.resident.repository.ResidentSensitiveInfoRepository;
 import com.eldercare.common.enums.RoomType;
 import com.eldercare.common.enums.BedStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +28,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class ResidentV1ServiceTests {
 
     @Autowired
@@ -41,12 +46,24 @@ class ResidentV1ServiceTests {
     @Autowired
     private FacilityRepository facilityRepository;
 
+    @Autowired
+    private AdmissionRepository admissionRepository;
+
+    @Autowired
+    private ResidentCareLevelHistoryRepository residentCareLevelHistoryRepository;
+
+    @Autowired
+    private ResidentSensitiveInfoRepository residentSensitiveInfoRepository;
+
     private ResidentEntity testResident;
     private BedEntity bed1;
     private BedEntity bed2;
 
     @BeforeEach
     void setUp() {
+        admissionRepository.deleteAll();
+        residentCareLevelHistoryRepository.deleteAll();
+        residentSensitiveInfoRepository.deleteAll();
         residentRepository.deleteAll();
         bedRepository.deleteAll();
         roomRepository.deleteAll();
