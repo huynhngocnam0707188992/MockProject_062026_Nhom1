@@ -1,5 +1,6 @@
-package com.eldercare.modules.resident_intake.care_level.admin.dto.response;
+package com.eldercare.modules.admin.facility_setup.care_level.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter
@@ -11,10 +12,14 @@ public class CareLevelResponse {
 
     private Long id;
 
+    @JsonProperty("level_code")
     private String levelCode;
 
+    @JsonProperty("level_name")
     private String levelName;
 
+    @JsonProperty("is_deleted")
     private Boolean isDeleted;
 
 }
+

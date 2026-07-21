@@ -27,6 +27,8 @@ import CarePlanReviewPage from "@/features/admin/care-plans/pages/care-plan-revi
 import CarePlanDetailPage from "@/features/admin/care-plans/pages/care-plan-detail/care-plan-detail-page";
 import EquipmentPage from "@/features/admin/inventory/pages/equipment-page";
 
+import { LOCRatesPage } from "@/features/admin/facilities/pages/loc-rates-page";
+
 export const adminRoutes: RouteObject = {
   path: "/admin",
   element: <AdminLayout />,
@@ -103,6 +105,14 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.FACILITY_VIEW}>
           <FacilityDetailPage />
+        </RequirePermission>
+      ),
+    },
+    {
+      path: "loc-rates",
+      element: (
+        <RequirePermission permission={PERMISSIONS.FACILITY_VIEW}>
+          <LOCRatesPage />
         </RequirePermission>
       ),
     },

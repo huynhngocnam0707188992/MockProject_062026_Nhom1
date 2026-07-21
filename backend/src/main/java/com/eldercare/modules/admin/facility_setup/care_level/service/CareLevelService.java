@@ -1,12 +1,12 @@
-package com.eldercare.modules.resident_intake.care_level.admin.service;
+package com.eldercare.modules.admin.facility_setup.care_level.service;
 
 import java.util.List;
 
-import com.eldercare.modules.resident_intake.care_level.admin.dto.request.CreateCareLevelRateRequest;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.request.UpdateCareLevelRateRequest;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.request.UpdateCareLevelRequest;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.response.CareLevelRateResponse;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.response.CareLevelResponse;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.request.CreateCareLevelRateRequest;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.request.UpdateCareLevelRateRequest;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.request.UpdateCareLevelRequest;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.response.CareLevelRateResponse;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.response.CareLevelResponse;
 
 public interface CareLevelService {
 
@@ -32,3 +32,4 @@ public interface CareLevelService {
     List<CareLevelRateResponse> seedSampleCareLevelRates();
  
 }
+

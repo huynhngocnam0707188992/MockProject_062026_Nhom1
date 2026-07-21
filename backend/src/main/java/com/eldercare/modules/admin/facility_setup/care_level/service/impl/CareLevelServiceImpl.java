@@ -1,20 +1,20 @@
-package com.eldercare.modules.resident_intake.care_level.admin.service.impl;
+package com.eldercare.modules.admin.facility_setup.care_level.service.impl;
 
-import com.eldercare.modules.resident_intake.care_level.CareLevelRateEntity;
-import com.eldercare.modules.resident_intake.care_level.CareLevelEntity;
+import com.eldercare.modules.admin.facility_setup.care_level.entity.CareLevelRateEntity;
+import com.eldercare.modules.admin.facility_setup.care_level.entity.CareLevelEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import com.eldercare.modules.resident_intake.care_level.admin.dto.request.CreateCareLevelRateRequest;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.request.UpdateCareLevelRateRequest;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.request.UpdateCareLevelRequest;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.response.CareLevelRateResponse;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.response.CareLevelResponse;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.request.CreateCareLevelRateRequest;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.request.UpdateCareLevelRateRequest;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.request.UpdateCareLevelRequest;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.response.CareLevelRateResponse;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.response.CareLevelResponse;
 
 
-import com.eldercare.modules.resident_intake.care_level.admin.repository.CareLevelRateRepository;
-import com.eldercare.modules.resident_intake.care_level.admin.repository.CareLevelRepository;
-import com.eldercare.modules.resident_intake.care_level.admin.service.CareLevelService;
+import com.eldercare.modules.admin.facility_setup.care_level.repository.CareLevelRateRepository;
+import com.eldercare.modules.admin.facility_setup.care_level.repository.CareLevelRepository;
+import com.eldercare.modules.admin.facility_setup.care_level.service.CareLevelService;
 
 import java.util.List;
 
@@ -244,3 +244,4 @@ public List<CareLevelRateResponse> getCareLevelRates(Long careLevelId) {
                 .build();
     }
 }
+
