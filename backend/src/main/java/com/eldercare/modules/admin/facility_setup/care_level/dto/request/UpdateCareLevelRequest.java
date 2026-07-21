@@ -1,4 +1,4 @@
-package com.eldercare.modules.resident_intake.care_level.admin.dto.request;
+package com.eldercare.modules.admin.facility_setup.care_level.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
@@ -16,3 +16,4 @@ public class UpdateCareLevelRequest {
     private Boolean isDeleted;
 
 }
+

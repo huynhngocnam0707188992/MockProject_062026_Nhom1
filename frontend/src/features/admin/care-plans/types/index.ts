@@ -1,39 +1,3 @@
-// LOC Rate Types
-export interface CareLevelRateResponse {
-  id: number;
-  careLevelId: number;
-  facilityId: number;
-  dailyRate: number;
-  effectiveFrom: string;
-  effectiveTo: string | null;
-}
-
-export interface CreateCareLevelRateRequest {
-  careLevelId: number;
-  facilityId: number;
-  dailyRate: number;
-  effectiveFrom: string;
-}
-
-export interface UpdateCareLevelRateRequest {
-  careLevelId?: number;
-  facilityId?: number;
-  dailyRate?: number;
-  effectiveFrom?: string;
-  effectiveTo?: string | null;
-}
-
-export interface CareLevelResponse {
-  id: number;
-  levelCode: string;
-  levelName: string;
-  isDeleted: boolean;
-}
-
-export interface UpdateCareLevelRequest {
-  isDeleted: boolean;
-}
-
 // Care Plan Types
 export interface CarePlan {
   id: number;

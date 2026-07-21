@@ -9,7 +9,7 @@ export default function CarePlanReivewTitle({
 }: CarePlanReviewTitle) {
   return (
     <Title>
-      <p className="font-bold">{`Review Care Plans - ${residentName ?? "Nguyen Vu"}`}</p>
+      <p className="font-bold">{`Review Care Plan - ${residentName}`}</p>
     </Title>
   );
 }

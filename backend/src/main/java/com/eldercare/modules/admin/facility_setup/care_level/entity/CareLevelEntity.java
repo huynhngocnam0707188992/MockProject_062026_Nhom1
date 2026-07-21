@@ -1,4 +1,4 @@
-package com.eldercare.modules.resident_intake.care_level;
+package com.eldercare.modules.admin.facility_setup.care_level.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,3 +26,4 @@ public class CareLevelEntity {
     @Builder.Default
     private Boolean isDeleted = false;
 }
+

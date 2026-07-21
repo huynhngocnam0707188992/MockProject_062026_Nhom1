@@ -160,7 +160,7 @@ class FacilityControllerTests {
         @Test
         @DisplayName("EP1: Valid request -> Returns 200 OK with select options")
         void getFacilitiesForSelect_ReturnsOk() throws Exception {
-            FacilitySelectResponse selectResponse = new FacilitySelectResponse(1L, "Test Facility");
+            FacilitySelectResponse selectResponse = new FacilitySelectResponse(1L, "Test Facility", java.util.Collections.emptyList());
             when(facilityService.getFacilitiesForSelect()).thenReturn(List.of(selectResponse));
 
             mockMvc.perform(get(RouteConstants.API_ADMIN_FACILITIES + "/select")

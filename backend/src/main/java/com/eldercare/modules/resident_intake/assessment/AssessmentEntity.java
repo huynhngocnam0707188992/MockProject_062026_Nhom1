@@ -6,7 +6,7 @@ import java.util.List;
 import com.eldercare.modules.admin.user_management.UserEntity;
 import com.eldercare.modules.resident_intake.admission_ledger.AdmissionEntity;
 import com.eldercare.modules.resident_intake.assessment_detail.AssessmentDetailEntity;
-import com.eldercare.modules.resident_intake.care_level.CareLevelEntity;
+import com.eldercare.modules.admin.facility_setup.care_level.entity.CareLevelEntity;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 
 import jakarta.persistence.*;

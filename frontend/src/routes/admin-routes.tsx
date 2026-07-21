@@ -27,6 +27,8 @@ import CarePlanReviewPage from "@/features/admin/care-plans/pages/care-plan-revi
 import CarePlanDetailPage from "@/features/admin/care-plans/pages/care-plan-detail/care-plan-detail-page";
 import EquipmentPage from "@/features/admin/inventory/pages/equipment-page";
 
+import { LOCRatesPage } from "@/features/admin/facilities/pages/loc-rates-page";
+
 export const adminRoutes: RouteObject = {
   path: "/admin",
   element: <AdminLayout />,
@@ -107,6 +109,14 @@ export const adminRoutes: RouteObject = {
       ),
     },
     {
+      path: "loc-rates",
+      element: (
+        <RequirePermission permission={PERMISSIONS.FACILITY_VIEW}>
+          <LOCRatesPage />
+        </RequirePermission>
+      ),
+    },
+    {
       path: "staffing-ratios",
       element: (
         <RequirePermission permission={PERMISSIONS.FACILITY_VIEW}>
@@ -152,12 +162,11 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.CARE_PLAN_VIEW}>
           <CarePlanDetailPage />
-
         </RequirePermission>
       ),
     },
     {
-      path: "care-plans/review",
+      path: "care-plans/review/:id",
       element: (
         <RequirePermission permission={PERMISSIONS.CARE_PLAN_VIEW}>
           <CarePlanReviewPage />

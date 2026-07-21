@@ -15,6 +15,5 @@ public interface FacilityRepository extends JpaRepository<FacilityEntity, Long> 
 
     Page<FacilityEntity> findByFacilityCodeContainingIgnoreCaseOrNameContainingIgnoreCaseOrLicenseNumberContainingIgnoreCase(
             String code, String name, String license, Pageable pageable);
-
     List<FacilityEntity> findByIsDeletedFalse();
 }

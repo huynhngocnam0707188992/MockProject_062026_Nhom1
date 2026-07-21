@@ -1,15 +1,15 @@
-package com.eldercare.modules.resident_intake.care_level.admin.controller;
+package com.eldercare.modules.admin.facility_setup.care_level.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.eldercare.modules.resident_intake.care_level.admin.dto.request.CreateCareLevelRateRequest;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.request.UpdateCareLevelRateRequest;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.request.UpdateCareLevelRequest;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.response.CareLevelRateResponse;
-import com.eldercare.modules.resident_intake.care_level.admin.dto.response.CareLevelResponse;
-import com.eldercare.modules.resident_intake.care_level.admin.service.CareLevelService;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.request.CreateCareLevelRateRequest;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.request.UpdateCareLevelRateRequest;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.request.UpdateCareLevelRequest;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.response.CareLevelRateResponse;
+import com.eldercare.modules.admin.facility_setup.care_level.dto.response.CareLevelResponse;
+import com.eldercare.modules.admin.facility_setup.care_level.service.CareLevelService;
 
 import java.util.List;
 
@@ -138,3 +138,4 @@ public class AdminCareLevelController {
     }
 
 }
+

@@ -10,11 +10,11 @@ export type ResidentDefinition = {
 export type CarePlanAuthor = {
   id: number;
   fullname: string;
-  roleName: string;
+  role: string;
 };
 export type CarePlan = {
   id: number;
-  LOCTier: number;
+  locTier: number;
   cycle: number;
 
   status:
@@ -79,7 +79,7 @@ export type CarePlanDetail = {
   lastReviewedBy: string | null;
   lastReviewedDateTime: string | null;
   nextReviewDateTime: string | null;
-
+  createdBy: CarePlanAuthor;
   resident: {
     id: number;
     fullname: string;
