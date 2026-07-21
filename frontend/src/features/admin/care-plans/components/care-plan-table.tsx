@@ -67,7 +67,7 @@ export default function CarePlanTable(props: CarePlanTableProps) {
               </TableCell>
 
               <TableCell className="text-left">
-                <Text>{carePlan.LOCTier}</Text>
+                <Text>{carePlan.locTier}</Text>
               </TableCell>
 
               <TableCell className="text-left">
