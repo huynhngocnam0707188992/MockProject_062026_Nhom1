@@ -162,12 +162,11 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.CARE_PLAN_VIEW}>
           <CarePlanDetailPage />
-
         </RequirePermission>
       ),
     },
     {
-      path: "care-plans/review",
+      path: "care-plans/review/:id",
       element: (
         <RequirePermission permission={PERMISSIONS.CARE_PLAN_VIEW}>
           <CarePlanReviewPage />

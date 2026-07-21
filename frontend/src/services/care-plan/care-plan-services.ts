@@ -31,3 +31,17 @@ export const getCarePlanDetail = async (id: number) => {
 
   return response.data;
 };
+
+export type ApproveCarePlanResponse = {
+  id: number;
+  status: "ACTIVE";
+  updatedAt: string;
+};
+
+export const approveCarePlan = async (
+  id: number,
+): Promise<ApproveCarePlanResponse> => {
+  const response = await apiClient.patch(`/care-plans/${id}/activate`);
+
+  return response.data.data;
+};
