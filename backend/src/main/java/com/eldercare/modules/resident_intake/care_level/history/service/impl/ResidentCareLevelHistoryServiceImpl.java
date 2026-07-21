@@ -1,8 +1,8 @@
 package com.eldercare.modules.resident_intake.care_level.history.service.impl;
 
-import com.eldercare.modules.resident_intake.care_level.CareLevelEntity;
-import com.eldercare.modules.resident_intake.care_level.ResidentCareLevelHistoryEntity;
-import com.eldercare.modules.resident_intake.care_level.admin.repository.CareLevelRepository;
+import com.eldercare.modules.admin.facility_setup.care_level.entity.CareLevelEntity;
+import com.eldercare.modules.admin.facility_setup.care_level.entity.ResidentCareLevelHistoryEntity;
+import com.eldercare.modules.admin.facility_setup.care_level.repository.CareLevelRepository;
 import com.eldercare.modules.resident_intake.care_level.history.dto.request.TransitionResidentCareLevelRequest;
 import com.eldercare.modules.resident_intake.care_level.history.dto.request.UpdateResidentCareLevelHistoryRequest;
 import com.eldercare.modules.resident_intake.care_level.history.dto.response.ActiveCareLevelSummaryResponse;

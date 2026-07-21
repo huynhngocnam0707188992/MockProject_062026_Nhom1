@@ -25,8 +25,8 @@ import com.eldercare.modules.resident_intake.assessment_detail.dto.response.Asse
 import com.eldercare.modules.resident_intake.assessment_metric.AssessmentMetricEntity;
 import com.eldercare.modules.resident_intake.assessment_metric.dto.AssessmentMetricDTO;
 import com.eldercare.modules.resident_intake.assessment_metric.repository.AssessmentMetricRepository;
-import com.eldercare.modules.resident_intake.care_level.CareLevelEntity;
-import com.eldercare.modules.resident_intake.care_level.admin.repository.CareLevelRepository;
+import com.eldercare.modules.admin.facility_setup.care_level.entity.CareLevelEntity;
+import com.eldercare.modules.admin.facility_setup.care_level.repository.CareLevelRepository;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import com.eldercare.modules.resident_intake.care_level.history.dto.response.AssessmentItemResponse;
 import com.eldercare.modules.resident_intake.care_level.history.dto.response.LocClassificationResultResponse;
