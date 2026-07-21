@@ -1,6 +1,7 @@
 package com.eldercare.modules.careplan_management.careplan_design.dto.getCarePlanDetailDTO;
 
 import com.eldercare.modules.careplan_management.careplan_design.dto.listCarePlansDTO.CarePlanOutput;
+import com.eldercare.modules.careplan_management.careplan_design.dto.listCarePlansDTO.CarePlanOutput.CarePlanAuthorOutput;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class GetCarePlanDetailResponseDTO {
     public String nextReviewDateTime;
     public int cycle;
     public List<Goal> goals;
+    public CarePlanAuthorOutput createdBy;
     public String createdAt;
     public String updatedAt;
     public Boolean isDeleted;

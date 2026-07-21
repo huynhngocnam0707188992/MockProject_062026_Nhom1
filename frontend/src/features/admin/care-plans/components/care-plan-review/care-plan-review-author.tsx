@@ -1,11 +1,19 @@
 import { cn } from "@/lib/utils";
 import Text from "../../ui/Text";
 import Title from "../../ui/Title";
+import type { CarePlanAuthor } from "@/services/care-plan/care-plan-types";
+import { formatOffsetDateTimeToDateTime } from "../../utils/time-utils";
 
 type CarePlanReviewAuthorProps = {
   className?: string;
+  author: CarePlanAuthor;
+  updatedAt: string;
 };
-function CarePlanReviewAuthor({ className }: CarePlanReviewAuthorProps) {
+function CarePlanReviewAuthor({
+  className,
+  author,
+  updatedAt,
+}: CarePlanReviewAuthorProps) {
   return (
     <div
       className={cn(
@@ -15,8 +23,10 @@ function CarePlanReviewAuthor({ className }: CarePlanReviewAuthorProps) {
     >
       <Title className="text-[16px] mb-[6px]">Author Accountability</Title>
       <div id="interventions">
-        <Text>Prepared by: asjkldjaslkd</Text>
-        <Text>Prepared on: lsdkajflkasdjflk</Text>
+        <Text>
+          Prepared by: {author.fullname} - {author.role}
+        </Text>
+        <Text>Prepared on: {formatOffsetDateTimeToDateTime(updatedAt)}</Text>
       </div>
     </div>
   );

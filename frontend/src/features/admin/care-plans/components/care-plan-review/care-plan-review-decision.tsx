@@ -6,9 +6,16 @@ import ApproveCarePlanDialog from "./approve-care-plan-dialog";
 
 type CarePlanReviewDecisionProps = {
   className?: string;
+  actorReviewName: string;
+  actorReviewRoleName: string;
+
+  onApprove: () => Promise<void>;
 };
 export default function CarePlanReviewDecision({
   className,
+  actorReviewName,
+  actorReviewRoleName,
+  onApprove,
 }: CarePlanReviewDecisionProps) {
   return (
     <div
@@ -19,11 +26,17 @@ export default function CarePlanReviewDecision({
     >
       <Title className="text-[16px] mb-[6px">Decision</Title>
       <div className="flex flex-col">
-        <Button className={`min-h-14`}>
-          <Text className="font-bold text-white">Approve & e-Sign</Text>
-        </Button>
+        <ApproveCarePlanDialog
+          actorReviewName={actorReviewName}
+          actorReviewRoleName={actorReviewRoleName}
+          onApprove={onApprove}
+        ></ApproveCarePlanDialog>
 
-        <ApproveCarePlanDialog></ApproveCarePlanDialog>
+        <Button
+          className={`min-h-14 bg-white  border-2 border-red-300 border-solid text-red-600 w-full `}
+        >
+          <Text className="font-bold text-red-600">Reject & Return</Text>
+        </Button>
       </div>
     </div>
   );

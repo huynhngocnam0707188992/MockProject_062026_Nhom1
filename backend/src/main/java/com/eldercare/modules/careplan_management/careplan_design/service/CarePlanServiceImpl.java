@@ -177,10 +177,14 @@ public class CarePlanServiceImpl implements ICarePlanService {
         }
 
         @Override
+        @Transactional()
         public GetCarePlanDetailResponseDTO getCarePlanDetail(GetCarePlanDetailRequestDTO requestDTO) {
 
                 CarePlanEntity carePlanEntity = this.carePlanRepository.findById(requestDTO.id);
-
+                List<Long> authorIds = new ArrayList<>();
+                authorIds.add((long) carePlanEntity.getCreatedBy());
+                List<UserEntity> author = this.carePlanRepository
+                                .getListUserByIDs(authorIds);
                 List<Long> residentIds = new ArrayList<>();
                 residentIds.add((long) carePlanEntity.getResident().getId());
                 Map<Long, Integer> locTierMap = this.carePlanRepository.getLOCTierFromResidentIds(residentIds);
@@ -204,6 +208,8 @@ public class CarePlanServiceImpl implements ICarePlanService {
                 responseDTO.createdAt = carePlanEntity.getCreatedAt().toString();
                 responseDTO.updatedAt = carePlanEntity.getUpdatedAt().toString();
                 responseDTO.isDeleted = carePlanEntity.getIsDeleted();
+                responseDTO.createdBy = new CarePlanOutput.CarePlanAuthorOutput(author.get(0).getId().intValue(),
+                                author.get(0).getFirstName(), author.get(0).getRole().getRoleName());
                 responseDTO.locTier = locTierMap.getOrDefault(
                                 Long.valueOf(carePlanEntity.getResident().getId()),
                                 0);
