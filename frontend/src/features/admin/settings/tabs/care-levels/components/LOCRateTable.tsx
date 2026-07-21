@@ -1,7 +1,7 @@
 import React from 'react';
-import type { CareLevelRateResponse } from '../../../../care-plans/types';
+import type { CareLevelRateResponse } from '../../../../facilities/types';
 import { Pencil, Save, X } from 'lucide-react';
-import { TIERS, CURRENT_USER } from '../../../../care-plans/utils/constants';
+import { TIERS, CURRENT_USER } from '../../../../facilities/utils/constants';
 
 interface LOCRateTableProps {
   rates: CareLevelRateResponse[];

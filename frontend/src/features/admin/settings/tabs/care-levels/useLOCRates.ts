@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import type { CareLevelRateResponse } from '../../../care-plans/types';
+import type { CareLevelRateResponse } from '../../../facilities/types';
 import { careLevelApi } from './care-level-api';
-import { TIERS } from '../../../care-plans/utils/constants';
+import { TIERS } from '../../../facilities/utils/constants';
 
 export const useLOCRates = () => {
   const [rates, setRates] = useState<CareLevelRateResponse[]>([]);
