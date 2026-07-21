@@ -23,11 +23,11 @@ import { Input } from "@/components/ui/input";
 
 import { useCreateAssessment } from "../hooks/use-create-assessment";
 import { useAssessmentMetrics } from "../hooks/use-assessment-metrics";
-import { useCompletedScreenings } from "../../pre-admission/hooks/use-completed-screenings";
 import { useDialogStore } from "@/store/use-dialog-store";
+import { useActiveAdmissions } from "../../admissions/hooks/use-active-admissions";
 
 const formSchema = z.object({
-  preAdmissionScreeningId: z.string().min(1, "Please select a screening."),
+  admissionId: z.string().min(1, "Please select an admission."),
   details: z
     .array(
       z.object({
@@ -40,10 +40,10 @@ const formSchema = z.object({
 });
 
 export const CreateAssessmentForm = () => {
-  const { data: screenings, isLoading: loadingScreenings } =
-    useCompletedScreenings();
+  const { data: admissions, isLoading: loadingAdmissions } =
+    useActiveAdmissions();
   const { data: metrics, isLoading: loadingMetrics } = useAssessmentMetrics();
-  const screeningOptions = screenings?.data ?? [];
+  const admissionOptions = admissions?.data ?? [];
   const metricOptions = metrics?.data ?? [];
 
   const createMutation = useCreateAssessment();
@@ -51,7 +51,7 @@ export const CreateAssessmentForm = () => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { preAdmissionScreeningId: "", details: [] },
+    defaultValues: { admissionId: "", details: [] },
   });
 
   const { fields, replace } = useFieldArray({
@@ -69,10 +69,7 @@ export const CreateAssessmentForm = () => {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     createMutation.mutate(
-      {
-        preAdmissionScreeningId: Number(values.preAdmissionScreeningId),
-        details: values.details,
-      },
+      { admissionId: Number(values.admissionId), details: values.details },
       { onSuccess: close },
     );
   };
@@ -81,13 +78,11 @@ export const CreateAssessmentForm = () => {
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <FieldGroup>
         <Controller
-          name="preAdmissionScreeningId"
+          name="admissionId"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>
-                Pre-Admission Screening
-              </FieldLabel>
+              <FieldLabel htmlFor={field.name}>Admission</FieldLabel>
               <Select
                 name={field.name}
                 value={field.value}
@@ -99,19 +94,19 @@ export const CreateAssessmentForm = () => {
                 >
                   <SelectValue
                     placeholder={
-                      loadingScreenings ? "Loading..." : "Select screening"
+                      loadingAdmissions ? "Loading..." : "Select admission"
                     }
                   >
                     {
-                      screeningOptions.find((s) => String(s.id) === field.value)
+                      admissionOptions.find((a) => String(a.id) === field.value)
                         ?.residentName
                     }
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {screeningOptions.map((s) => (
-                    <SelectItem key={s.id} value={String(s.id)}>
-                      #{s.id} - {s.residentName}
+                  {admissionOptions.map((a) => (
+                    <SelectItem key={a.id} value={String(a.id)}>
+                      #{a.id} - {a.residentName}
                     </SelectItem>
                   ))}
                 </SelectContent>

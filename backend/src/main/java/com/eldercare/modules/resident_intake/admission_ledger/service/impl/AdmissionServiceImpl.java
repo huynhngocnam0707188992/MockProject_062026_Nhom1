@@ -1,20 +1,25 @@
 package com.eldercare.modules.resident_intake.admission_ledger.service.impl;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.eldercare.common.enums.BedStatus;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.BedEntity;
+import com.eldercare.modules.admin.facility_setup.facility.facility_layout.repository.BedRepository;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
 import com.eldercare.modules.resident_intake.admission_ledger.AdmissionEntity;
 import com.eldercare.modules.resident_intake.admission_ledger.dto.request.AdmissionCreateRequest;
 import com.eldercare.modules.resident_intake.admission_ledger.dto.request.AdmissionDischargeRequest;
 import com.eldercare.modules.resident_intake.admission_ledger.dto.response.AdmissionResponse;
+import com.eldercare.modules.resident_intake.admission_ledger.dto.response.AdmissionSelectDTO;
 import com.eldercare.modules.resident_intake.admission_ledger.repository.AdmissionRepository;
 import com.eldercare.modules.resident_intake.admission_ledger.service.AdmissionService;
-import com.eldercare.modules.resident_intake.assessment.AssessmentEntity;
-import com.eldercare.modules.resident_intake.assessment.repository.AssessmentRepository;
+import com.eldercare.modules.resident_intake.pre_admission.PreAdmissionScreeningEntity;
+import com.eldercare.modules.resident_intake.pre_admission.repository.PreAdmissionScreeningRepository;
 import com.eldercare.modules.resident_intake.resident.repository.ResidentRepository;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 
@@ -26,21 +31,33 @@ import lombok.RequiredArgsConstructor;
 public class AdmissionServiceImpl implements AdmissionService {
 
   private final AdmissionRepository admRepo;
-  private final AssessmentRepository assessRepo;
+  private final PreAdmissionScreeningRepository preRepo;
   private final ResidentRepository residentRepo;
+  private final BedRepository bedRepository;
 
   @Override
   @Transactional
   public AdmissionResponse create(AdmissionCreateRequest req) {
-    AssessmentEntity assess = assessRepo.findById(req.getAssessmentId())
-        .orElseThrow(() -> new RuntimeException("Assessment not found"));
 
-    if (!"COMPLETED".equals(assess.getStatus())
-        || !Boolean.TRUE.equals(assess.getIsCurrent())) {
-      throw new RuntimeException("The assessment is not eligible for admission creation.");
+    PreAdmissionScreeningEntity pre = preRepo.findById(req.getPreAdmissionScreeningId())
+        .orElseThrow(() -> new RuntimeException("Pre-admission screening not found"));
+
+    if (!"COMPLETED".equals(pre.getStatus()) || !Boolean.TRUE.equals(pre.getIsCurrent())) {
+      throw new RuntimeException("Pre-admission screening is not eligible for admission.");
     }
 
-    Long residentId = assess.getResident().getId();
+    BedEntity bed = bedRepository.findById(req.getBedId())
+        .orElseThrow(() -> new RuntimeException("Bed not found"));
+
+    if (bed.getStatus() != BedStatus.AVAILABLE) {
+      throw new RuntimeException("Selected bed is not available.");
+    }
+
+    if (!bed.getRoom().getFacility().getId().equals(req.getFacilityId())) {
+      throw new RuntimeException("Bed does not belong to selected facility.");
+    }
+
+    Long residentId = pre.getResident().getId();
 
     admRepo.findByResidentIdAndIsCurrentTrue(residentId)
         .ifPresent(old -> {
@@ -48,31 +65,32 @@ public class AdmissionServiceImpl implements AdmissionService {
           admRepo.save(old);
         });
 
-    AdmissionEntity adm = new AdmissionEntity();
-    adm.setResident(assess.getResident());
-    adm.setAssessment(assess);
+    AdmissionEntity admission = new AdmissionEntity();
 
-    FacilityEntity f = new FacilityEntity();
-    f.setId(req.getFacilityId());
-    adm.setFacility(f);
+    admission.setResident(pre.getResident());
+    admission.setPreAdmissionScreening(pre);
+    admission.setFacility(bed.getRoom().getFacility());
 
-    adm.setAdmissionDate(req.getAdmissionDate());
-    adm.setIsCurrent(true);
-    adm.setCreatedAt(OffsetDateTime.now());
+    admission.setAdmissionDate(req.getAdmissionDate());
+    admission.setIsCurrent(true);
+    admission.setCreatedAt(OffsetDateTime.now());
 
-    admRepo.save(adm);
+    admRepo.save(admission);
 
-    ResidentEntity r = assess.getResident();
-    r.setStatus("ACTIVE");
-    residentRepo.save(r);
+    bed.setStatus(BedStatus.OCCUPIED);
+    bedRepository.save(bed);
 
-    return toResponse(adm);
+    ResidentEntity resident = pre.getResident();
+    resident.setStatus("ACTIVE");
+    resident.setBed(bed);
+    residentRepo.save(resident);
+
+    return toResponse(admission);
   }
 
   @Override
   public Page<AdmissionResponse> listPaged(Pageable pageable) {
-    return admRepo.findAll(pageable)
-        .map(this::toResponse);
+    return admRepo.findAll(pageable).map(this::toResponse);
   }
 
   @Override
@@ -88,10 +106,29 @@ public class AdmissionServiceImpl implements AdmissionService {
     admRepo.save(adm);
 
     ResidentEntity r = adm.getResident();
+    BedEntity bed = r.getBed();
+    if (bed != null) {
+      bed.setStatus(BedStatus.AVAILABLE);
+      r.setBed(null);
+
+      bedRepository.save(bed);
+    }
     r.setStatus("DISCHARGED");
+
     residentRepo.save(r);
+    bedRepository.save(bed);
 
     return toResponse(adm);
+  }
+
+  @Override
+  public List<AdmissionSelectDTO> listActiveForSelect() {
+    return admRepo.findByIsCurrentTrueAndDischargeDateIsNull().stream().map(a -> {
+      AdmissionSelectDTO dto = new AdmissionSelectDTO();
+      dto.setId(a.getId());
+      dto.setResidentName(a.getResident().getFirstName() + " " + a.getResident().getLastName());
+      return dto;
+    }).toList();
   }
 
   private AdmissionResponse toResponse(AdmissionEntity a) {
@@ -99,10 +136,9 @@ public class AdmissionServiceImpl implements AdmissionService {
     dto.setId(a.getId());
     dto.setAdmissionDate(a.getAdmissionDate());
     dto.setResidentId(a.getResident().getId());
-    dto.setResidentName(
-        a.getResident().getFirstName() + " " + a.getResident().getLastName());
+    dto.setResidentName(a.getResident().getFirstName() + " " + a.getResident().getLastName());
     dto.setFacilityId(a.getFacility().getId());
-    dto.setAssessmentId(a.getAssessment().getId());
+    dto.setPreAdmissionScreeningId(a.getPreAdmissionScreening().getId());
     dto.setDischargeDate(a.getDischargeDate());
     dto.setDischargeReason(a.getDischargeReason());
     dto.setStatus(a.getDischargeDate() == null ? "ACTIVE" : "DISCHARGED");

@@ -17,12 +17,13 @@ public class CarePlanOutput {
     public String lastReviewedBy;
     public String lastReviewedDateTime;
     public String nextReviewDateTime;
+    public CarePlanAuthorOutput createdBy;
     public int cycle;
     public String createdAt;
     public String updatedAt;
     public Boolean isDeleted;
 
-    public static class CarePlanResidentOutput{
+    public static class CarePlanResidentOutput {
         public int id;
         public String fullname;
         public String dateOfBirth;
@@ -34,7 +35,7 @@ public class CarePlanOutput {
         }
     }
 
-    public static class CarePlanResidentDefinitionOutput{
+    public static class CarePlanResidentDefinitionOutput {
         public String room;
         public String bed;
 
@@ -44,5 +45,17 @@ public class CarePlanOutput {
         }
     }
 
+    public static class CarePlanAuthorOutput {
+        public int id;
+        public String fullname;
+        public String role;
+
+        public CarePlanAuthorOutput(int id, String fullname, String role) {
+            this.id = id;
+            this.fullname = fullname;
+            this.role = role;
+        }
+
+    }
 
 }

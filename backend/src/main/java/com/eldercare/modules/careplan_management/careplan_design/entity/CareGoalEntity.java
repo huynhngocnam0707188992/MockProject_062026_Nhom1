@@ -19,22 +19,21 @@ public class CareGoalEntity {
     private CarePlanGoalStatusEnum status;
     private List<CareInterventionEntity> listCareIntervention = new ArrayList<>();
 
+    public void initState() {
+        this.status = CarePlanGoalStatusEnum.IN_PROGRESS;
+    }
+
     public void addIntervention(CareInterventionEntity careInterventionEntity) {
         this.listCareIntervention.add(careInterventionEntity);
     }
 
-    public void removeIntervention(int id){
+    public void removeIntervention(int id) {
         for (int i = 0; i < this.listCareIntervention.size(); i++) {
-            if (this.listCareIntervention.get(i).getId() == id){
+            if (this.listCareIntervention.get(i).getId() == id) {
                 this.listCareIntervention.remove(i);
                 return;
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        return "CareGoalEntity [id=" + id + ", status=" + status + "]";
     }
 
 }

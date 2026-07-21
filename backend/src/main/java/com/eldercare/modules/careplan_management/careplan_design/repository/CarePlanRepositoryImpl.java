@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.eldercare.modules.admin.facility_setup.facility.facility_layout.entity.BedEntity;
+import com.eldercare.modules.admin.user_management.UserEntity;
+import com.eldercare.modules.admin.user_management.UserRepository;
 import com.eldercare.modules.careplan_management.careplan_design.dto.searchCarePlanDTO.SearchCarePlanRequestDTO;
 import com.eldercare.modules.careplan_management.careplan_design.entity.resident_info.CarePlanResidentInfoEntity;
 import com.eldercare.modules.careplan_management.careplan_design.mapper.CareGoalMapper;
@@ -14,6 +16,7 @@ import com.eldercare.modules.careplan_management.careplan_design.mapper.CarePlan
 import com.eldercare.modules.resident_intake.resident.repository.ResidentRepository;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import jakarta.persistence.EntityManager;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
@@ -26,6 +29,7 @@ import com.eldercare.modules.careplan_management.careplan_design.entity.CarePlan
 import com.eldercare.modules.careplan_management.careplan_design.repository.database_schema.CareGoalSchema;
 import com.eldercare.modules.careplan_management.careplan_design.repository.database_schema.CareInterventionSchema;
 import com.eldercare.modules.careplan_management.careplan_design.repository.database_schema.CarePlanSchema;
+import com.eldercare.modules.careplan_management.careplan_design.repository.jpa.JpaAssessmentRepository;
 import com.eldercare.modules.careplan_management.careplan_design.repository.jpa.JpaCareGoalRepository;
 import com.eldercare.modules.careplan_management.careplan_design.repository.jpa.JpaCareInterventionRepository;
 import com.eldercare.modules.careplan_management.careplan_design.repository.jpa.JpaCarePlanRepository;
@@ -44,40 +48,48 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
     private final JpaCareGoalRepository jpaCareGoalRepository;
     private final JpaCareInterventionRepository jpaCareInterventionRepository;
     private final ResidentRepository jpaResidentRepositoty;
+    private final UserRepository jpaUserRepository;
+    private final JpaAssessmentRepository jpaAssessmentRepository;
 
     public CarePlanRepositoryImpl(EntityManager entityManager, JpaCarePlanRepository jpaCarePlanRepository,
-                                  JpaCareGoalRepository jpaCareGoalRepository,
-                                  JpaCareInterventionRepository jpaCareInterventionRepository, ResidentRepository jpaResidentRepositoty) {
+            JpaCareGoalRepository jpaCareGoalRepository,
+            JpaCareInterventionRepository jpaCareInterventionRepository, ResidentRepository jpaResidentRepositoty,
+            UserRepository jpaUserRepository, JpaAssessmentRepository jpaAssessmentRepository) {
         this.entityManager = entityManager;
         this.jpaCarePlanRepository = jpaCarePlanRepository;
         this.jpaCareGoalRepository = jpaCareGoalRepository;
         this.jpaCareInterventionRepository = jpaCareInterventionRepository;
         this.jpaResidentRepositoty = jpaResidentRepositoty;
+        this.jpaUserRepository = jpaUserRepository;
+        this.jpaAssessmentRepository = jpaAssessmentRepository;
     }
 
     @Override
     @Transactional()
     public CarePlanEntity findById(int id) {
         Optional<CarePlanSchema> optionalCarePlanSchema = this.jpaCarePlanRepository.findById(Long.valueOf(id));
-        CarePlanSchema carePlanSchema = optionalCarePlanSchema.get();
-        CarePlanEntity carePlanEntity = CarePlanMapper.toEntity(carePlanSchema);
-        return carePlanEntity;
+        if (optionalCarePlanSchema.isEmpty()) {
+            throw new IllegalArgumentException("Care plan with id " + id + " not found");
+        }
+        return CarePlanMapper.toEntity(optionalCarePlanSchema.get());
     }
 
     @Override
     @Transactional()
-    public void updateOne(CarePlanEntity carePlanEntity) {
-//        CarePlanSchema schema = CarePlanMapper.toSchema(carePlanEntity);
+    public CarePlanEntity updateOne(CarePlanEntity carePlanEntity) {
+        // CarePlanSchema schema = CarePlanMapper.toSchema(carePlanEntity);
         CarePlanSchema schema = jpaCarePlanRepository.findById(
-                (long)carePlanEntity.getId())
+                (long) carePlanEntity.getId())
                 .orElseThrow();
         schema.setStatus(carePlanEntity.getStatus().toString());
         schema.setUpdatedAt(carePlanEntity.getUpdatedAt());
         schema.setSignificantChangeFlag(carePlanEntity.getSignificantFlag());
-        if (carePlanEntity.getIsDeleted() == true){
+        if (carePlanEntity.getIsDeleted() == true) {
             schema.setIsDeleted(true);
         }
         jpaCarePlanRepository.save(schema);
+
+        return carePlanEntity;
     }
 
     @Override
@@ -126,21 +138,21 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
                                 },
                                 toList())));
 
-//        Map<Long, List<CareInterventionEntity>> interventionMap = jpaCareInterventionRepository
-//                .findByCarePlanIdIn(carePlanIds)
-//                .stream()
-//                .collect(Collectors.groupingBy(
-//                        intervention -> intervention.getCarePlan().getId(),
-//                        Collectors.mapping(
-//                                intervention -> new CareInterventionEntity(
-//                                        intervention.getId().intValue(),
-//                                        intervention.getAssignedRole()),
-//                                toList())));
-
+        // Map<Long, List<CareInterventionEntity>> interventionMap =
+        // jpaCareInterventionRepository
+        // .findByCarePlanIdIn(carePlanIds)
+        // .stream()
+        // .collect(Collectors.groupingBy(
+        // intervention -> intervention.getCarePlan().getId(),
+        // Collectors.mapping(
+        // intervention -> new CareInterventionEntity(
+        // intervention.getId().intValue(),
+        // intervention.getAssignedRole()),
+        // toList())));
 
         return carePlans.stream()
                 .map(schema -> {
-                  return CarePlanMapper.toEntity(schema);
+                    return CarePlanMapper.toEntity(schema);
                 })
                 .toList();
     }
@@ -156,19 +168,16 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
         Specification<CarePlanSchema> spec = Specification.unrestricted();
 
         if (request.residentId != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("residentId"), request.residentId));
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("residentId"), request.residentId));
         }
 
         if (request.status != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("status"), request.status.name()));
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), request.status.name()));
         }
 
         if (request.significantChangeFlag != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("significantChangeFlag"),
-                            request.significantChangeFlag));
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("significantChangeFlag"),
+                    request.significantChangeFlag));
         }
 
         Page<CarePlanSchema> page = jpaCarePlanRepository.findAll(spec, pageable);
@@ -190,17 +199,17 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
                                 goal -> CareGoalMapper.toEntity(goal),
                                 toList())));
 
-//        Map<Long, List<CareInterventionEntity>> interventionMap = jpaCareInterventionRepository
-//                .findByCarePlanIdIn(carePlanIds)
-//                .stream()
-//                .collect(Collectors.groupingBy(
-//                        intervention -> intervention.getCarePlan().getId(),
-//                        Collectors.mapping(
-//                                intervention -> new CareInterventionEntity(
-//                                        intervention.getId().intValue(),
-//                                        intervention.getAssignedRole()),
-//                                toList())));
-
+        // Map<Long, List<CareInterventionEntity>> interventionMap =
+        // jpaCareInterventionRepository
+        // .findByCarePlanIdIn(carePlanIds)
+        // .stream()
+        // .collect(Collectors.groupingBy(
+        // intervention -> intervention.getCarePlan().getId(),
+        // Collectors.mapping(
+        // intervention -> new CareInterventionEntity(
+        // intervention.getId().intValue(),
+        // intervention.getAssignedRole()),
+        // toList())));
 
         List<CarePlanEntity> entities = carePlans.stream()
                 .map(schema -> {
@@ -225,8 +234,7 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
         return new PageImpl<>(
                 entities,
                 pageable,
-                page.getTotalElements()
-        );
+                page.getTotalElements());
     }
 
     @Override
@@ -247,22 +255,19 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
         }
 
         if (request.status != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("status"), request.status.name()));
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), request.status.name()));
         }
 
         if (request.significantChangeFlag != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("significantChangeFlag"),
-                            request.significantChangeFlag));
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("significantChangeFlag"),
+                    request.significantChangeFlag));
         }
 
         Page<CarePlanSchema> page = jpaCarePlanRepository.findAll(spec, pageable);
 
         return page.getContent()
                 .stream()
-                .map(CarePlanMapper::toEntity
-                )
+                .map(CarePlanMapper::toEntity)
                 .toList();
     }
 
@@ -285,14 +290,12 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
         }
 
         if (request.status != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("status"), request.status.name()));
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), request.status.name()));
         }
 
         if (request.significantChangeFlag != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("significantChangeFlag"),
-                            request.significantChangeFlag));
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("significantChangeFlag"),
+                    request.significantChangeFlag));
         }
 
         Page<CarePlanSchema> page = jpaCarePlanRepository.findAll(spec, pageable);
@@ -309,7 +312,40 @@ public class CarePlanRepositoryImpl implements ICarePlanRepository {
         return new PageImpl<>(
                 entities,
                 pageable,
-                page.getTotalElements()
-        );
+                page.getTotalElements());
+    }
+
+    @Override
+    @Transactional()
+    public CarePlanEntity saveOne(CarePlanEntity carePlanEntity) {
+        CarePlanSchema carePlanSchema = CarePlanMapper.toSchema(carePlanEntity);
+        CarePlanSchema carePlanSchemaSaved = this.jpaCarePlanRepository.save(carePlanSchema);
+        CarePlanEntity carePlanEntityAfterSaved = new CarePlanEntity();
+        carePlanEntityAfterSaved.setId(carePlanSchemaSaved.getId().intValue());
+        return carePlanEntityAfterSaved;
+    }
+
+    @Override
+    @Transactional()
+    public ResidentEntity getResidentInfo(long id) {
+        ResidentEntity residentEntity = this.jpaResidentRepositoty.findById(id).get();
+        return residentEntity;
+    }
+
+    @Override
+    @Transactional()
+    public List<UserEntity> getListUserByIDs(List<Long> ids) {
+        return this.jpaUserRepository.findAllById(ids);
+    }
+
+    @Override
+    @Transactional()
+    public Map<Long, Integer> getLOCTierFromResidentIds(List<Long> ids) {
+
+        return this.jpaAssessmentRepository.findCurrentResidentTier(ids)
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> ((Long) row[1]).intValue()));
     }
 }

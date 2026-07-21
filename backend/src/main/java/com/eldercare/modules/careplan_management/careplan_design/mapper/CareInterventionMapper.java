@@ -9,7 +9,7 @@ public class CareInterventionMapper {
 
         return new CareInterventionEntity(
 
-                schema.getId().intValue(),
+                schema.getId() == null ? 0 : schema.getId().intValue(),
 
                 schema.getTitle(),
 

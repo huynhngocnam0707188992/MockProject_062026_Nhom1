@@ -8,4 +8,5 @@ import lombok.Setter;
 public class AssessmentDecisionRequest {
   private String status;
   private Long confirmedCareLevelId;
+  private String overrideReason;
 }
