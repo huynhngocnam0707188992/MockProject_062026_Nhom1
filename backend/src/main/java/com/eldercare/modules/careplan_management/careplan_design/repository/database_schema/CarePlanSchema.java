@@ -39,8 +39,12 @@ public class CarePlanSchema {
     @OneToMany(mappedBy = "carePlan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CareGoalSchema> listCareGoal = new ArrayList<>();
 
-    @Column(name = "last_reviewed_by", nullable = true)
-    private String lastReviewdBy;
+    // @Column(name = "last_reviewed_by", nullable = true)
+    // private String lastReviewdBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "last_reviewed_by", nullable = true)
+    private UserEntity lastReviewedBy;
 
     @Column(name = "last_reviewed_datetime", nullable = true)
     private OffsetDateTime lastReviewedDateTime;

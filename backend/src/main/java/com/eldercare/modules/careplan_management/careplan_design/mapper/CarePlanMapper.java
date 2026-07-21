@@ -55,7 +55,9 @@ public class CarePlanMapper {
                 newEntity.setSignificantFlag(schema.getSignificantChangeFlag());
                 newEntity.setLastReviewDateTime(
                                 schema.getLastReviewedDateTime() == null ? null : schema.getLastReviewedDateTime());
-                newEntity.setLastReviewBy(schema.getLastReviewdBy());
+                newEntity.setLastReviewBy(
+                                schema.getLastReviewedBy() != null ? schema.getLastReviewedBy().getId().toString()
+                                                : null);
 
                 return newEntity;
         }
