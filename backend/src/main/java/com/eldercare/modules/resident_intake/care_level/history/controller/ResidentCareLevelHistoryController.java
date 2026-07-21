@@ -116,22 +116,24 @@ public class ResidentCareLevelHistoryController {
 
 
 
-    // ============================
-    // API 27
-    // DELETE /care-level-history/{id}
-    // ============================
-    @DeleteMapping("/care-level-history/{id}")
-    public ResponseEntity<Void> deleteCareLevelHistory(
-            @PathVariable Long id
-    ) {
+   // ============================
+// API 27
+// DELETE /care-level-history/{id}
+// ============================
+@DeleteMapping("/care-level-history/{id}")
+public ResponseEntity<?> deleteCareLevelHistory(
+        @PathVariable Long id
+) {
 
+    historyService.deleteCareLevelHistory(id);
 
-        historyService.deleteCareLevelHistory(id);
-
-
-        return ResponseEntity
-                .noContent()
-                .build();
-    }
-
+    return ResponseEntity
+            .status(HttpStatus.METHOD_NOT_ALLOWED)
+            .body(
+                java.util.Map.of(
+                    "message",
+                    "Care level history cannot be deleted because historical records must be retained."
+                )
+            );
+}
 }
