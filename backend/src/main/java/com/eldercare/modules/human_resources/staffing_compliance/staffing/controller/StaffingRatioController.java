@@ -3,6 +3,8 @@ package com.eldercare.modules.human_resources.staffing_compliance.staffing.contr
 import com.eldercare.modules.human_resources.staffing_compliance.staffing.dto.request.UpdateStaffingRatioRequest;
 import com.eldercare.modules.human_resources.staffing_compliance.staffing.dto.response.StaffingRatioResponse;
 import com.eldercare.modules.human_resources.staffing_compliance.staffing.service.StaffingRatioService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +24,7 @@ public class StaffingRatioController {
 
     @PutMapping
     public ResponseEntity<StaffingRatioResponse> updateStaffingRatio(
-            @RequestBody UpdateStaffingRatioRequest request
-    ) {
+            @Valid @RequestBody UpdateStaffingRatioRequest request) {
         return ResponseEntity.ok(staffingRatioService.updateStaffingRatio(request));
     }
 }
