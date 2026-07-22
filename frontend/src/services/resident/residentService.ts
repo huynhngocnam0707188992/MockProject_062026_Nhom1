@@ -129,7 +129,7 @@ function calculateAge(dobString: string): number {
 }
 
 export const residentService = {
-  getResidents: async (search?: string, status?: string, referral?: string): Promise<ResidentListItemFE[]> => {
+  getResidents: async (search?: string, status?: string, _referral?: string): Promise<ResidentListItemFE[]> => {
     // If status is "All", pass undefined to backend
     const statusParam = status === 'All' ? undefined : status
     const response = await apiClient.get<ApiResponse<ResidentListResponseContainerDto>>('/residents', {

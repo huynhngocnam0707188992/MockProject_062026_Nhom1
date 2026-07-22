@@ -23,7 +23,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.springframework.test.context.ActiveProfiles;
+
 @SpringBootTest
+@ActiveProfiles("test")
 class ResidentV1ServiceTests {
 
     @Autowired
@@ -41,12 +44,40 @@ class ResidentV1ServiceTests {
     @Autowired
     private FacilityRepository facilityRepository;
 
+    @Autowired
+    private com.eldercare.modules.resident_intake.admission_ledger.repository.AdmissionRepository admissionRepository;
+
+    @Autowired
+    private com.eldercare.modules.resident_intake.resident.repository.ResidentCareLevelHistoryRepository residentCareLevelHistoryRepository;
+
+    @Autowired
+    private com.eldercare.modules.resident_intake.resident.repository.ResidentContactRepository residentContactRepository;
+
+    @Autowired
+    private com.eldercare.modules.resident_intake.resident.repository.ResidentInsurancePolicyRepository residentInsurancePolicyRepository;
+
+    @Autowired
+    private com.eldercare.modules.resident_intake.resident.repository.ResidentSensitiveInfoRepository residentSensitiveInfoRepository;
+
+    @Autowired
+    private com.eldercare.modules.resident_intake.resident.repository.ClinicalRecordRepository clinicalRecordRepository;
+
+    @Autowired
+    private com.eldercare.modules.resident_intake.assessment.repository.AssessmentRepository assessmentRepository;
+
     private ResidentEntity testResident;
     private BedEntity bed1;
     private BedEntity bed2;
 
     @BeforeEach
     void setUp() {
+        admissionRepository.deleteAll();
+        residentCareLevelHistoryRepository.deleteAll();
+        residentContactRepository.deleteAll();
+        residentInsurancePolicyRepository.deleteAll();
+        residentSensitiveInfoRepository.deleteAll();
+        clinicalRecordRepository.deleteAll();
+        assessmentRepository.deleteAll();
         residentRepository.deleteAll();
         bedRepository.deleteAll();
         roomRepository.deleteAll();
@@ -93,6 +124,14 @@ class ResidentV1ServiceTests {
     @Test
     void testGetResidentsV1() {
         ResidentListResponseContainerDto container = residentService.getResidentsV1(null, null, "John", 1, 10);
+        assertNotNull(container);
+        assertEquals(1, container.getResidents().size());
+        assertEquals("John", container.getResidents().get(0).getFirstName());
+    }
+
+    @Test
+    void testGetResidentsV1_FullNameSearch() {
+        ResidentListResponseContainerDto container = residentService.getResidentsV1(null, null, "John Doe", 1, 10);
         assertNotNull(container);
         assertEquals(1, container.getResidents().size());
         assertEquals("John", container.getResidents().get(0).getFirstName());

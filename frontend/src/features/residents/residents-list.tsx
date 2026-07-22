@@ -1,16 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { residentService } from '../../services/resident/residentService'
 import {
-  LayoutDashboard,
   Users,
-  ClipboardList,
-  Pill,
-  ShieldAlert,
-  BarChart3,
-  LogOut,
-  Menu,
-  Bell,
-  HelpCircle,
   Search,
   ChevronDown,
   Table as TableIcon,
@@ -18,11 +9,8 @@ import {
   UserCheck,
   UserX,
   Clock,
-  X,
   ChevronRight,
-  Info,
-  Sun,
-  Moon
+  Info
 } from 'lucide-react'
 
 // Define the interface for a resident
@@ -64,6 +52,23 @@ export default function ResidentsList({ onViewDetail }: ResidentsListProps) {
   // Dropdown menus open/close states
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false)
   const [isReferralDropdownOpen, setIsReferralDropdownOpen] = useState(false)
+  const statusDropdownRef = useRef<HTMLDivElement>(null)
+  const referralDropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target as Node)) {
+        setIsStatusDropdownOpen(false)
+      }
+      if (referralDropdownRef.current && !referralDropdownRef.current.contains(event.target as Node)) {
+        setIsReferralDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const fetchResidents = async () => {
     try {
@@ -199,11 +204,10 @@ export default function ResidentsList({ onViewDetail }: ResidentsListProps) {
               {/* Filters Container for inline wrapping */}
               <div className="flex flex-wrap items-center gap-2">
                 {/* Status Filter */}
-                <div className="relative flex-1 sm:flex-none">
+                <div ref={statusDropdownRef} className="relative flex-1 sm:flex-none">
                   <button
                     onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
-                    onBlur={() => setTimeout(() => setIsStatusDropdownOpen(false), 200)}
-                    className="w-full sm:w-auto flex items-center justify-between gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 min-w-[120px] text-left"
+                    className="w-full sm:w-auto flex items-center justify-between gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 min-w-[120px] text-left cursor-pointer"
                   >
                     <span>Status: {statusFilter}</span>
                     <ChevronDown className="size-3.5 text-slate-400" />
@@ -213,11 +217,12 @@ export default function ResidentsList({ onViewDetail }: ResidentsListProps) {
                       {['All', 'Active', 'Pending', 'Discharged'].map((status) => (
                         <button
                           key={status}
+                          type="button"
                           onClick={() => {
                             setStatusFilter(status)
                             setIsStatusDropdownOpen(false)
                           }}
-                          className={`w-full text-left px-3 py-2 text-sm transition-all hover:bg-slate-50 dark:hover:bg-slate-800 ${
+                          className={`w-full text-left px-3 py-2 text-sm transition-all hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer ${
                             statusFilter === status ? 'text-blue-600 dark:text-blue-400 font-semibold bg-blue-50/50 dark:bg-blue-950/20' : 'text-slate-600 dark:text-slate-300'
                           }`}
                         >
@@ -229,11 +234,10 @@ export default function ResidentsList({ onViewDetail }: ResidentsListProps) {
                 </div>
 
                 {/* Referral Filter */}
-                <div className="relative flex-1 sm:flex-none">
+                <div ref={referralDropdownRef} className="relative flex-1 sm:flex-none">
                   <button
                     onClick={() => setIsReferralDropdownOpen(!isReferralDropdownOpen)}
-                    onBlur={() => setTimeout(() => setIsReferralDropdownOpen(false), 200)}
-                    className="w-full sm:w-auto flex items-center justify-between gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 min-w-[140px] text-left"
+                    className="w-full sm:w-auto flex items-center justify-between gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 min-w-[140px] text-left cursor-pointer"
                   >
                     <span className="truncate">Referral: {referralFilter}</span>
                     <ChevronDown className="size-3.5 text-slate-400" />
@@ -243,11 +247,12 @@ export default function ResidentsList({ onViewDetail }: ResidentsListProps) {
                       {referralSources.map((source) => (
                         <button
                           key={source}
+                          type="button"
                           onClick={() => {
                             setReferralFilter(source)
                             setIsReferralDropdownOpen(false)
                           }}
-                          className={`w-full text-left px-3 py-2 text-sm transition-all hover:bg-slate-50 dark:hover:bg-slate-800 truncate ${
+                          className={`w-full text-left px-3 py-2 text-sm transition-all hover:bg-slate-50 dark:hover:bg-slate-800 truncate cursor-pointer ${
                             referralFilter === source ? 'text-blue-600 dark:text-blue-400 font-semibold bg-blue-50/50 dark:bg-blue-950/20' : 'text-slate-600 dark:text-slate-300'
                           }`}
                         >

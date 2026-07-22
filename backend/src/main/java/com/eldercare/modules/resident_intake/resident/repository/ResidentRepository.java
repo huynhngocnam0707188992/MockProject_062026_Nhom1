@@ -18,6 +18,9 @@ public interface ResidentRepository extends JpaRepository<ResidentEntity, Long>,
            "AND (:bedId IS NULL OR (r.bed IS NOT NULL AND r.bed.id = :bedId)) " +
            "AND (:search IS NULL OR LOWER(r.firstName) LIKE LOWER(CONCAT('%', :search, '%')) " +
            "OR LOWER(r.lastName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+           "OR LOWER(CONCAT(r.firstName, ' ', r.lastName)) LIKE LOWER(CONCAT('%', :search, '%')) " +
+           "OR LOWER(CONCAT(r.lastName, ' ', r.firstName)) LIKE LOWER(CONCAT('%', :search, '%')) " +
+           "OR LOWER(CONCAT(r.firstName, ' ', COALESCE(r.middleName, ''), ' ', r.lastName)) LIKE LOWER(CONCAT('%', :search, '%')) " +
            "OR CAST(r.id AS string) LIKE CONCAT('%', :search, '%'))")
     Page<ResidentEntity> findResidentsWithFilters(
             @Param("status") String status,

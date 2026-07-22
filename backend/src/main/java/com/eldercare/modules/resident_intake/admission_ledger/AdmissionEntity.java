@@ -40,7 +40,7 @@ public class AdmissionEntity {
     private FacilityEntity facility;
 
     @ManyToOne
-    @JoinColumn(name = "assessment_id")
+    @JoinColumn(name = "assessment_id", insertable = false, updatable = false)
     private AssessmentEntity assessment;
     private Boolean isCurrent;
     @Column(name = "created_at", nullable = false)

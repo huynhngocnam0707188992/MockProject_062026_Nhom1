@@ -511,10 +511,10 @@ public class ResidentServiceImpl implements ResidentService {
 
         // Save Care Level history
         final ResidentEntity savedResidentRef = resident;
-        CareLevelEntity careLevel = careLevelRepository.findByLevelNameAndIsDeletedFalse("Level 3")
+        CareLevelEntity careLevel = careLevelRepository.findAll().stream().findFirst()
                 .orElseGet(() -> {
                     CareLevelEntity cl = new CareLevelEntity();
-                    cl.setLevelCode("L3");
+                    cl.setLevelCode("LEVEL_3");
                     cl.setLevelName("Level 3");
                     return careLevelRepository.save(cl);
                 });
