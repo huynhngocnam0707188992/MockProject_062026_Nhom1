@@ -8,7 +8,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdmissionCreateRequest {
-  private Long assessmentId;
+
+  private Long preAdmissionScreeningId;
+
   private Long facilityId;
+
+  private Long bedId;
+
   private LocalDate admissionDate;
 }

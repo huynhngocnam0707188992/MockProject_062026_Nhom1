@@ -32,6 +32,8 @@ const IncidentSeverityPage = () => {
   const [rows, setRows] = useState<IncidentSeverityRow[]>([]);
   const [newSeverityName, setNewSeverityName] = useState("");
   const [newChartLockTrigger, setNewChartLockTrigger] = useState(false);
+  const [newDescription, setNewDescription] = useState("");
+  const [newExample, setNewExample] = useState("");
   const [newSeverityError, setNewSeverityError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -41,8 +43,8 @@ const IncidentSeverityPage = () => {
       data.map((item) => ({
         id: item.id,
         levelName: item.levelName,
-        description: defaultSeverityContent.description,
-        example: defaultSeverityContent.example,
+        description: item.description?.trim() || defaultSeverityContent.description,
+        example: item.example?.trim() || defaultSeverityContent.example,
         chartLockTrigger: item.chartLockTrigger,
         isEditing: false,
       }))
@@ -74,8 +76,8 @@ const IncidentSeverityPage = () => {
           ? {
               ...row,
               levelName: originalRow.levelName,
-              description: defaultSeverityContent.description,
-              example: defaultSeverityContent.example,
+              description: originalRow.description?.trim() || defaultSeverityContent.description,
+              example: originalRow.example?.trim() || defaultSeverityContent.example,
               isEditing: false,
             }
           : row
@@ -115,9 +117,13 @@ const IncidentSeverityPage = () => {
       await createIncidentSeverityLevel({
         level_name: newSeverityName.trim(),
         chart_lock_trigger: newChartLockTrigger,
+        description: newDescription.trim(),
+        example: newExample.trim(),
       });
       setNewSeverityName("");
       setNewChartLockTrigger(false);
+      setNewDescription("");
+      setNewExample("");
       setNewSeverityError(null);
       queryClient.invalidateQueries({ queryKey: ["incidentSeverityLevels"] });
       setActiveTab("list");
@@ -273,9 +279,13 @@ const IncidentSeverityPage = () => {
             <AddSeverityTab
               newSeverityName={newSeverityName}
               newChartLockTrigger={newChartLockTrigger}
+              newDescription={newDescription}
+              newExample={newExample}
               newSeverityError={newSeverityError}
               onSeverityNameChange={setNewSeverityName}
               onChartLockTriggerChange={setNewChartLockTrigger}
+              onDescriptionChange={setNewDescription}
+              onExampleChange={setNewExample}
               onCreate={handleCreateSeverity}
             />
           </TabsContent>

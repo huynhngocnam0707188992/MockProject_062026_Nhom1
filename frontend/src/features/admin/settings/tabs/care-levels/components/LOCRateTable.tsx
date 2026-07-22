@@ -1,7 +1,7 @@
 import React from 'react';
-import type { CareLevelRateResponse } from '../../../../care-plans/types';
+import type { CareLevelRateResponse } from '../../../../facilities/types';
 import { Pencil, Save, X } from 'lucide-react';
-import { TIERS, CURRENT_USER } from '../../../../care-plans/utils/constants';
+import { TIERS, CURRENT_USER } from '../../../../facilities/utils/constants';
 
 interface LOCRateTableProps {
   rates: CareLevelRateResponse[];
@@ -37,7 +37,7 @@ const LOCRateTable: React.FC<LOCRateTableProps> = ({
         </thead>
         <tbody className="divide-y">
           {rates.map((rate) => {
-            const tierInfo = TIERS.find(t => t.id === rate.careLevelId) || TIERS[0];
+            const tierInfo = TIERS.find(t => t.id === rate.care_level_id) || TIERS[0];
             const isEditing = editingId === rate.id;
             
             return (
@@ -63,7 +63,7 @@ const LOCRateTable: React.FC<LOCRateTableProps> = ({
                     />
                   ) : (
                     <span className="font-semibold text-emerald-600">
-                      ${rate.dailyRate.toFixed(2)}
+                      ${rate.daily_rate.toFixed(2)}
                     </span>
                   )}
                 </td>
@@ -79,7 +79,7 @@ const LOCRateTable: React.FC<LOCRateTableProps> = ({
                       className="px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   ) : (
-                    <span className="text-gray-700">{rate.effectiveFrom}</span>
+                    <span className="text-gray-700">{rate.effective_from}</span>
                   )}
                 </td>
                 <td className="px-6 py-5 text-gray-700">

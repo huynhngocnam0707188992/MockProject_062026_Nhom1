@@ -1,14 +1,18 @@
 import { AlarmClock, Clock, Database, Paperclip } from "lucide-react";
 import Card from "../ui/card";
-import type { CarePlan } from "@/services/care-plan/care-plan-types";
+import type {
+  CarePlan,
+  CarePlanMetadata,
+} from "@/services/care-plan/care-plan-types";
 
 type CarePlanStatisticalProps = {
   carePlans: CarePlan[];
+  carePlanMetadata: CarePlanMetadata;
 };
 
 export default function CarePlanStatistical(props: CarePlanStatisticalProps) {
   const getTotalCarePlan = () => {
-    return props.carePlans.length;
+    return props.carePlanMetadata.totalElements;
   };
 
   const getTotalDraft = () => {
@@ -16,14 +20,15 @@ export default function CarePlanStatistical(props: CarePlanStatisticalProps) {
       .length;
   };
 
-  const getTotalActive = () => {
-    return props.carePlans.filter((carePlan) => carePlan.status === "ACTIVE")
-      .length;
+  const getTotalPendingReview = () => {
+    return props.carePlans.filter(
+      (carePlan) => carePlan.status === "PENDING_REVIEW",
+    ).length;
   };
 
-  const getTotalDiscontinue = () => {
+  const getTotalReviewDue = () => {
     return props.carePlans.filter(
-      (carePlan) => carePlan.status === "DISCONTINUED",
+      (carePlan) => carePlan.status === "REVIEW_DUE",
     ).length;
   };
 
@@ -39,15 +44,7 @@ export default function CarePlanStatistical(props: CarePlanStatisticalProps) {
       ></Card>
 
       <Card
-        icon={AlarmClock}
-        title="Active"
-        amount={getTotalActive().toString()}
-        className="bg-blue-200"
-        width="basis-[calc((100%-36px)/4)]"
-        height="h-[120px]"
-      ></Card>
-      <Card
-        icon={Clock}
+        icon={Paperclip}
         title="Draft"
         amount={getTotalDraft().toString()}
         width="basis-[calc((100%-36px)/4)]"
@@ -55,13 +52,23 @@ export default function CarePlanStatistical(props: CarePlanStatisticalProps) {
         height="h-[120px]"
       ></Card>
       <Card
-        icon={Paperclip}
-        title="Discontinued"
-        amount={getTotalDiscontinue().toString()}
+        icon={Clock}
+        title="Pending Review"
+        amount={getTotalPendingReview().toString()}
+        width="basis-[calc((100%-36px)/4)]"
         className="bg-blue-200"
         height="h-[120px]"
-        width="basis-[calc((100%-36px)/4)]"
       ></Card>
+
+      <Card
+        icon={AlarmClock}
+        title="Pending Review"
+        amount={getTotalReviewDue().toString()}
+        className="bg-blue-200"
+        width="basis-[calc((100%-36px)/4)]"
+        height="h-[120px]"
+      ></Card>
+      <Card></Card>
     </div>
   );
 }

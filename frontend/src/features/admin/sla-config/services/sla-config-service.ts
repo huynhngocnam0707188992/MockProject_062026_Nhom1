@@ -4,23 +4,29 @@ export type SLAConfigResponse = {
   id: number;
   severityId: number;
   slaWindowHrs: number;
+  externalReportRequired?: boolean;
+  regulatoryBody?: string;
 };
 
 type SLAConfigApiResponse = {
   id: number;
   severity_id: number;
   sla_window_hrs: number;
+  external_report_required?: boolean;
+  regulatory_body?: string;
 };
 
 export type CreateSLAConfigRequest = {
   severity_id: number;
   sla_window_hrs: number;
+  external_report_required?: boolean;
+  regulatory_body?: string;
 };
 
 export type UpdateSLAConfigRequest = {
   severity_id: number;
   sla_window_hrs: number;
-  external_report_required?: string;
+  external_report_required?: boolean;
   regulatory_body?: string;
 };
 
@@ -36,6 +42,8 @@ export const createSLAConfig = async (
     id: response.data.id,
     severityId: response.data.severity_id,
     slaWindowHrs: response.data.sla_window_hrs,
+    externalReportRequired: response.data.external_report_required,
+    regulatoryBody: response.data.regulatory_body,
   };
 };
 
@@ -46,6 +54,8 @@ export const fetchSLAConfigs = async (): Promise<SLAConfigResponse[]> => {
     id: item.id,
     severityId: item.severity_id,
     slaWindowHrs: item.sla_window_hrs,
+    externalReportRequired: item.external_report_required,
+    regulatoryBody: item.regulatory_body,
   }));
   console.log("SLA API mapped response:", mapped);
   return mapped;
@@ -64,5 +74,7 @@ export const updateSLAConfig = async (
     id: response.data.id,
     severityId: response.data.severity_id,
     slaWindowHrs: response.data.sla_window_hrs,
+    externalReportRequired: response.data.external_report_required,
+    regulatoryBody: response.data.regulatory_body,
   };
 };

@@ -9,15 +9,21 @@ import {
   TimelineTitle,
 } from "@/components/ui/timeline";
 import Flag from "../../../ui/flag";
+import type { CarePlanGoal } from "@/services/care-plan/care-plan-types";
+import { formatOffsetDateTimeToDate } from "../../../utils/time-utils";
 
-type PlanProps = {
-  id?: number;
-  status?: string;
-  title?: string;
-  goal?: string;
-  description?: string;
+export type CarePlanDetailTabOverviewProps = {
+  listCareGoals: CarePlanGoal[];
+  reviewCycle: number;
+  lastReview: string;
+  nextReview: string;
 };
-export default function CarePlanDetailTabOverview(props: PlanProps) {
+export default function CarePlanDetailTabOverview({
+  listCareGoals,
+  reviewCycle,
+  lastReview,
+  nextReview,
+}: CarePlanDetailTabOverviewProps) {
   return (
     <div className="w-full">
       <div>
@@ -27,42 +33,46 @@ export default function CarePlanDetailTabOverview(props: PlanProps) {
       <div className="flex flex-col md:grid md:grid-cols-[70%_30%] gap-4">
         <div className="flex flex-col">
           <div className="careList">
-            <div className="rounded-[6px] border-gray-200 bg-white border-2 p-[8px] mb-[16px]">
-              <div className="flex justify-between">
-                <p className="text-lg font-bold">{props.title ?? "Mobility"}</p>
-                <Flag title={props.title ?? "On Track"}></Flag>
+            {listCareGoals.map((goal) => (
+              <div
+                key={goal.id}
+                className="rounded-[6px] border-gray-200 bg-white border-2 p-[8px] mb-[16px]"
+              >
+                <div className="flex justify-between">
+                  <p className="text-lg font-bold">{goal.title}</p>
+
+                  <Flag title={goal.status} />
+                </div>
+
+                <div className="mt-2 text-gray-600">
+                  <p>
+                    <span className="font-medium">Goal:</span>{" "}
+                    {goal.goalDescription}
+                  </p>
+                </div>
+
+                {goal.interventions && goal.interventions.length > 0 && (
+                  <div className="mt-4">
+                    <p className="font-medium mb-2">Interventions</p>
+
+                    <ul className="space-y-2">
+                      {goal.interventions.map((intervention) => (
+                        <li
+                          key={intervention.id}
+                          className="rounded bg-gray-50 p-2"
+                        >
+                          <p>{intervention.title}</p>
+
+                          <p className="text-sm text-gray-500">
+                            Assigned Role: {intervention.assignedRole}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
-              <div className="text-gray-600">
-                <p>{`Goal: ${props.goal ?? "Ambulate 50 ft with walker x2/day"} \n`}</p>
-              </div>
-              <div className="mt-[8px] text-gray-600">
-                <p>{`${props.description ?? "Assist ambulation W/ walker, 2x daily"}`}</p>
-              </div>
-            </div>
-            <div className="rounded-[6px] border-gray-200 bg-white border-2 p-[8px] mb-[16px]">
-              <div className="flex justify-between">
-                <p className="text-lg font-bold">{props.title ?? "Mobility"}</p>
-                <Flag title={props.title ?? "On Track"}></Flag>
-              </div>
-              <div className="text-gray-600">
-                <p>{`Goal: ${props.goal ?? "Ambulate 50 ft with walker x2/day"} \n`}</p>
-              </div>
-              <div className="mt-[8px] text-gray-600">
-                <p>{`${props.description ?? "Assist ambulation W/ walker, 2x daily"}`}</p>
-              </div>
-            </div>
-            <div className="rounded-[6px] border-gray-200 bg-white border-2 p-[8px] mb-[16px]">
-              <div className="flex justify-between">
-                <p className="text-lg font-bold">{props.title ?? "Mobility"}</p>
-                <Flag title={props.title ?? "On Track"}></Flag>
-              </div>
-              <div className="text-gray-600">
-                <p>{`Goal: ${props.goal ?? "Ambulate 50 ft with walker x2/day"} \n`}</p>
-              </div>
-              <div className="mt-[8px] text-gray-600">
-                <p>{`${props.description ?? "Assist ambulation W/ walker, 2x daily"}`}</p>
-              </div>
-            </div>
+            ))}
           </div>
           <div className="activityTimeLineList">
             <p>Activity (Care Activity Timeline)</p>
@@ -176,16 +186,18 @@ export default function CarePlanDetailTabOverview(props: PlanProps) {
               <p className="text-lg font-bold">Review Cycle</p>
               <div className=" flex flex-row justify-between">
                 <p>Last reviewed</p>
-                <p className="font-bold">YYYY-MM-DD</p>
+                <p className="font-bold">
+                  {formatOffsetDateTimeToDate(lastReview)}
+                </p>
               </div>
               <div className=" flex flex-row justify-between">
                 <p>Next review due</p>
-                <p>YYYY-MM-DD</p>
+                <p>{formatOffsetDateTimeToDate(nextReview)}</p>
               </div>
               <div className=" flex flex-row justify-between">
                 <p className="font-bold">Cycle</p>
 
-                <p className="font-bold">{`90 days`}</p>
+                <p className="font-bold">{`${reviewCycle} days`}</p>
               </div>
             </div>
           </div>

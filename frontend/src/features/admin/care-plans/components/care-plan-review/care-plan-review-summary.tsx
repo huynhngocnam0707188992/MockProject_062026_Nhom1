@@ -1,57 +1,63 @@
-import Text from "../../ui/Text";
+import type {
+  CarePlanGoal,
+  CarePlanIntervention,
+} from "@/services/care-plan/care-plan-types";
 import Title from "../../ui/Title";
+import Text from "../../ui/Text";
 
-type CarePlanReviewPlanSummary = {
-  goals?: string[];
-  interventions?: string[];
+type CarePlanReviewPlanSummaryProps = {
+  goals: CarePlanGoal[];
 };
 
-// function CarePlanReviewPlanSummary({
-//   goals,
-//   interventions,
-// }: CarePlanReviewPlanSummary) {
-//   return (
-//     <div>
-//       <Text>Plan Summary (read-only)</Text>
-//       <div id="goals">
-//         {goals?.map((item) => {
-//           return <Text>{item}</Text>;
-//         })}
-//       </div>
-//       <div id="interventions">
-//         {interventions?.map((item) => {
-//           return <Text>{item}</Text>;
-//         })}
-//       </div>
-//     </div>
-//   );
-// }
+function CarePlanReviewPlanSummary({ goals }: CarePlanReviewPlanSummaryProps) {
+  const interventions: CarePlanIntervention[] = goals.flatMap(
+    (goal) => goal.interventions ?? [],
+  );
 
-function CarePlanReviewPlanSummary({
-  goals,
-  interventions,
-}: CarePlanReviewPlanSummary) {
   return (
-    <div className="bg-[#fafcfe] border-2 border-solid border-gray-200 rounded-[8px] p-[8px]">
-      <Title className="text-[16px] mb-[6px]">Plan Summary (read-only)</Title>
-      <div id="goals" className="">
-        <Title className="text-[14px] mb-[6px]">Goals</Title>
-        <Text>hang 1</Text>
-        <Text>hang 1</Text>
-        <Text>hang 1</Text>
-        <Text>hang 1</Text>
-        <Text>hang 1</Text>
-        <Text>hang 1</Text>
-      </div>
-      <div id="interventions">
-        <Title className="text-[14px] mb-[6px] mt-[6px]">Interventions</Title>
-        <Text> jdskfj 1</Text>
-        <Text> jdskfj 1</Text>
-        <Text> jdskfj 1</Text>
-        <Text> jdskfj 1</Text>
-        <Text> jdskfj 1</Text>
-      </div>
+    <div className="rounded-lg border-2 border-gray-200 bg-[#fafcfe] p-4">
+      <Title className="mb-5">Plan Summary (read-only)</Title>
+
+      {/* Goals */}
+      <section className="mb-6">
+        <Title className="mb-3 text-[22px]">Goals</Title>
+
+        {goals.length > 0 ? (
+          <ul className="list-disc pl-5 space-y-2">
+            {goals.map((goal) => (
+              <li key={goal.id}>
+                <Text>{goal.goalDescription}</Text>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Text>No goals available.</Text>
+        )}
+      </section>
+
+      {/* Interventions */}
+      <section>
+        <Title className="mb-3 text-[22px]">Interventions</Title>
+
+        {interventions.length > 0 ? (
+          <ul className="list-disc pl-5 space-y-2">
+            {interventions.map((intervention) => (
+              <li key={intervention.id}>
+                <Text>
+                  {intervention.title}
+                  <span className="ml-2 text-gray-500">
+                    ({intervention.assignedRole})
+                  </span>
+                </Text>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Text>No interventions available.</Text>
+        )}
+      </section>
     </div>
   );
 }
+
 export default CarePlanReviewPlanSummary;

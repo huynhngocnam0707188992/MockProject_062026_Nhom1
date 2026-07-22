@@ -6,6 +6,7 @@ import CareTaskPage from "@/features/admin/care-tasks/pages/care-task-page";
 import DashboardPage from "@/features/admin/dashboard/pages/dashboard-page";
 import FacilityPage from "@/features/admin/facilities/pages/facility-page";
 import IncidentSeverityPage from "@/features/admin/incident-severity/pages/incident-severity-page";
+import IncidentPage from "@/features/admin/incidents/pages/incident-page";
 import NotificationPage from "@/features/admin/notifications/pages/notification-page";
 import ProfilePage from "@/features/admin/profile/pages/profile-page";
 import ResidentPage from "@/features/admin/residents/pages/resident-page";
@@ -24,6 +25,9 @@ import RolePage from "@/features/admin/roles/pages/role-page";
 import { AssessmentPage } from "@/features/admin/assessment/pages/assessment-page";
 import CarePlanReviewPage from "@/features/admin/care-plans/pages/care-plan-review-page";
 import CarePlanDetailPage from "@/features/admin/care-plans/pages/care-plan-detail/care-plan-detail-page";
+import EquipmentPage from "@/features/admin/inventory/pages/equipment-page";
+
+import { LOCRatesPage } from "@/features/admin/facilities/pages/loc-rates-page";
 
 export const adminRoutes: RouteObject = {
   path: "/admin",
@@ -105,6 +109,14 @@ export const adminRoutes: RouteObject = {
       ),
     },
     {
+      path: "loc-rates",
+      element: (
+        <RequirePermission permission={PERMISSIONS.FACILITY_VIEW}>
+          <LOCRatesPage />
+        </RequirePermission>
+      ),
+    },
+    {
       path: "staffing-ratios",
       element: (
         <RequirePermission permission={PERMISSIONS.FACILITY_VIEW}>
@@ -120,6 +132,15 @@ export const adminRoutes: RouteObject = {
         </RequirePermission>
       ),
     },
+    {
+      path: "incidents",
+      element: (
+        <RequirePermission permission={PERMISSIONS.INCIDENTS_VIEW}>
+          <IncidentPage />
+        </RequirePermission>
+      ),
+    },
+
     {
       path: "sla-config",
       element: (
@@ -141,12 +162,11 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.CARE_PLAN_VIEW}>
           <CarePlanDetailPage />
-
         </RequirePermission>
       ),
     },
     {
-      path: "care-plans/review",
+      path: "care-plans/review/:id",
       element: (
         <RequirePermission permission={PERMISSIONS.CARE_PLAN_VIEW}>
           <CarePlanReviewPage />
@@ -187,6 +207,14 @@ export const adminRoutes: RouteObject = {
       element: (
         <RequirePermission permission={PERMISSIONS.USER_VIEW}>
           <DemoDataPage />
+        </RequirePermission>
+      ),
+    },
+    {
+      path: "equipment",
+      element: (
+        <RequirePermission permission={PERMISSIONS.EQUIPMENT_VIEW}>
+          <EquipmentPage />
         </RequirePermission>
       ),
     },

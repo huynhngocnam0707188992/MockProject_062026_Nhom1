@@ -11,12 +11,16 @@ import com.eldercare.modules.resident_intake.resident.repository.ResidentReposit
 import com.eldercare.modules.resident_intake.resident.service.ResidentService;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.repository.FacilityRepository;
+import com.eldercare.modules.resident_intake.admission_ledger.repository.AdmissionRepository;
+import com.eldercare.modules.resident_intake.resident.repository.ResidentCareLevelHistoryRepository;
+import com.eldercare.modules.resident_intake.resident.repository.ResidentSensitiveInfoRepository;
 import com.eldercare.common.enums.RoomType;
 import com.eldercare.common.enums.BedStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,10 +49,10 @@ class ResidentV1ServiceTests {
     private FacilityRepository facilityRepository;
 
     @Autowired
-    private com.eldercare.modules.resident_intake.admission_ledger.repository.AdmissionRepository admissionRepository;
+    private AdmissionRepository admissionRepository;
 
     @Autowired
-    private com.eldercare.modules.resident_intake.resident.repository.ResidentCareLevelHistoryRepository residentCareLevelHistoryRepository;
+    private ResidentCareLevelHistoryRepository residentCareLevelHistoryRepository;
 
     @Autowired
     private com.eldercare.modules.resident_intake.resident.repository.ResidentContactRepository residentContactRepository;
@@ -57,7 +61,7 @@ class ResidentV1ServiceTests {
     private com.eldercare.modules.resident_intake.resident.repository.ResidentInsurancePolicyRepository residentInsurancePolicyRepository;
 
     @Autowired
-    private com.eldercare.modules.resident_intake.resident.repository.ResidentSensitiveInfoRepository residentSensitiveInfoRepository;
+    private ResidentSensitiveInfoRepository residentSensitiveInfoRepository;
 
     @Autowired
     private com.eldercare.modules.resident_intake.resident.repository.ClinicalRecordRepository clinicalRecordRepository;

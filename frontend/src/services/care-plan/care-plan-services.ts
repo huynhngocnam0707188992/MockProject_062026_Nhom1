@@ -1,5 +1,8 @@
 import { apiClient } from "@/lib/api-client";
-import type { GetCarePlanListResponse } from "./care-plan-types";
+import type {
+  GetCarePlanDetailResponse,
+  GetCarePlanListResponse,
+} from "./care-plan-types";
 
 export type GetCarePlanListParams = {
   page?: number;
@@ -11,10 +14,34 @@ export type GetCarePlanListParams = {
   sortDir?: "ASC" | "DESC";
 };
 
-export const getCarePlanList = async (params?: GetCarePlanListParams) => {
+export const getCarePlanList = async (
+  params?: GetCarePlanListParams,
+): Promise<GetCarePlanListResponse> => {
   const response = await apiClient.get<GetCarePlanListResponse>("/care-plans", {
     params,
   });
 
-  return response.data.data.list;
+  return response.data;
+};
+
+export const getCarePlanDetail = async (id: number) => {
+  const response = await apiClient.get<GetCarePlanDetailResponse>(
+    `/care-plans/${id}`,
+  );
+
+  return response.data;
+};
+
+export type ApproveCarePlanResponse = {
+  id: number;
+  status: "ACTIVE";
+  updatedAt: string;
+};
+
+export const approveCarePlan = async (
+  id: number,
+): Promise<ApproveCarePlanResponse> => {
+  const response = await apiClient.patch(`/care-plans/${id}/activate`);
+
+  return response.data.data;
 };

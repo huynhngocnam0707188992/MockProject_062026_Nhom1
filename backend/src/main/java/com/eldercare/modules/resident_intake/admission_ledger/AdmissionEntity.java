@@ -1,7 +1,7 @@
 package com.eldercare.modules.resident_intake.admission_ledger;
 
 import com.eldercare.modules.admin.facility_setup.facility.facility_profile.entity.FacilityEntity;
-import com.eldercare.modules.resident_intake.assessment.AssessmentEntity;
+import com.eldercare.modules.resident_intake.pre_admission.PreAdmissionScreeningEntity;
 import com.eldercare.modules.resident_intake.resident_profile.ResidentEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,8 +40,12 @@ public class AdmissionEntity {
     private FacilityEntity facility;
 
     @ManyToOne
+    @JoinColumn(name = "pre_admission_screening_id")
+    private PreAdmissionScreeningEntity preAdmissionScreening;
+
+    @ManyToOne
     @JoinColumn(name = "assessment_id", insertable = false, updatable = false)
-    private AssessmentEntity assessment;
+    private com.eldercare.modules.resident_intake.assessment.AssessmentEntity assessment;
     private Boolean isCurrent;
     @Column(name = "created_at", nullable = false)
     @Builder.Default
