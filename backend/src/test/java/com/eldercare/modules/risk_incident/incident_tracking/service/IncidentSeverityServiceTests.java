@@ -1,4 +1,6 @@
-package com.eldercare.modules.risk_incident.incident_tracking.service.impl;
+package com.eldercare.modules.risk_incident.incident_tracking.service;
+
+import com.eldercare.modules.risk_incident.incident_tracking.service.impl.*;
 
 import com.eldercare.modules.risk_incident.incident_tracking.dto.reponse.IncidentSeverityResponse;
 import com.eldercare.modules.risk_incident.incident_tracking.dto.request.CreateIncidentSeverityRequest;
