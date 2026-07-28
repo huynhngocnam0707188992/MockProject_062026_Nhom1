@@ -34,11 +34,11 @@ export type PageResponse<T> = {
 
 export const incidentsApi = {
   getAll: (page = 0, size = 10) =>
-    apiClient.get<PageResponse<IncidentApiResponse>>("/incidents", { params: { page, size } })
+    apiClient.get<PageResponse<IncidentApiResponse>>("/admin/incidents", { params: { page, size } })
        .then((res) => res.data),
 
   getById: (id: number) =>
-    apiClient.get<IncidentApiResponse>(`/incidents/${id}`).then((res) => res.data),
+    apiClient.get<IncidentApiResponse>(`/admin/incidents/${id}`).then((res) => res.data),
 
   create: (payload: {
     residentID: number;
@@ -48,5 +48,5 @@ export const incidentsApi = {
     location?: string;
     description?: string;
     witnesses?: string;
-  }) => apiClient.post<IncidentApiResponse>("/incidents", payload).then((res) => res.data),
+  }) => apiClient.post<IncidentApiResponse>("/admin/incidents", payload).then((res) => res.data),
 };
