@@ -11,8 +11,9 @@ interface CareLevelHistory {
   endDate: string | null;
 }
 
-export const CareLevelHistoryTab = () => {
-  const { id } = useParams();
+export const CareLevelHistoryTab = (props?: { residentId?: string }) => {
+  const { id: paramId } = useParams();
+  const id = props?.residentId || paramId;
 
   console.log("Resident ID:", id);
 

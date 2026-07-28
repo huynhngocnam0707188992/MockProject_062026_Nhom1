@@ -38,12 +38,12 @@ public interface ResidentRepository
                        )
                        AND (
                            :search IS NULL
-                           OR LOWER(r.firstName)
-                                 LIKE LOWER(CONCAT('%', :search, '%'))
-                           OR LOWER(r.lastName)
-                                 LIKE LOWER(CONCAT('%', :search, '%'))
-                           OR CAST(r.id AS string)
-                                 LIKE CONCAT('%', :search, '%')
+                           OR LOWER(r.firstName) LIKE LOWER(CONCAT('%', :search, '%'))
+                           OR LOWER(r.lastName) LIKE LOWER(CONCAT('%', :search, '%'))
+                           OR LOWER(CONCAT(r.firstName, ' ', r.lastName)) LIKE LOWER(CONCAT('%', :search, '%'))
+                           OR LOWER(CONCAT(r.lastName, ' ', r.firstName)) LIKE LOWER(CONCAT('%', :search, '%'))
+                           OR LOWER(CONCAT(r.firstName, ' ', COALESCE(r.middleName, ''), ' ', r.lastName)) LIKE LOWER(CONCAT('%', :search, '%'))
+                           OR CAST(r.id AS string) LIKE CONCAT('%', :search, '%')
                        )
                      """)
        Page<ResidentEntity> findResidentsWithFilters(

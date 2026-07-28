@@ -30,6 +30,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**", "/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/residents/**", "/api/v1/demo-data-seeder/**").permitAll()
                 .requestMatchers("/admin/**", "/api/v1/admin/**").hasAnyRole("System_Administrator", "NHA_Admin")
                 .anyRequest().authenticated()
             )

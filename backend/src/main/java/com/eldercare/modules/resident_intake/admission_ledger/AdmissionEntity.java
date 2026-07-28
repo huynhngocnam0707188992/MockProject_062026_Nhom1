@@ -43,6 +43,9 @@ public class AdmissionEntity {
     @JoinColumn(name = "pre_admission_screening_id")
     private PreAdmissionScreeningEntity preAdmissionScreening;
 
+    @ManyToOne
+    @JoinColumn(name = "assessment_id", insertable = false, updatable = false)
+    private com.eldercare.modules.resident_intake.assessment.AssessmentEntity assessment;
     private Boolean isCurrent;
     @Column(name = "created_at", nullable = false)
     @Builder.Default
