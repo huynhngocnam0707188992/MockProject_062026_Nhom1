@@ -1,0 +1,77 @@
+services:
+  # -------------------------------------------------------------
+  # 1. DATABASE: SQL Server 2019
+  # -------------------------------------------------------------
+  db:
+    image: zamhuynh/my-sql-image:latest
+    container_name: eldercare-db
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=MatKhauCuaBan123!
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    networks:
+      - eldercare-network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'MatKhauCuaBan123!' -Q 'SELECT 1' -C || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # -------------------------------------------------------------
+  # 2. BACKEND: Spring Boot
+  # -------------------------------------------------------------
+  backend:
+    image: zamhuynh/my-backend-image:latest # 👈 ĐIỀN TÊN IMAGE BACKEND CỦA BẠN VÀO ĐÂY
+    container_name: eldercare-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=1433
+      - DB_NAME=elder_care_21_jul
+      - DB_USERNAME=sa
+      - DB_POOL_NAME=EldCareHikariCP
+      - DB_MIN_IDLE=5
+      - DB_MAX_POOL_SIZE=20
+      - DB_IDLE_TIMEOUT=300000
+      - DB_MAX_LIFETIME=1200000
+      - DB_CONNECTION_TIMEOUT=20000
+      - DB_VALIDATION_TIMEOUT=5000
+      - DB_PASSWORD=MatKhauCuaBan123!
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - eldercare-network
+
+  # -------------------------------------------------------------
+  # 3. FRONTEND: React (Nginx port 5173)
+  # -------------------------------------------------------------
+  frontend:
+    image: zamhuynh/my-frontend-image:latest # 👈 ĐIỀN TÊN IMAGE FRONTEND CỦA BẠN VÀO ĐÂY
+    container_name: eldercare-frontend
+    restart: always
+    # Map cổng 5173 của máy thật vào đúng cổng 5173 của Nginx trong container
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - eldercare-network
+
+# -------------------------------------------------------------
+# KHAI BÁO NETWORKS VÀ VOLUMES
+# -------------------------------------------------------------
+networks:
+  eldercare-network:
+    driver: bridge
+
+volumes:
+  mssql_data:
